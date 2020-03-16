@@ -9,6 +9,7 @@ const app = express();
 
 /* Models */ 
 const Partie = require('./models/Partie');
+const Serie = require('./models/Serie');
 
 app.use(parser.json());
 app.use(cors());
@@ -25,8 +26,49 @@ app.get('/', (req, res) => {
 });
 
 /**
- * données :
- * - username
+ * Permet de récupérer la liste des séries
+ * 
+ * Query:
+ *  limit: nombre d'éléments à recupérer (optionel, max 25)
+ *  offset: (optionel, 0 par défault)
+ */
+app.get('/series', (req, res) => {
+    let {limit, offset} = req.query;
+
+    if(!limit || !Number(limit) || limit > 25) limit = 25;
+    if(!offset || !Number(offset) || offset < 0) offset = 0;
+
+
+    // Compte le nombre totals de séries
+    Serie.count((err, count) => {
+        if(err) throw err;
+        //récupère les séries
+        Serie.find().limit(Number(limit)).skip(Number(offset)).exec()
+            .then((series) => {
+                if(!series){
+                    res.status(200).json({
+                        count,
+                        series: [],
+                    })
+                    return;
+                }
+
+                res.status(200).json({
+                    count,
+                    series,
+                })
+            })
+            .catch((error) => {
+                throw error;
+            });
+    });
+});
+
+/**
+ * Permet de créée une nouvelle partie
+ * 
+ * Body :
+ * - username : nom du joueur
  * 
  * @return 
  * id de la partie
@@ -59,6 +101,8 @@ app.post("/parties", (req, res) => {
             })
         });
 });
+
+/* Gestion des erreurs */
 
 // Lorsque l'url ne corrspond à aucune route
 app.all('*', (req, res) => {
