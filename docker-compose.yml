@@ -10,9 +10,9 @@ services:
     image: node
     container_name: api-backoffice
     user: "node"
-    working_dir: /app/client
+    working_dir: /app/client # a définir
     volumes:
-      - ./api:/app/client
+      - ./api:/app/client # a définir
     command: "npm run dev"
     ports:
       - "8080:8080"
@@ -25,9 +25,9 @@ services:
     image: node
     container_name: api-mobile
     user: "node"
-    working_dir: /app/client
+    working_dir: /app/client # a définir
     volumes:
-      - ./api:/app/client
+      - ./api:/app/client # a définir
     command: "npm run dev"
     ports:
       - "8081:8081"
@@ -40,9 +40,9 @@ services:
     image: node
     container_name: api-player
     user: "node"
-    working_dir: /app/client
+    working_dir: /app/client # a définir
     volumes:
-      - ./api:/app/client
+      - ./api:/app/client # a définir
     command: "npm run dev"
     ports:
       - "8082:8082"
