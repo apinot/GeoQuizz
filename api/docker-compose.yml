@@ -1,7 +1,7 @@
 version: "2"
 
-networks:
-  consoapp.net:
+networks: 
+  geoquizz:
     driver: bridge
 
 services:
@@ -10,51 +10,51 @@ services:
     image: node
     container_name: apiBackoffice
     user: "node"
-    working_dir: /api/apiBackoffice
+    working_dir: /api
     volumes:
-      - ./api:/api/apiBackoffice
+      - ./apiBackoffice:/api
     command: "npm run dev"
     ports:
-      - "8080:8080"
+      - "8081:8080"
     networks: 
       - 'geoquizz'
     links: 
-      - database:mongodb
+      - databaseGeoQuizz:mongodb
 
   apiMobile:
     image: node
     container_name: apiMobile
     user: "node"
-    working_dir: /api/apiMobile
+    working_dir: /api
     volumes:
-      - ./api:/api/apiMobile
+      - ./apiMobile:/api
     command: "npm run dev"
     ports:
-      - "8081:8081"
+      - "8082:8080"
     networks: 
       - 'geoquizz'
     links: 
-      - database:mongodb
+      - databaseGeoQuizz:mongodb
 
   apiPlayer:
     image: node
     container_name: apiPlayer
     user: "node"
-    working_dir: /api/apiPlayer
+    working_dir: /api
     volumes:
-      - ./api:/api/apiPlayer
+      - ./apiPlayer:/api
     command: "npm run dev"
     ports:
-      - "8082:8082"
+      - "8083:8080"
     networks: 
       - 'geoquizz'
     links: 
-      - database:mongodb
+      - databaseGeoQuizz:mongodb
       
-  database:
+  databaseGeoQuizz:
     image: mongo
     restart: always
-    container_name: database
+    container_name: databaseGeoQuizz
     environment:
         - MONGO_INITDB_DATABASE=Geoquizz
         - MONGO_INITDB_USERNAME=root
@@ -71,6 +71,6 @@ services:
     networks:
       - geoquizz
     ports:
-      - "8090:8090"
+      - "8090:8081"
     links:
-      - database:mongo
+      - databaseGeoQuizz:mongo
