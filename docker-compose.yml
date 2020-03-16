@@ -6,13 +6,13 @@ networks:
 
 services:
   
-  api-backoffice:
+  apiBackoffice:
     image: node
-    container_name: api-backoffice
+    container_name: apiBackoffice
     user: "node"
-    working_dir: /app/client # a définir
+    working_dir: /api/apiBackoffice
     volumes:
-      - ./api:/app/client # a définir
+      - ./api:/api/apiBackoffice
     command: "npm run dev"
     ports:
       - "8080:8080"
@@ -21,13 +21,13 @@ services:
     links: 
       - database:mongodb
 
-  api-mobile:
+  apiMobile:
     image: node
-    container_name: api-mobile
+    container_name: apiMobile
     user: "node"
-    working_dir: /app/client # a définir
+    working_dir: /api/apiMobile
     volumes:
-      - ./api:/app/client # a définir
+      - ./api:/api/apiMobile
     command: "npm run dev"
     ports:
       - "8081:8081"
@@ -36,13 +36,13 @@ services:
     links: 
       - database:mongodb
 
-  api-player:
+  apiPlayer:
     image: node
-    container_name: api-player
+    container_name: apiPlayer
     user: "node"
-    working_dir: /app/client # a définir
+    working_dir: /api/apiPlayer
     volumes:
-      - ./api:/app/client # a définir
+      - ./api:/api/apiPlayer
     command: "npm run dev"
     ports:
       - "8082:8082"
