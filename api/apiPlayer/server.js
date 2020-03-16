@@ -11,6 +11,10 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
     useUnifiedTopology: true
 });
 
+app.get('/', (req, res) => {
+    res.json({app: 'GeoQuizz'});
+});
+
 app.listen(8082, () => {
     console.log('api player is running !');
 });
