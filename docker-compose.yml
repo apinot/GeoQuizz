@@ -1,0 +1,76 @@
+version: "2"
+
+networks: 
+  consoapp.net:
+    driver: bridge
+
+services:
+  
+  api-backoffice:
+    image: node
+    container_name: api-backoffice
+    user: "node"
+    working_dir: /app/client
+    volumes:
+      - ./api:/app/client
+    command: "npm run dev"
+    ports:
+      - "8080:8080"
+    networks: 
+      - 'geoquizz'
+    links: 
+      - database:mongodb
+
+  api-mobile:
+    image: node
+    container_name: api-mobile
+    user: "node"
+    working_dir: /app/client
+    volumes:
+      - ./api:/app/client
+    command: "npm run dev"
+    ports:
+      - "8081:8081"
+    networks: 
+      - 'geoquizz'
+    links: 
+      - database:mongodb
+
+  api-player:
+    image: node
+    container_name: api-player
+    user: "node"
+    working_dir: /app/client
+    volumes:
+      - ./api:/app/client
+    command: "npm run dev"
+    ports:
+      - "8082:8082"
+    networks: 
+      - 'geoquizz'
+    links: 
+      - database:mongodb
+      
+  database:
+    image: mongo
+    restart: always
+    container_name: database
+    environment:
+        - MONGO_INITDB_DATABASE=Geoquizz
+        - MONGO_INITDB_USERNAME=root
+        - MONGO_INITDB_PASSWORD=example
+    volumes:
+        - ./mongo-volume:/data/db
+    ports:
+        - '27017:27017'
+    networks: 
+        - 'geoquizz'
+
+  dbmanager:
+    image: mongo-express
+    networks:
+      - geoquizz
+    ports:
+      - "8090:8090"
+    links:
+      - database:mongo
