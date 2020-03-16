@@ -60,7 +60,22 @@ app.post("/parties", (req, res) => {
         });
 });
 
-// TODO catcher les erreurs de routes
+// Lorsque l'url ne corrspond à aucune route
+app.all('*', (req, res) => {
+    res.status(400).json({
+        status: 400,
+        msg: 'Bad request',
+    });
+});
+
+// Lorsqu'une erreur 500 est renvoyée
+app.use((error, req, res, next) => {
+    console.log(error);
+    res.status(500).json({
+        status: 500,
+        msg: 'Internal Server Error',
+    });
+});
 
 app.listen(8080, () => {
     console.log('api player is running !');
