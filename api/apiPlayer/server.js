@@ -1,10 +1,17 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const parser = require('body-parser');
 
 // create app
 const app = express();
 
+/* Models */ 
+const Partie = require('./models/Partie');
+
+app.use(parser.json());
+app.use(cors());
 
 // connexion à la base de donnée mongo
 mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
@@ -19,20 +26,42 @@ app.get('/', (req, res) => {
 
 /**
  * données :
- * - pseudo
- * - série
- * - niveau (éventuel)
+ * - username
  * 
  * @return 
  * id de la partie
  * token de la partie
  */
-app.post("/start", (req, res) => {
-    //TODO filtrer les données
-    let param = req.query.params;
+app.post("/parties", (req, res) => {
+    let { username } = req.body;
+    if(!username) {
+        res.status(400).json({ status: 400, msg: 'Bad Request' });
+        return;
+    }
+    
+    const token = crypto.randomBytes(48).toString('hex');
+
+    const nouvellePartie = new Partie({
+        token,
+        serie: null,
+        end: false,
+        score: 0,
+        username,
+        created_at: new Date(),
+        photos: [],
+    })
+
+    nouvellePartie.save()
+        .then((partie) => {
+            res.status(201).json({
+                partie: partie._id,
+                token: token,
+            })
+        });
 });
 
+// TODO catcher les erreurs de routes
 
-app.listen(8082, () => {
+app.listen(8080, () => {
     console.log('api player is running !');
 });
