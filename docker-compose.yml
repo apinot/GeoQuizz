@@ -1,6 +1,6 @@
 version: "2"
 
-networks: 
+networks:
   consoapp.net:
     driver: bridge
 
