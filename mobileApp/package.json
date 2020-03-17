@@ -13,10 +13,22 @@
   "repository": "<fill-your-repository-here>",
   "dependencies": {
     "@nativescript/theme": "~2.2.1",
+    "axios": "^0.19.2",
+    "btoa": "^1.2.1",
+    "cloudinary": "^1.20.0",
+    "cloudinary-core": "^2.8.1",
+    "cloudinary-vue": "^1.0.0",
+    "current-script-polyfill": "^1.0.0",
+    "filereader": "^0.10.3",
+    "geolocation": "^0.2.0",
+    "nativescript-background-http": "^4.2.1",
     "nativescript-camera": "^4.5.0",
     "nativescript-geolocation": "^5.1.0",
+    "nativescript-http-formdata": "^2.1.0",
     "nativescript-imagepicker": "^7.1.0",
+    "nativescript-mapbox": "^4.4.1",
     "nativescript-vue": "~2.4.0",
+    "sha1": "^1.1.1",
     "tns-core-modules": "~6.3.0"
   },
   "devDependencies": {
