@@ -7,10 +7,6 @@ const parser = require('body-parser');
 // create app
 const app = express();
 
-/* Models */ 
-const Partie = require('./models/Partie');
-const Serie = require('./models/Serie');
-
 app.use(cors());
 app.use(parser.json());
 
@@ -23,6 +19,7 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
 
 /* Models */ 
 const Partie = require('./models/Partie');
+const Serie = require('./models/Serie');
 
 
 /* Routes */
@@ -137,6 +134,8 @@ app.post("/parties", (req, res) => {
         
     });
 });
+
+
 
 /* Gestion des erreurs */
 

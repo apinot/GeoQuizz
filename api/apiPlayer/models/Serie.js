@@ -8,7 +8,7 @@ const schema = new mongoose.Schema({
         lat: { type: Number, required: true },
         lng: { type: Number, required: true },
         zoom: { type: Number, required: true },
-    }
+    },
     photos: [{type: String}],
 });
 
