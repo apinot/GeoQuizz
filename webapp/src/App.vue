@@ -1,3 +1,4 @@
+
 <template>
   <div id="app">
     <div class="container">
@@ -7,7 +8,11 @@
           <label for="first_name">Pseudo</label>
         </div>
       </div>
-      <button class="btn waves-effect waves-light" type="submit" name="action">
+      <button
+        v-on:click="createPartie"
+        class="btn waves-effect waves-light"
+        type="submit"
+        name="action">
         Submit
         <i class="material-icons right">send</i>
       </button>
@@ -22,7 +27,22 @@ export default {
   data() {
     return {
       userName: '',
+      data: '',
     };
+  },
+
+  methods: {
+    createPartie() {
+      console.log('coucou');
+      this.$http
+        .post('/parties', { username: this.userName })
+        .then((response) => {
+          this.data = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
 };
 </script>
