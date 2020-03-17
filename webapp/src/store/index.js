@@ -10,16 +10,16 @@ export default new Vuex.Store({
   },
   getters: {
     getToken(state) {
-      return !!state.token;
+      return state.token;
     },
     getPartie(state) {
       return state.partie;
     },
   },
   mutations: {
-    retrieveToken(state, token, partie) {
-      state.token = token;
-      state.partie = partie;
+    retrieveToken(state, data) {
+      state.token = data.token;
+      state.partie = data.partie;
     },
     destroyToken(state) {
       state.token = null;
@@ -32,7 +32,7 @@ export default new Vuex.Store({
         const { token, partie } = credentials;
         localStorage.setItem('token', token);
         localStorage.setItem('partie', partie);
-        context.commit('retrieveToken', token, partie);
+        context.commit('retrieveToken', { token, partie });
         resolve();
       }).catch((error) => {
         console.log(error);

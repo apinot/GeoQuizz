@@ -111,14 +111,19 @@ app.post("/parties", (req, res) => {
 
         // récupération de n photos dans la séries
         const nbPhotos = 10;
+        const photosIds = [];
         for(let i = 0; (i < nbPhotos && serie.photos.length > 0); i++) {
             // on verifie si la serie a encore des photos
             
             const index = Math.floor(Math.random() * serie.photos.length);
-            const photo = serie.photos.splice(index, 1).shift();
-            nouvellePartie.photos.push(photo);
-            console.log(serie.photos.length);
+            const photoId = serie.photos.splice(index, 1).shift();
+
+            photosIds.push(photoId);
         }
+
+        Photo.find({
+            _id
+        })
 
         nouvellePartie.nb_photos = nouvellePartie.photos.length;
     
