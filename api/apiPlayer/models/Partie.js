@@ -7,6 +7,7 @@ const schema = new mongoose.Schema({
     end: { type: Boolean, required: true },
     score: { type: Number, required: true },
     username: { type: String, required: true },
+    nb_photos: { type: Number, required: true },
     created_at: { type: Date, required: true}, 
     photos: [{type: String, required: true}],
 });
