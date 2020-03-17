@@ -33,6 +33,8 @@ app.get('/', (req, res) => {
  * Query:
  *  limit: nombre d'éléments à recupérer (optionel, max 25)
  *  offset: (optionel, 0 par défault)
+ * 
+ *  retourne la liste des series
  */
 app.get('/series', (req, res) => {
     let {limit, offset} = req.query;
@@ -135,6 +137,49 @@ app.post("/parties", (req, res) => {
     });
 });
 
+
+/**
+ * Permet de créée une nouvelle partie
+ * 
+ * Query :
+ * - id : id de la partie
+ * 
+ * Authorization : 
+ * - token: token de la partie
+ * 
+ * @return 
+ *  liste des photos d'une partie
+ */
+app.get('/parties/:id/photos', (req, res) => {
+    const idPartie = req.params.id;
+    if(!idPartie) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
+
+    Partie.findById(idPartie, (err, partie) => {
+        if(err) throw err;
+
+        if(!partie) {
+            res.status(404).json({status: 404, msg: 'Partie not found'});
+            return;
+        }
+
+        const token = req.headers.authorization.split(' ')[0];
+        if(!token || partie.token !== token) {
+            res.status(401).json({status: 401, msg: 'Not Autorized'});
+            return;
+        }
+
+        res.status(200).json({
+            partie: {
+                id: partie._id,
+                nb_photos: partie.nb_photos,
+                photos: partie.photos,
+            }
+        })
+    });
+});
 
 
 /* Gestion des erreurs */
