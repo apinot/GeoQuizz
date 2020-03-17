@@ -140,7 +140,7 @@ app.post("/parties", (req, res) => {
 
 
 /**
- * Permet de créée une nouvelle partie
+ * Permet de récupérer les photos d'une partie
  * 
  * Query :
  * - id : id de la partie
@@ -200,6 +200,62 @@ app.get('/parties/:id/photos', (req, res) => {
     });
 });
 
+/**
+ * Permet de récupérer la serie de photo d'une partie
+ * 
+ * Query :
+ * - id : id de la partie
+ * 
+ * Authorization : 
+ * - token: token de la partie
+ * 
+ * @return 
+ *      serie de la partie
+ */
+app.get('/parties/:id/series', (req, res) => {
+    const idPartie = req.params.id;
+    if(!idPartie) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
+
+    Partie.findById(idPartie, (err, partie) => {
+        if(err) throw err;
+
+        if(!partie) {
+            res.status(404).json({status: 404, msg: 'Partie not found'});
+            return;
+        }
+
+        if(!req.headers.authorization) {
+            res.status(401).json({status: 401, msg: 'Not Autorized'});
+            return;
+        }
+        
+        const token = req.headers.authorization.split(' ')[1];
+        if(!token || partie.token !== token) {
+            res.status(401).json({status: 401, msg: 'Not Autorized'});
+            return;
+        }
+
+        const idSerie = partie.serie;
+        Serie.findById(idSerie, (err, serie) => {
+            if(err) throw err;
+            if(!serie) {
+                res.status(404).json({status: 404, msg: 'Serie not found'});
+                return;
+            }
+
+            res.status(200).json({
+                serie: {
+                    id: serie._id,
+                    dist: serie.dist,
+                    map: serie.map,
+                }
+            });
+        });
+    });
+});
 
 /* Gestion des erreurs */
 
