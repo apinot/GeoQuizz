@@ -120,12 +120,9 @@ app.post("/parties", (req, res) => {
             const index = Math.floor(Math.random() * serie.photos.length);
             const photoId = serie.photos.splice(index, 1).shift();
 
-            photosIds.push(photoId);
+            nouvellePartie.photos.push(photoId);
         }
 
-        Photo.find({
-            _id
-        })
 
         nouvellePartie.nb_photos = nouvellePartie.photos.length;
     
@@ -183,7 +180,8 @@ app.get('/parties/:id/photos', (req, res) => {
             return;
         }
 
-        const photos = [];
+        console.log(partie.photos);
+
         Photo.find({
             "_id": partie.photos,
         }, (err, photos) => {
@@ -191,7 +189,7 @@ app.get('/parties/:id/photos', (req, res) => {
             if(!photos) {
                 res.status(404).json({
                     status: 404,
-                    msg: 'Photo not found',
+                    msg: 'Photos not found',
                 })
             }
             
