@@ -20,6 +20,7 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
 /* Models */ 
 const Partie = require('./models/Partie');
 const Serie = require('./models/Serie');
+const Photo = require('./models/Photo');
 
 
 /* Routes */
@@ -34,7 +35,8 @@ app.get('/', (req, res) => {
  *  limit: nombre d'éléments à recupérer (optionel, max 25)
  *  offset: (optionel, 0 par défault)
  * 
- *  retourne la liste des series
+ *  @return
+ *      la liste des series
  */
 app.get('/series', (req, res) => {
     let {limit, offset} = req.query;
@@ -75,8 +77,8 @@ app.get('/series', (req, res) => {
  * - username : nom du joueur
  * 
  * @return 
- * id de la partie
- * token de la partie
+ *      id de la partie
+ *      token de la partie
  */
 app.post("/parties", (req, res) => {
     let { username } = req.body;
@@ -137,7 +139,7 @@ app.post("/parties", (req, res) => {
             })
             .catch((error) => {
                 throw error;
-            })
+            });
         
     });
 });
@@ -153,7 +155,7 @@ app.post("/parties", (req, res) => {
  * - token: token de la partie
  * 
  * @return 
- *  liste des photos d'une partie
+ *      liste des photos d'une partie
  */
 app.get('/parties/:id/photos', (req, res) => {
     const idPartie = req.params.id;
@@ -170,19 +172,37 @@ app.get('/parties/:id/photos', (req, res) => {
             return;
         }
 
-        const token = req.headers.authorization.split(' ')[0];
+        if(!req.headers.authorization) {
+            res.status(401).json({status: 401, msg: 'Not Autorized'});
+            return;
+        }
+        
+        const token = req.headers.authorization.split(' ')[1];
         if(!token || partie.token !== token) {
             res.status(401).json({status: 401, msg: 'Not Autorized'});
             return;
         }
 
-        res.status(200).json({
-            partie: {
-                id: partie._id,
-                nb_photos: partie.nb_photos,
-                photos: partie.photos,
+        const photos = [];
+        Photo.find({
+            "_id": partie.photos,
+        }, (err, photos) => {
+            if(err) throw err;
+            if(!photos) {
+                res.status(404).json({
+                    status: 404,
+                    msg: 'Photo not found',
+                })
             }
-        })
+            
+            res.status(200).json({
+                partie: {
+                    id: partie._id,
+                    nb_photos: partie.nb_photos,
+                    photos: photos,
+                }
+            });
+        });
     });
 });
 
