@@ -8,6 +8,7 @@ const schema = new mongoose.Schema({
         lng: { type: Number, required: true },
     },
     url: { type: String, required: true },
+    created_at: {type: Date, required: true},
 });
 
 module.exports = mongoose.model("Photo", schema);

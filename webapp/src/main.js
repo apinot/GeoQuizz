@@ -1,9 +1,21 @@
+
 import Vue from 'vue';
+import axios from 'axios';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 
+
 Vue.config.productionTip = false;
+
+/* Configuratio d'axios */
+// Nom de domaine et port de l'api Player
+const apiHost = 'https://6b03b439.ngrok.io/';
+axios.defaults.baseURL = apiHost;
+
+axios.defaults.crossDomain = true;
+
+Vue.prototype.$http = axios;
 
 new Vue({
   router,
