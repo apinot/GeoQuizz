@@ -1,20 +1,27 @@
 <template>
   <div>
     <div class="row">
-      <img class="materialboxed col s12 m4 l2" :src="photoActuelle.url" v-if="photoActuelle" />
+      <img class="materialboxed col s12 m6" :src="photoActuelle.url" v-if="photoActuelle" />
       <leaflet
         v-if="options"
-        class="col s12 m8 l10"
+        class="col s12 m6"
         :options="options"
         :markers="markers"
         @mapclick="saveLatLngClick"
       />
     </div>
-    <button v-on:click="nextPhoto" class="btn waves-effect waves-light" type="submit" name="action">
-      Valider
-      <i class="material-icons right">send</i>
-    </button>
-    <p>{{this.score}}</p>
+    <div class="container">
+      <div class="card row">
+        <p class="col s6 m2"> Score: {{this.score}}</p>
+        <p class="col s6 m2">Temps: {{timer}} s</p>
+        <button
+          v-on:click="nextPhoto"
+          class="col s12 m2 offset-m5 btn waves-effect waves-light"
+          type="submit" name="action">
+          Valider
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -31,6 +38,9 @@ export default {
 
   data() {
     return {
+      // timer
+      timer: 20,
+      timeoutTimer: '',
       // Leaflet attribut
       markers: [],
       token: '',
@@ -55,10 +65,14 @@ export default {
       // calcul des points
       this.addPointToScore();
 
+      clearTimeout(this.timeoutTimer);
+      this.timer = 20;
+      this.countDownTimer();
       if (this.numeroPhotoActuelle === this.photos.length - 1) return;
 
       // afficher l'autre photo
       this.numeroPhotoActuelle += 1;
+      // reset du timer
       this.dateAffichagePhoto = new Date();
 
 
@@ -66,7 +80,7 @@ export default {
       this.markers = [];
     },
 
-    // TODO ajoute les points au score après le clique
+    // ajout les points
     addPointToScore() {
       if (!this.photoActuelle) return;
       const point1 = {
@@ -108,6 +122,14 @@ export default {
       ];
     },
 
+    countDownTimer() {
+      if (this.timer > 0) {
+        this.timeoutTimer = setTimeout(() => {
+          this.timer -= 1;
+          this.countDownTimer();
+        }, 1000);
+      }
+    },
   },
 
   created() {
@@ -131,6 +153,8 @@ export default {
       }).catch((error) => {
         console.log(error);
       });
+
+    this.countDownTimer();
   },
 
   computed: {
