@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="row">
-      <img class="materialboxed col s12 m4 l2" :src="photoActuelle.url" v-if="photoActuelle" />
+      <img class="materialboxed col s12 m6" :src="photoActuelle.url" v-if="photoActuelle" />
       <leaflet
         v-if="options"
-        class="col s12 m8 l10"
+        class="col s12 m6"
         :options="options"
         :markers="markers"
         @mapclick="saveLatLngClick"
@@ -19,7 +19,6 @@
           class="col s12 m2 offset-m5 btn waves-effect waves-light"
           type="submit" name="action">
           Valider
-          <i class="material-icons right">send</i>
         </button>
       </div>
     </div>
@@ -59,9 +58,6 @@ export default {
   methods: {
     // TODO passe à la prochaine photo lorsque l'utlisateur clique sur un lieu
     nextPhoto() {
-      clearTimeout(this.timeoutTimer);
-      this.timer = 20;
-      this.countDownTimer();
       // s'il n'y a plus de photo, afficher le score final
       // verifier qu'il a placé un point
       if (this.markers.length === 0) return;
@@ -69,6 +65,9 @@ export default {
       // calcul des points
       this.addPointToScore();
 
+      clearTimeout(this.timeoutTimer);
+      this.timer = 20;
+      this.countDownTimer();
       if (this.numeroPhotoActuelle === this.photos.length - 1) return;
 
       // afficher l'autre photo
@@ -131,7 +130,6 @@ export default {
         }, 1000);
       }
     },
-
   },
 
   created() {
