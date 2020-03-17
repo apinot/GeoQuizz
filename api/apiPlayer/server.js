@@ -80,26 +80,57 @@ app.post("/parties", (req, res) => {
         res.status(400).json({ status: 400, msg: 'Bad Request' });
         return;
     }
-    
-    const token = crypto.randomBytes(48).toString('hex');
 
-    const nouvellePartie = new Partie({
-        token,
-        serie: null,
-        end: false,
-        score: 0,
-        username,
-        created_at: new Date(),
-        photos: [],
-    })
+    // récupération de la série
+    const idSerie = "5e6f900f5eae5800060e8d10";
+    Serie.findById(idSerie, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({ status: 404, msg: 'Serie not found' });
+            return;
+        }
 
-    nouvellePartie.save()
-        .then((partie) => {
-            res.status(201).json({
-                partie: partie._id,
-                token: token,
-            })
+        // token de vérification de la partie
+         const token = crypto.randomBytes(48).toString('hex');
+
+        // initialidation de la partie
+        const nouvellePartie = new Partie({
+            token,
+            serie: serie._id,
+            end: false,
+            score: 0,
+            username,
+            created_at: new Date(),
+            nb_photos: 0,
+            photos: [],
         });
+
+        // récupération de n photos dans la séries
+        const nbPhotos = 10;
+        for(let i = 0; (i < nbPhotos && serie.photos.length > 0); i++) {
+            // on verifie si la serie a encore des photos
+            
+            const index = Math.floor(Math.random() * serie.photos.length);
+            const photo = serie.photos.splice(index, 1).shift();
+            nouvellePartie.photos.push(photo);
+            console.log(serie.photos.length);
+        }
+
+        nouvellePartie.nb_photos = nouvellePartie.photos.length;
+    
+        // enregistrement de la partie
+        nouvellePartie.save()
+            .then((partie) => {
+                res.status(201).json({
+                    partie: partie._id,
+                    token: token,
+                })
+            })
+            .catch((error) => {
+                throw error;
+            })
+        
+    });
 });
 
 /* Gestion des erreurs */
