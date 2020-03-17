@@ -34,7 +34,8 @@ app.get('/', (req, res) => {
  *  limit: nombre d'éléments à recupérer (optionel, max 25)
  *  offset: (optionel, 0 par défault)
  * 
- *  retourne la liste des series
+ *  @return
+ *      la liste des series
  */
 app.get('/series', (req, res) => {
     let {limit, offset} = req.query;
@@ -75,8 +76,8 @@ app.get('/series', (req, res) => {
  * - username : nom du joueur
  * 
  * @return 
- * id de la partie
- * token de la partie
+ *      id de la partie
+ *      token de la partie
  */
 app.post("/parties", (req, res) => {
     let { username } = req.body;
@@ -132,7 +133,7 @@ app.post("/parties", (req, res) => {
             })
             .catch((error) => {
                 throw error;
-            })
+            });
         
     });
 });
@@ -148,7 +149,7 @@ app.post("/parties", (req, res) => {
  * - token: token de la partie
  * 
  * @return 
- *  liste des photos d'une partie
+ *      liste des photos d'une partie
  */
 app.get('/parties/:id/photos', (req, res) => {
     const idPartie = req.params.id;
@@ -177,7 +178,7 @@ app.get('/parties/:id/photos', (req, res) => {
                 nb_photos: partie.nb_photos,
                 photos: partie.photos,
             }
-        })
+        });
     });
 });
 
