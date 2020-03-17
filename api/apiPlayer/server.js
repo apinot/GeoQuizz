@@ -11,8 +11,8 @@ const app = express();
 const Partie = require('./models/Partie');
 const Serie = require('./models/Serie');
 
-app.use(parser.json());
 app.use(cors());
+app.use(parser.json());
 
 // connexion à la base de donnée mongo
 mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
@@ -21,6 +21,11 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
     useUnifiedTopology: true
 });
 
+/* Models */ 
+const Partie = require('./models/Partie');
+
+
+/* Routes */
 app.get('/', (req, res) => {
     res.json({app: 'GeoQuizz'});
 });
@@ -152,6 +157,8 @@ app.use((error, req, res, next) => {
     });
 });
 
+
+/* Démarrage de l'application */
 app.listen(8080, () => {
     console.log('api player is running !');
 });
