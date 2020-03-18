@@ -59,7 +59,8 @@ export default {
           Authorization: `basic ${this.base64Credentials}`,
         },
       })
-        .then(() => {
+        .then((response) => {
+          this.$store.dispatch('signin', response.data);
           this.$router.push({ name: 'home' });
         })
         .catch((error) => {
