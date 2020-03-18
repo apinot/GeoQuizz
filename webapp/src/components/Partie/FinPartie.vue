@@ -31,6 +31,7 @@ export default {
   },
 
   created() {
+    // enregistrement dans la base de données
     this.$http
       .put(`/parties/${this.$store.getters.getPartie}`,
         { end: true, score: this.score },

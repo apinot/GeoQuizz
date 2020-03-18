@@ -1,59 +1,40 @@
 <template>
   <div>
-  <div v-if="enCours">
-    <div class="row">
-      <div class="col s12 m6">
-        <div class="row">
-          <div class="col s12 m12">
-            <div class="card">
-              <div class="card-image">
-                <img :src="photoActuelle.url"
-                  v-if="photoActuelle" >
-              </div>
-              <div class="card-action center-align">
-                <a data-target="modal1" class="btn modal-trigger">Modal</a>
-              </div>
-            </div>
-          </div>
+    <div v-if="enCours">
+      <jeu :options="options"
+        :markers="markers"
+        :photo="photoActuelle"
+        @point="updateMarker">
+      </jeu>
+      <div class="container">
+        <div class="card row">
+          <p class="col s6 m2"> Score: {{this.score}}</p>
+          <p class="col s6 m2">Temps: {{timer}} s</p>
+          <button
+            v-on:click="nextPhoto"
+            class="col s12 m2 offset-m5 btn waves-effect waves-light"
+            type="submit" name="action">
+            Valider
+          </button>
         </div>
       </div>
-      <carte :options="options" :markers="markers" @point="updateMarker"></carte>
     </div>
-    <div class="container">
-      <div class="card row">
-        <p class="col s6 m2"> Score: {{this.score}}</p>
-        <p class="col s6 m2">Temps: {{timer}} s</p>
-        <button
-          v-on:click="nextPhoto"
-          class="col s12 m2 offset-m5 btn waves-effect waves-light"
-          type="submit" name="action">
-          Valider
-        </button>
-      </div>
-    </div>
-    <!-- Modal Structure -->
-      <div id="modal1" class="modal">
-        <div class="row">
-        <img class="col s12" :src="photoActuelle.url" v-if="photoActuelle">
-      </div>
+    <div v-else>
+      <fin-partie :score="score"></fin-partie>
     </div>
   </div>
-  <div v-else>
-    <fin-partie :score="score"></fin-partie>
-  </div>
-</div>
 </template>
 
 <script>
 /* eslint-disable no-restricted-properties */
 import getDistance from 'geolib/es/getDistance';
-import Carte from '../components/Partie/Carte.vue';
+import Jeu from '../components/Partie/Jeu.vue';
 import FinPartie from '../components/Partie/FinPartie.vue';
 
 export default {
   name: 'Partie',
   components: {
-    Carte,
+    Jeu,
     FinPartie,
   },
 
@@ -81,10 +62,8 @@ export default {
      * Change de photo lorsque l'utilisateur sur valider
      */
     nextPhoto() {
-      // s'il n'y a plus de photo, afficher le score final
       // verifier qu'il a placé un point
       if (this.markers.length === 0) return;
-
 
       // calcul des points
       this.addPointToScore();
@@ -92,6 +71,7 @@ export default {
       clearTimeout(this.timeoutTimer);
       this.timer = 20;
       this.countDownTimer();
+      // s'il n'y a plus de photo, afficher le score final
       if (this.numeroPhotoActuelle === this.photos.length - 1) this.enCours = false;
 
       // afficher l'autre photo
@@ -155,11 +135,6 @@ export default {
           this.countDownTimer();
         }, 1000);
       }
-    },
-
-    backAccueil() {
-      this.$store.dispatch('destroyToken');
-      this.$router.push({ name: 'home' });
     },
   },
 
