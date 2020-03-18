@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <div class="container">
+      <p>Liste des règles</p>
       <div class="row">
         <div class="input-field col s12">
           <input v-model="userName" id="first_name" type="text" class="validate" />

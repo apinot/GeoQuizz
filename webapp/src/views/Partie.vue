@@ -1,8 +1,23 @@
 <template>
   <div>
+  <div v-if="enCours">
     <div class="row">
-      <img class="materialboxed col s12 m6" :src="photoActuelle.url" v-if="photoActuelle" />
-      <leaflet
+      <div class="col s12 m6">
+        <div class="row">
+          <div class="col s12 m12">
+            <div class="card">
+              <div class="card-image">
+                <img :src="photoActuelle.url"
+                  v-if="photoActuelle" >
+              </div>
+              <div class="card-action center-align">
+                <a data-target="modal1" class="btn modal-trigger">Modal</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     <leaflet
         v-if="options"
         class="col s12 m6"
         :options="options"
@@ -22,7 +37,31 @@
         </button>
       </div>
     </div>
+    <!-- Modal Structure -->
+      <div id="modal1" class="modal">
+        <div class="row">
+        <img class="col s12" :src="photoActuelle.url" v-if="photoActuelle">
+      </div>
+    </div>
   </div>
+  <div v-else>
+    <div class="row container">
+    <div class="col s12 m8 offset-m2">
+      <div class="card">
+        <div class="card-image">
+          <img src="https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif">
+        </div>
+        <div class="card-content">
+          <p>Vous avez fait {{score}} pts !</p>
+        </div>
+        <div class="card-action center-align">
+          <a class="btn waves-effect waves-light" v-on:click="backAccueil">Retour à l'accueil</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
 </template>
 
 <script>
@@ -49,6 +88,7 @@ export default {
       photos: [],
       numeroPhotoActuelle: -1,
       score: 0,
+      enCours: true,
       // coordonée du point sur la carte
       lat: '',
       lng: '',
@@ -56,7 +96,9 @@ export default {
     };
   },
   methods: {
-    // TODO passe à la prochaine photo lorsque l'utlisateur clique sur un lieu
+    /**
+     * Change de photo lorsque l'utilisateur sur valider
+     */
     nextPhoto() {
       // s'il n'y a plus de photo, afficher le score final
       // verifier qu'il a placé un point
@@ -68,19 +110,22 @@ export default {
       clearTimeout(this.timeoutTimer);
       this.timer = 20;
       this.countDownTimer();
-      if (this.numeroPhotoActuelle === this.photos.length - 1) return;
+      if (this.numeroPhotoActuelle === this.photos.length - 1) this.enCours = false;
 
       // afficher l'autre photo
       this.numeroPhotoActuelle += 1;
       // reset du timer
       this.dateAffichagePhoto = new Date();
 
-
       // remetre les valeurs par défaut
       this.markers = [];
     },
 
-    // ajout les points
+    /**
+     * Calcul les points qui vont être additionner au score total
+     * cela prend en compte la distance entre le marker et les coordonées de l'image
+     * et le temps
+     */
     addPointToScore() {
       if (!this.photoActuelle) return;
       const point1 = {
@@ -109,6 +154,9 @@ export default {
       this.score += (res * multiplicateur);
     },
 
+    /**
+     * Enregistre la position du marler lors du clique
+     */
     saveLatLngClick(event) {
       this.lat = event.position.lat;
       this.lng = event.position.lng;
@@ -122,6 +170,9 @@ export default {
       ];
     },
 
+    /**
+     * Affiche le timer
+     */
     countDownTimer() {
       if (this.timer > 0) {
         this.timeoutTimer = setTimeout(() => {
@@ -130,10 +181,16 @@ export default {
         }, 1000);
       }
     },
+
+    backAccueil() {
+      // TODO casser le localstorage
+      this.$router.push({ name: 'home' });
+    },
   },
 
   created() {
     this.token = this.$store.getters.getToken;
+    // optention de toute les photos
     this.$http
       .get(`/parties/${this.$store.getters.getPartie}/photos`, {
         headers: { Authorization: `Bearer ${this.token}` },
@@ -145,6 +202,7 @@ export default {
         console.log(error);
       });
 
+    // optention de la series
     this.$http
       .get(`/parties/${this.$store.getters.getPartie}/series`, {
         headers: { Authorization: `Bearer ${this.token}` },
@@ -172,6 +230,11 @@ export default {
         },
       };
     },
+  },
+
+  mounted() {
+    // eslint-disable-next-line no-undef
+    M.AutoInit();
   },
 };
 </script>
