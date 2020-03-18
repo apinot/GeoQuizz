@@ -143,6 +143,66 @@ app.post("/parties", (req, res) => {
 
 
 /**
+ * Permet de mettre à jour les données de la partie
+ * (notamment lorsqu'elle est terminée)
+ */
+app.put('/parties/:id', (req, res) => {
+    const idPartie = req.params.id;
+    if(!idPartie) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
+
+    Partie.findById(idPartie, (err, partie) => {
+        if(err) throw err;
+
+        if(!partie) {
+            res.status(404).json({status: 404, msg: 'Partie not found'});
+            return;
+        }
+
+        if(!req.headers.authorization) {
+            res.status(401).json({status: 401, msg: 'Not Autorized'});
+            return;
+        }
+        
+        const token = req.headers.authorization.split(' ')[1];
+        if(!token || partie.token !== token) {
+            res.status(401).json({status: 401, msg: 'Not Autorized'});
+            return;
+        }
+
+        const {end, score} = req.params;
+        if(!end || !Boolean(end)) {
+            res.status(400).json({status: 400, msg: 'Bad Request'});
+            return;
+        }
+        if(!score || !Number(score)) {
+            res.status(400).json({status: 400, msg: 'Bad Request'});
+            return;
+        }
+
+        partie.end = end;
+        partie.score = score;
+
+        partie.save()
+            .then((saved) => {
+                return res.status(200).json({
+                    partie: {
+                        id: partie._id,
+                        username: partie.username,
+                        end: partie.end,
+                        score: partie.score,
+                    }
+                });
+            })
+            .catch((error) => {
+                throw error;
+            })
+    });
+});
+
+/**
  * Permet de récupérer les photos d'une partie
  * 
  * Query :
@@ -179,8 +239,6 @@ app.get('/parties/:id/photos', (req, res) => {
             res.status(401).json({status: 401, msg: 'Not Autorized'});
             return;
         }
-
-        console.log(partie.photos);
 
         Photo.find({
             "_id": partie.photos,
