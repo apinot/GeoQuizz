@@ -110,7 +110,10 @@ export default {
       clearTimeout(this.timeoutTimer);
       this.timer = 20;
       this.countDownTimer();
-      if (this.numeroPhotoActuelle === this.photos.length - 1) this.enCours = false;
+      if (this.numeroPhotoActuelle === this.photos.length - 1) {
+        this.enCours = false;
+        this.saveDataPartie();
+      }
 
       // afficher l'autre photo
       this.numeroPhotoActuelle += 1;
@@ -186,6 +189,18 @@ export default {
       // TODO casser le localstorage
       this.$router.push({ name: 'home' });
     },
+
+    saveDataPartie() {
+      this.$http
+        .put(`/parties/${this.$store.getters.getPartie}`,
+          { end: true, score: this.score },
+          { headers: { Authorization: `Bearer ${this.token}` } }).then((response) => {
+          console.log(response);
+        }).catch((error) => {
+          console.log(error);
+        });
+    },
+
   },
 
   created() {
