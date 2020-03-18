@@ -2,6 +2,7 @@
   <div class="home">
     <h1>Back-office GeoQuizz</h1>
     <router-link class="btn" :to="{name: 'signup'}">S'inscrire</router-link>
+    <router-link class="btn" :to="{name: 'signin'}">Se connecter</router-link>
   </div>
 </template>
 

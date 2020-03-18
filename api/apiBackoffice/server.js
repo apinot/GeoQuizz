@@ -107,19 +107,23 @@ app.post('/utilisateurs', (req, res) => {
  */
 app.post('/utilisateurs/auth', (req, res) => {
     setTimeout(() => {
+        console.log(req.headers.authorization);
         if(!req.headers.authorization) {
+            console.log('j');
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
     
         const credentialsBase64 = req.headers.authorization.split(' ')[1];
         if(!credentialsBase64) {
+            console.log('u');
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
 
-        const [email, password] = Buffer.from(credentialsBase64, 'base64').toString('UTF-8').split(':');
+        const [email, password] = Buffer.from(credentialsBase64, 'base64').toString('utf-8').split(':');
         if(!email || !password) {
+            console.log('s');
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -128,7 +132,7 @@ app.post('/utilisateurs/auth', (req, res) => {
             if(err) throw err;
 
             if(users.length !== 1) {
-                res.status(404).json({status: 404, msg: 'Not found'});
+                res.status(404).json({status: 401, msg: 'Unauthorized'});
                 return;
             } 
 
@@ -137,6 +141,7 @@ app.post('/utilisateurs/auth', (req, res) => {
             bcrypt.compare(config.passwordSecret + password, user.password)
                 .then((result) => {
                     if(!result) {
+                        console.log('t');
                         res.status(401).json({status: 401, msg: 'Unauthorized'});
                         return;
                     }

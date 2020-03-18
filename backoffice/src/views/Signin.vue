@@ -1,10 +1,10 @@
 <template>
-<div id="singup">
+<div id="singin">
   <div class="row center-align">
-    <h1>Inscription</h1>
+    <h1>Connexion</h1>
   </div>
   <div class="row red accent-4 white-text p-5 center-align" v-if="error">
-    Inscription impossible !
+    Email ou mot de passe incorrect !
   </div>
   <div class="row">
     <form @submit.prevent="signup">
@@ -18,15 +18,8 @@
       <!-- password -->
       <div class="row">
         <div class="input-field">
-          <input id="password" type="password" v-model="password"/>
+          <input id="password" type="text" v-model="password"/>
           <label for="password">Mot de passe</label>
-        </div>
-      </div>
-      <!-- passowor confirm -->
-      <div class="row">
-        <div class="input-field">
-          <input id="passwordConfirm" type="password" v-model="passwordConfirm"/>
-          <label for="passwordConfirm">Confirmation</label>
         </div>
       </div>
 
@@ -51,7 +44,6 @@ export default {
     return {
       email: '',
       password: '',
-      passwordConfirm: '',
       error: false,
       loading: false,
     };
@@ -62,13 +54,13 @@ export default {
 
       this.loading = true;
 
-      this.$http.post('/utilisateurs', {
-        email: this.email,
-        password: this.password,
-        passwordConfirm: this.passwordConfirm,
+      this.$http.post('/utilisateurs/auth', {}, {
+        headers: {
+          Authorization: `basic ${this.base64Credentials}`,
+        },
       })
         .then(() => {
-          this.$router.push({ name: 'signin' });
+          this.$router.push({ name: 'home' });
         })
         .catch((error) => {
           console.log(error);
@@ -77,6 +69,11 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+  },
+  computed: {
+    base64Credentials() {
+      return Buffer.from(`${this.email}:${this.password}`, 'utf-8').toString('base64');
     },
   },
 };
