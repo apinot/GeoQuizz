@@ -12,6 +12,7 @@
   <link type="text/css" rel="stylesheet" href="css/materialize.css" media="screen,projection" />
 
   <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+  
 
   <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
@@ -25,6 +26,12 @@
   <!-- built files will be auto injected -->
 
   <script type="text/javascript" src="js/materialize.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const elems = document.querySelectorAll('.modal');
+    const instances = M.Modal.init(elems);
+  });
+  </script>
 </body>
 
 </html>
