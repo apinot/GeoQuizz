@@ -8,12 +8,12 @@
                 <Image v-for="img in images" :src="img.img.src" width="75" height="75" />
             </WrapLayout>
             <Button text="Upload" @tap="sendPictures" />
+
         </StackLayout>
     </Page>
-</template>
+</template>/storage/emulated/0/DCIM/Camera/IMG_20200316_174255.jpg
 
 <script>
-    import btoa from 'btoa'
     import * as camera from "nativescript-camera";
     import * as imagepicker from "nativescript-imagepicker";
     import { Image } from "tns-core-modules/ui/image";
@@ -21,6 +21,8 @@
     const bghttp = require("nativescript-background-http");
     const session = bghttp.session("image-upload");
     import AddCoords from "./AddCoords/AddCoords";
+    import axios from 'axios/dist/axios';
+    const dialogs = require("tns-core-modules/ui/dialogs");
 
 
     export default {
@@ -31,7 +33,8 @@
             return {
                 images:[],
                 location: null,
-                images_uploaded: null
+                images_uploaded: null,
+                urls: []
             }
         },
         created(){
@@ -42,19 +45,21 @@
         methods:{
             selectPicture() {
                 let context = imagepicker.create({
-                    mode: 'single'
+                    mode: 'multiple'
                 });
                 context.authorize()
                     .then(function() {
                         return context.present();
                     })
                     .then(selection => {
+                        console.log("sleetction: " + selection[0]);
                         selection.forEach(selected => {
                             console.log(selected);
                             let img = new Image();
                             img.src = selected;
                             let obj = {img: img};
                             this.images.push(obj);
+                            console.log(obj.img);
                             console.log(this.images.length)
                         });
                     }).catch(function (e) {
@@ -62,24 +67,23 @@
                 });
             },
             takePicture() {
+                let obj = {};
                 camera.requestPermissions()
                     .then(() => {
                         camera.takePicture({ width: 300, height: 300, keepAspectRatio: true, saveToGallery:false })
                             .then(imageAsset => {
                                 let img = new Image();
                                 img.src = imageAsset;
-                                console.log(imageAsset);
-                                let obj = new Object();
-                                geolocation.getCurrentLocation( {timeout: 5000} )
+                                obj.img = img;
+                                geolocation.getCurrentLocation( {timeout: null} )
                                     .then(function (location) {
-                                        console.log(location.latitude);
-                                        console.log(location.longitude);
-                                        this.location = {lat: location.latitude, long:location.longitude};
-                                    }, function (e) {
+                                        obj.location = location;
+                                        console.log(obj)
+                                    }
+                                    , function (e) {
                                         console.log("Error: " + e.message);
                                     });
-                                obj.img = img;
-                                obj.location = this.location;
+
                                 this.images.push(obj);
 
                             })
@@ -90,6 +94,7 @@
                     .catch(e => {
                         console.log('Error requesting permission');
                     });
+
 
             },
             sendPictures(){
@@ -115,8 +120,35 @@
                     task.on("error", this.logEvent);
                     task.on("complete", this.logEvent);
                     task.on("responded", this.respondedHandler);
-                })
+                    //console.log('Dans le foreach: '+this.urls);
 
+                });
+                //console.log('Hors du foreach: '+this.urls);
+
+            },
+
+            setUrlToImg(urls){
+                let compt = 0;
+                this.images.forEach((image) =>{
+                    image.img.url = urls[compt];
+                    compt++;
+                    //console.log('URL dans setURLTOIMG : '+image.img.url);
+
+                });
+                const data = {
+                    data : this.images
+                };
+                axios.post("https://9135e781.ngrok.io/photos", data)
+                    .then((result)=>{
+                        console.log(result.data);
+                        dialogs.alert('Votre photo a bien été upload :)').
+                            then(()=>{
+                                console.log('dialog closed')
+                        })
+                    })
+                    .catch((err)=>{
+                        console.log(err)
+                    })
             },
             logEvent(e) {
                 console.log(e.eventName);
@@ -124,7 +156,16 @@
             respondedHandler(e) {
                 const result = JSON.parse(e.data);
                 const uploaded_image = result.data;
-                console.log(uploaded_image.url); //url de l'image
+                //console.log(uploaded_image.url); //url de l'image
+                this.urls.push(uploaded_image.url);
+                //console.log(this.urls);
+                if(this.images.length === this.urls.length){
+                    this.setUrlToImg(this.urls);
+                    //console.log(this.images[0].location)
+                    this.images = [];
+                    this.urls = []
+                }
+
             },
             getName(path){
                 const string = path.split('/');
