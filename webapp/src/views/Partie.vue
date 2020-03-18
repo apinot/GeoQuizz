@@ -1,31 +1,36 @@
 <template>
   <div>
-    <div v-if="loadCarte && loadPhoto">
-      <div v-if="enCours">
-        <jeu :options="options"
-          :markers="markers"
-          :photo="photoActuelle"
-          @point="updateMarker">
-        </jeu>
-        <div class="container">
-          <div class="card row">
-            <p class="col s6 m2"> Score: {{this.score}}</p>
-            <p class="col s6 m2">Temps: {{timer}} s</p>
-            <button
-              v-on:click="nextPhoto"
-              class="col s12 m2 offset-m5 btn waves-effect waves-light"
-              type="submit" name="action">
-              Valider
-            </button>
+    <div v-if="errored">
+      <error></error>
+    </div>
+    <div v-else>
+      <div v-if="loadCarte && loadPhoto">
+        <div v-if="enCours">
+          <photo-carte :options="options"
+            :markers="markers"
+            :photo="photoActuelle"
+            @point="updateMarker">
+          </photo-carte>
+          <div class="container">
+            <div class="card row">
+              <p class="col s6 m2"> Score: {{this.score}}</p>
+              <p class="col s6 m2">Temps: {{timer}}s</p>
+              <button
+                v-on:click="nextPhoto"
+                class="col s12 m2 offset-m5 btn waves-effect waves-light"
+                type="submit" name="action">
+                Valider
+              </button>
+            </div>
           </div>
+        </div>
+        <div v-else>
+          <fin-partie :score="score"></fin-partie>
         </div>
       </div>
       <div v-else>
-        <fin-partie :score="score"></fin-partie>
+        <spinner></spinner>
       </div>
-    </div>
-    <div v-else>
-      <spinner></spinner>
     </div>
   </div>
 </template>
@@ -33,16 +38,18 @@
 <script>
 /* eslint-disable no-restricted-properties */
 import getDistance from 'geolib/es/getDistance';
-import Jeu from '../components/Partie/Jeu.vue';
-import FinPartie from '../components/Partie/FinPartie.vue';
-import Spinner from '../components/spinner/Spinner.vue';
+import PhotoCarte from '../components/partie/PhotoCarte.vue';
+import FinPartie from '../components/partie/FinPartie.vue';
+import Spinner from '../components/load/Spinner.vue';
+import Error from '../components/load/Error.vue';
 
 export default {
   name: 'Partie',
   components: {
-    Jeu,
+    PhotoCarte,
     FinPartie,
     Spinner,
+    Error,
   },
 
   data() {
@@ -50,6 +57,7 @@ export default {
       // chargement
       loadPhoto: false,
       loadCarte: false,
+      errored: false,
       // timer
       timer: 20,
       timeoutTimer: '',
@@ -157,8 +165,10 @@ export default {
         this.photos = response.data.partie.photos;
         this.numeroPhotoActuelle = 0;
         this.dateAffichagePhoto = new Date();
+        this.errored = false;
         this.loadPhoto = true;
       }).catch((error) => {
+        this.errored = true;
         console.log(error);
       });
 
@@ -169,7 +179,9 @@ export default {
       }).then((response) => {
         this.serie = response.data.serie;
         this.loadCarte = true;
+        this.errored = false;
       }).catch((error) => {
+        this.errored = true;
         console.log(error);
       });
 
@@ -191,11 +203,6 @@ export default {
         },
       };
     },
-  },
-
-  mounted() {
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="">
     <div class="row">
         <div class="col s12 m6">
           <div class="row">
@@ -62,6 +62,11 @@ export default {
         },
       });
     },
+  },
+
+  mounted() {
+    // eslint-disable-next-line no-undef
+    M.AutoInit();
   },
 };
 </script>
