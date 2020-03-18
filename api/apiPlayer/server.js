@@ -145,6 +145,13 @@ app.post("/parties", (req, res) => {
 /**
  * Permet de mettre à jour les données de la partie
  * (notamment lorsqu'elle est terminée)
+ * 
+ *  Body :
+ * - score : nouveau score
+ * - end : indique que la partie est terminée
+ * 
+ * @return 
+ *      nouvelles infos de la partie
  */
 app.put('/parties/:id', (req, res) => {
     const idPartie = req.params.id;
@@ -172,7 +179,7 @@ app.put('/parties/:id', (req, res) => {
             return;
         }
 
-        const {end, score} = req.params;
+        const {end, score} = req.body;
         if(!end || !Boolean(end)) {
             res.status(400).json({status: 400, msg: 'Bad Request'});
             return;
@@ -248,9 +255,10 @@ app.get('/parties/:id/photos', (req, res) => {
                 res.status(404).json({
                     status: 404,
                     msg: 'Photos not found',
-                })
+                });
+                return;
             }
-            
+
             res.status(200).json({
                 partie: {
                     id: partie._id,
