@@ -1,0 +1,4 @@
+{
+    "passwordSecret": "Secret for password hash",
+    "jwtSecret": "Secret for token generation"
+}
