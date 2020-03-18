@@ -187,6 +187,7 @@ export default {
 
     backAccueil() {
       // TODO casser le localstorage
+      this.$store.dispatch('destroyToken');
       this.$router.push({ name: 'home' });
     },
 
