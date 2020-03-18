@@ -17,13 +17,7 @@
           </div>
         </div>
       </div>
-     <leaflet
-        v-if="options"
-        class="col s12 m6"
-        :options="options"
-        :markers="markers"
-        @mapclick="saveLatLngClick"
-      />
+      <carte :options="options" :markers="markers" @point="updateMarker"></carte>
     </div>
     <div class="container">
       <div class="card row">
@@ -45,34 +39,22 @@
     </div>
   </div>
   <div v-else>
-    <div class="row container">
-    <div class="col s12 m8 offset-m2">
-      <div class="card">
-        <div class="card-image">
-          <img src="https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif">
-        </div>
-        <div class="card-content">
-          <p>Vous avez fait {{score}} pts !</p>
-        </div>
-        <div class="card-action center-align">
-          <a class="btn waves-effect waves-light" v-on:click="backAccueil">Retour à l'accueil</a>
-        </div>
-      </div>
-    </div>
-  </div>
+    <fin-partie :score="score"></fin-partie>
   </div>
 </div>
 </template>
 
 <script>
 /* eslint-disable no-restricted-properties */
-import Leaflet from 'easy-vue-leaflet';
 import getDistance from 'geolib/es/getDistance';
+import Carte from '../components/Partie/Carte.vue';
+import FinPartie from '../components/Partie/FinPartie.vue';
 
 export default {
   name: 'Partie',
   components: {
-    Leaflet,
+    Carte,
+    FinPartie,
   },
 
   data() {
@@ -82,7 +64,6 @@ export default {
       timeoutTimer: '',
       // Leaflet attribut
       markers: [],
-      token: '',
       // données de la partie
       serie: 0,
       photos: [],
@@ -90,9 +71,9 @@ export default {
       score: 0,
       enCours: true,
       // coordonée du point sur la carte
+      dateAffichagePhoto: null,
       lat: '',
       lng: '',
-      dateAffichagePhoto: null,
     };
   },
   methods: {
@@ -104,16 +85,14 @@ export default {
       // verifier qu'il a placé un point
       if (this.markers.length === 0) return;
 
+
       // calcul des points
       this.addPointToScore();
 
       clearTimeout(this.timeoutTimer);
       this.timer = 20;
       this.countDownTimer();
-      if (this.numeroPhotoActuelle === this.photos.length - 1) {
-        this.enCours = false;
-        this.saveDataPartie();
-      }
+      if (this.numeroPhotoActuelle === this.photos.length - 1) this.enCours = false;
 
       // afficher l'autre photo
       this.numeroPhotoActuelle += 1;
@@ -160,17 +139,10 @@ export default {
     /**
      * Enregistre la position du marler lors du clique
      */
-    saveLatLngClick(event) {
+    updateMarker(event) {
+      this.markers = [event];
       this.lat = event.position.lat;
       this.lng = event.position.lng;
-      this.markers = [
-        {
-          position: {
-            lat: this.lat,
-            lng: this.lng,
-          },
-        },
-      ];
     },
 
     /**
@@ -186,30 +158,16 @@ export default {
     },
 
     backAccueil() {
-      // TODO casser le localstorage
       this.$store.dispatch('destroyToken');
       this.$router.push({ name: 'home' });
     },
-
-    saveDataPartie() {
-      this.$http
-        .put(`/parties/${this.$store.getters.getPartie}`,
-          { end: true, score: this.score },
-          { headers: { Authorization: `Bearer ${this.token}` } }).then((response) => {
-          console.log(response);
-        }).catch((error) => {
-          console.log(error);
-        });
-    },
-
   },
 
   created() {
-    this.token = this.$store.getters.getToken;
     // optention de toute les photos
     this.$http
       .get(`/parties/${this.$store.getters.getPartie}/photos`, {
-        headers: { Authorization: `Bearer ${this.token}` },
+        headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
       }).then((response) => {
         this.photos = response.data.partie.photos;
         this.numeroPhotoActuelle = 0;
@@ -221,7 +179,7 @@ export default {
     // optention de la series
     this.$http
       .get(`/parties/${this.$store.getters.getPartie}/series`, {
-        headers: { Authorization: `Bearer ${this.token}` },
+        headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
       }).then((response) => {
         this.serie = response.data.serie;
       }).catch((error) => {
