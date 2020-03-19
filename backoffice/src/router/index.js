@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
+import store from '../store';
 
 Vue.use(VueRouter);
 
@@ -24,13 +25,25 @@ const routes = [
     path: '/serie/:id',
     name: 'serie',
     component: () => import('../views/Serie.vue'),
-    // TODO require logged
+    meta: {
+      requireAuth: true,
+    },
+  },
+  {
+    path: '/newserie',
+    name: 'newserie',
+    component: () => import('../views/NewSerie.vue'),
+    meta: {
+      requireAuth: true,
+    },
   },
   {
     path: '/series',
     name: 'series',
     component: () => import('../views/Series.vue'),
-    // TODO require logged
+    meta: {
+      requireAuth: true,
+    },
   },
 ];
 
@@ -38,6 +51,20 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requireAuth)) {
+    if (!store.getters.isAuth) {
+      next({
+        name: 'signin',
+        query: { redirect: to.fullPath },
+      });
+      return;
+    }
+  }
+
+  next();
 });
 
 export default router;

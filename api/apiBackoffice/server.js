@@ -23,6 +23,7 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
 /* Models */
 const Utilisateur = require('./models/Utilisateur');
 const Serie = require('./models/Serie');
+const Photo = require('./models/Photo');
 
 
 /* Middelware d'authentification */
@@ -56,7 +57,6 @@ app.use((req, res, next) => {
               return;
             }
             req.authUser = user;
-            console.log(req.authUser);
             next();
         })
         .catch((error) => {
@@ -147,7 +147,6 @@ app.post('/utilisateurs', (req, res) => {
  */
 app.post('/utilisateurs/auth', (req, res) => {
     setTimeout(() => {
-        console.log(req.headers.authorization);
         if(!req.headers.authorization) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
@@ -178,7 +177,6 @@ app.post('/utilisateurs/auth', (req, res) => {
             bcrypt.compare(config.passwordSecret + password, user.password)
                 .then((result) => {
                     if(!result) {
-                        console.log('t');
                         res.status(401).json({status: 401, msg: 'Unauthorized'});
                         return;
                     }
@@ -277,6 +275,38 @@ app.get('/series/:id', (req, res) => {
     });
 });
 
+
+// TODO créer une serie
+/**
+ * Permet de créer une série
+ */
+app.post('/serie', (req, res) => {
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const { serie } = req.body;
+    // TODO verifier que serie possède la bonne architecture
+    const newSerie = new Serie({
+        ville: serie.ville,
+        dist: serie.dist,
+        map : {
+            lat: serie.map.lat,
+            lng: serie.map.lng,
+        },
+        photos: serie.photos,
+        create_at : new Date()
+    });
+
+    newSerie.save().then((data) => {
+        res.status(200).json({data})
+    }).catch((err) =>{
+        res.status(500).json({err})
+    });
+
+});
+
+
 /**
  * Met à jour les règles de la parie
  * Query : 
@@ -293,18 +323,18 @@ app.get('/series/:id', (req, res) => {
  *     }
  */
 app.put('/series/:id/', (req, res) => {
-    const { id } = req.params;
-    const { rules } = req.body;
-    if(!id.match(/^[0-9a-fA-F]{24}$/)){
-        res.status(404).json({status: 404, msg: 'Serie Not Found'});
-        return;
-    }
     if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-
-    //TODO verifier que rules possède la bonne architecture
+    const { id } = req.params;
+    const { rules } = req.body;
+    // TODO verifier que rules possède la bonne architecture
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+    
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -338,6 +368,53 @@ app.put('/series/:id/', (req, res) => {
 });
 
 /**
+ * Récupère les photos d'une série
+ * Query : 
+ *   - id : id de la série
+ * 
+ * @retun
+ *      tableau de photos
+ */
+app.get("/series/:id/photos", (req, res) => {
+    const { id } = req.params;
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+
+    // application du middleware
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+
+        Photo.find({ _id: serie.photos }, (error, photos) => {
+            if(error) throw error;
+            
+            res.status(200).json({
+                serie: {
+                    id: serie._id,
+                    photos: photos.map((photo) => ({
+                        id: photo._id,
+                        ntm: 'va te faire foutre',
+                        position: photo.position,
+                        desc: photo.desc,
+                        url: photo.url,
+                    })),
+                },
+            });
+        });
+    });
+});
+
+/**
  * Ajout une photo à la serie
  * Query : 
  *   - id : id de la série
@@ -350,13 +427,12 @@ app.put('/series/:id/', (req, res) => {
  *       url 
  *     }
  */
-app.put("/serie/:id/photo", (req, res) => {
+app.put("/series/:id/photos", (req, res) => {
     const { id } = req.params;
     if(!id.match(/^[0-9a-fA-F]{24}$/)){
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
-
     // TODO verifier la structure de l'objet photo
     let photos = req.body.data[0];
     if(!photos) {
@@ -365,7 +441,7 @@ app.put("/serie/:id/photo", (req, res) => {
     }
 
     // application du middleware
-    if(!res.authUser) {
+    if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }

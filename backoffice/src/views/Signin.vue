@@ -55,7 +55,12 @@ export default {
       })
         .then((response) => {
           this.$store.dispatch('signin', response.data);
-          this.$router.push({ name: 'home' });
+          const destination = this.$route.query.redirect;
+          if (destination) {
+            this.$router.push(destination);
+          } else {
+            this.$router.push({ name: 'home' });
+          }
         })
         .catch((error) => {
           console.log(error);
