@@ -23,6 +23,7 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
 /* Models */
 const Utilisateur = require('./models/Utilisateur');
 const Serie = require('./models/Serie');
+const Photo = require('./models/Photo');
 
 
 /* Middelware d'authentification */
@@ -294,7 +295,7 @@ app.post('/serie', (req, res) => {
             lat: serie.map.lat,
             lng: serie.map.lng,
         },
-        photos: serie.photo,
+        photos: serie.photos,
         create_at : new Date()
     });
 
