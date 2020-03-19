@@ -59,25 +59,18 @@
     <div class="row">
       <!-- TODO ici afficher les photos -->
     </div>
-
-    <div class="row" v-if="loading">
-      <spinner></spinner>
-    </div>
 </div>
 </template>
 
 <script>
 import Leaflet from 'easy-vue-leaflet';
-import Spinner from '../components/Spinner.vue';
 
 export default {
   components: {
-    Spinner,
     Leaflet,
   },
   data() {
     return {
-      loading: true,
       serie: null,
       error: null,
       edit: null,
@@ -85,6 +78,7 @@ export default {
     };
   },
   created() {
+    this.$store.dispatch('setLoading', true);
     this.$http.get(`/series/${this.idUrlParam}`)
       .then((response) => {
         this.serie = response.data.serie;
@@ -97,7 +91,7 @@ export default {
         this.error = 'Impossible d\'afficher cette série de photos';
       })
       .finally(() => {
-        this.loading = false;
+        this.$store.dispatch('setLoading', false);
       });
   },
   computed: {
@@ -117,7 +111,7 @@ export default {
   },
   methods: {
     saveSerie() {
-      this.loading = true;
+      this.$store.dispatch('setLoading', true);
       this.$http.put(`/series/${this.serie.id}`, { rules: this.serie }, {
         headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
       })
@@ -133,7 +127,7 @@ export default {
           this.error = 'Impossible de mettre à jour les données';
         })
         .finally(() => {
-          this.loading = false;
+          this.$store.dispatch('setLoading', false);
         });
     },
     onMapViewChange(event) {

@@ -56,7 +56,6 @@ app.use((req, res, next) => {
               return;
             }
             req.authUser = user;
-            console.log(req.authUser);
             next();
         })
         .catch((error) => {
@@ -148,7 +147,6 @@ app.post('/utilisateurs', (req, res) => {
  */
 app.post('/utilisateurs/auth', (req, res) => {
     setTimeout(() => {
-        console.log(req.headers.authorization);
         if(!req.headers.authorization) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
@@ -179,7 +177,6 @@ app.post('/utilisateurs/auth', (req, res) => {
             bcrypt.compare(config.passwordSecret + password, user.password)
                 .then((result) => {
                     if(!result) {
-                        console.log('t');
                         res.status(401).json({status: 401, msg: 'Unauthorized'});
                         return;
                     }
