@@ -35,13 +35,14 @@
                 images:[],
                 location: null,
                 images_uploaded: null,
-                urls: []
+                urls: [],
+                data: [],
+                serie: null
             }
         },
         created(){
             geolocation.enableLocationRequest();
-
-
+            console.log(this.$store.state.tokenAuth)
         },
         methods:{
             selectPicture() {
@@ -101,7 +102,8 @@
             sendPictures(){
                 this.$showModal(SerieSelection)
                     .then( serie => {
-                        console.log(serie);
+                       console.log(serie);
+                        this.serie = serie;
                        if(serie){
                            const url = 'https://api.imgbb.com/1/upload';
                            const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
@@ -129,6 +131,7 @@
                                task.on("responded", this.respondedHandler);
 
                            });
+
 
                        }else{
                            dialogs.alert("Vous n'avez pas choisis de serie")
@@ -160,15 +163,27 @@
 
                     axios.post("https://fdfdffbc.ngrok.io/photos", data)
                         .then((result)=>{
-                            dialogs.alert('Votre photo a bien été upload :)').
-
-                            then(()=>{
-                                console.log('dialog closed')
+                            dialogs.alert('Votre photo a bien été sauvagrder dans la bdd :)');
+                            this.data.push(result.data);
+                            axios.put('https://b3b4976d.ngrok.io/serie/'+this.serie._id+"/photo",{data: this.data},{
+                                headers: {
+                                    'Authorization': `Bearer ${this.$store.state.tokenAuth}`
+                                },
+                                timeout: 10
                             })
+                                .then((res) =>{
+                                    console.log("zinzin: " +res.data)
+                                })
+                                .catch((err) =>{
+                                    console.log("ERRRRRR : "+err)
+                                });
+
                         })
                         .catch((err)=>{
                             console.log(err)
-                        })
+                        });
+
+
                 }
 
             },
@@ -177,6 +192,12 @@
                 if(e.eventName === 'error'){
                     dialogs.alert("Une erreur est survenue avec l ")
                 }
+
+                if(e.eventName === 'complete'){
+                    dialogs.alert('Votre photo a bien été upload :)')
+                }
+
+
             },
             respondedHandler(e) {
                 const result = JSON.parse(e.data);
@@ -209,12 +230,7 @@
             checkApiMobile(){
                 axios.get("https://fdfdffbc.ngrok.io/")
                     .then((result)=>{
-                        console.log(result.data);
-                        dialogs.alert('Votre photo a bien été upload :)').
-                        then(()=>{
-                            console.log('dialog closed');
-                            return true;
-                        })
+                        return true;
                     })
                     .catch((err)=>{
                         console.log(err);

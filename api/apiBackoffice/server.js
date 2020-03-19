@@ -85,7 +85,6 @@ app.post('/utilisateurs', (req, res) => {
     // TODO verifier que c'est un email
 
     const {email, password, passwordConfirm} = req.body;
-
     // verifie que les données sont présentes
     if(!email || !password || !passwordConfirm || password !== passwordConfirm) {
         res.status(400).json({
