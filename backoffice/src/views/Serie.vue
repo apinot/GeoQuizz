@@ -5,7 +5,10 @@
     </div>
     <div v-if="serie">
       <div class="row">
-        <h1 class="align-center">Série de photos</h1>
+        <h1 class="align-center">
+          Série de photos
+          <i v-if="serie.nom">: {{serie.nom}}</i>
+        </h1>
       </div>
 
       <!-- Ville -->
@@ -22,7 +25,7 @@
           </div>
           <button
             class="btn"
-            @click="serie.ville = currentCity; currentCity = null; saveSerie()"
+            @click="defineVille"
             :disabled="!currentCity">
               Valider
           </button>
@@ -55,7 +58,7 @@
           </div>
           <button
             class="btn"
-            @click="serie.dist = currentDist; currentDist = null; saveSerie()"
+            @click="defineDist"
             :disabled="!currentDist">
               Valider
           </button>
@@ -146,6 +149,9 @@ export default {
         },
       };
     },
+    isLoading() {
+      return this.$store.getters.isLoading;
+    },
   },
   methods: {
     saveSerie() {
@@ -179,6 +185,18 @@ export default {
     defineNewMap() {
       if (!this.currentMapPosition) return;
       this.serie.map = this.currentMapPosition;
+      this.saveSerie();
+    },
+    defineVille() {
+      if (!this.currentCity || this.isLoading) return;
+      this.serie.ville = this.currentCity;
+      this.currentCity = null;
+      this.saveSerie();
+    },
+    defineDist() {
+      if (!this.currentDist || this.isLoading) return;
+      this.serie.dist = this.currentDist;
+      this.currentDist = null;
       this.saveSerie();
     },
   },
