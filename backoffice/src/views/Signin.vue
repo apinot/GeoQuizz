@@ -25,8 +25,7 @@
 
       <!-- submit -->
       <div class="row center-align">
-          <spinner v-if="loading"></spinner>
-          <input type="submit" value="S'inscrire" class="btn" v-else>
+          <input type="submit" value="S'inscrire" class="btn" disabled="loading">
       </div>
     </form>
   </div>
@@ -34,18 +33,13 @@
 </template>
 
 <script>
-import Spinner from '../components/Spinner.vue';
 
 export default {
-  components: {
-    Spinner,
-  },
   data() {
     return {
       email: '',
       password: '',
       error: false,
-      loading: false,
     };
   },
   methods: {

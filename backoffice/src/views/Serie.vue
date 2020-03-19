@@ -24,29 +24,42 @@
           </button>
         </template>
         <template v-else>
-          <p>
-            Ville :
-            {{serie.ville}}
+          <h4>Ville</h4>
+          <div class="row">
+            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+              {{serie.ville}}
+            </span>
             <button class="btn" @click="edit = 'ville'">
               <i class="fas fa-pen-square left"></i> Modifier
             </button>
-            </p>
+          </div>
         </template>
       </div>
+
       <!-- carte -->
       <div class="row">
-        <h3>Carte de la serie</h3>
+        <h4>Carte de la serie</h4>
+        <div class="row">
           <leaflet :options="leafletOptions"
             @viewchanged="onMapViewChange"
           >
           </leaflet>
+        </div>
+        <div class="row center-align">
           <button
             @click="defineNewMap"
             class="btn">
             Définir cette vue comme nouvelle carte
           </button>
+        </div>
       </div>
     </div>
+
+    <!-- Photos -->
+    <div class="row">
+      <!-- TODO ici afficher les photos -->
+    </div>
+
     <div class="row" v-if="loading">
       <spinner></spinner>
     </div>
