@@ -26,6 +26,12 @@ const routes = [
     component: () => import('../views/Serie.vue'),
     // TODO require logged
   },
+  {
+    path: '/series',
+    name: 'series',
+    component: () => import('../views/Series.vue'),
+    // TODO require logged
+  },
 ];
 
 const router = new VueRouter({
