@@ -1,6 +1,5 @@
 <template>
 <div class="serie">
-  <p>zizi</p>
     <div class="row red accent-4 white-text p-5 center-align" v-if="error">
       {{error}}
     </div>
