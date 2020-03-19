@@ -18,6 +18,8 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
 
 /*Models*/
 const Photo = require('./model/Photo.js');
+const Serie = require('./model/Serie.js');
+
 
 /*Routes*/
 app.get("/", (req,res) =>{

@@ -23,11 +23,12 @@
     import AddCoords from "./AddCoords/AddCoords";
     import axios from 'axios/dist/axios';
     const dialogs = require("tns-core-modules/ui/dialogs");
-
+    import SerieSelection from "./SerieSelection/SerieSelection";
 
     export default {
         components: {
-           AddCoords
+           AddCoords,
+           SerieSelection
         },
         data() {
             return {
@@ -98,60 +99,84 @@
 
             },
             sendPictures(){
+                this.$showModal(SerieSelection)
+                    .then( serie => {
+                        console.log(serie);
+                       if(serie){
+                           const url = 'https://api.imgbb.com/1/upload';
+                           const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
 
-                const url = 'https://api.imgbb.com/1/upload';
-                const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
+                           this.images.forEach((image) => {
 
-                this.images.forEach((image) => {
-                    console.log(this.getName(image.img.src.android));
-                    const request = {
-                        url: url + "?key=" + api_key,
-                        method: "POST",
-                        header: {
-                            "Content-Type": "application/octet-stream",
-                        },
-                        description: 'Uploading ' + this.getName(image.img.src.android)
-                    };
-                    const params = [
-                        {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
-                    ];
-                    const task = session.multipartUpload(params, request);
-                    task.on("progress", this.logEvent);
-                    task.on("error", this.logEvent);
-                    task.on("complete", this.logEvent);
-                    task.on("responded", this.respondedHandler);
-                    //console.log('Dans le foreach: '+this.urls);
+                               const request = {
+                                   url: url + "?key=" + api_key,
+                                   method: "POST",
+                                   header: {
+                                       "Content-Type": "application/octet-stream",
+                                   },
+                                   description: 'Uploading ' + this.getName(image.img.src.android)
+                               };
 
-                });
-                //console.log('Hors du foreach: '+this.urls);
+                               const params = [
+                                   {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
+                               ];
+
+                               const task = session.multipartUpload(params, request);
+
+                               task.on("progress", this.logEvent);
+                               task.on("error", this.logEvent);
+                               task.on("complete", this.logEvent);
+                               task.on("responded", this.respondedHandler);
+
+                           });
+
+                       }else{
+                           dialogs.alert("Vous n'avez pas choisis de serie")
+                       }
+                    });
 
             },
 
             setUrlToImg(urls){
-                let compt = 0;
-                this.images.forEach((image) =>{
-                    image.img.url = urls[compt];
-                    compt++;
-                    //console.log('URL dans setURLTOIMG : '+image.img.url);
 
-                });
-                const data = {
-                    data : this.images
-                };
-                axios.post("https://9135e781.ngrok.io/photos", data)
-                    .then((result)=>{
-                        console.log(result.data);
-                        dialogs.alert('Votre photo a bien été upload :)').
+                if (this.checkApiMobile()){
+
+                    dialogs.alert("Une erreur est survenue avec l'api ")
+
+                }else{
+
+                    let compt = 0;
+
+                    this.images.forEach((image) =>{
+
+                        image.img.url = urls[compt];
+                        compt++;
+                        //console.log('URL dans setURLTOIMG : '+image.img.url);
+
+                    });
+                    const data = {
+                        data : this.images
+                    };
+
+                    axios.post("https://fdfdffbc.ngrok.io/photos", data)
+                        .then((result)=>{
+                            dialogs.alert('Votre photo a bien été upload :)').
+
                             then(()=>{
                                 console.log('dialog closed')
+                            })
                         })
-                    })
-                    .catch((err)=>{
-                        console.log(err)
-                    })
+                        .catch((err)=>{
+                            console.log(err)
+                        })
+                }
+
             },
             logEvent(e) {
                 console.log(e.eventName);
+                if(e.eventName === 'error'){
+                    dialogs.alert("Une erreur est survenue avec l ")
+                }
             },
             respondedHandler(e) {
                 const result = JSON.parse(e.data);
@@ -179,6 +204,21 @@
                             obj.location = coords;
                             this.images.push(obj)
                         }
+                    })
+            },
+            checkApiMobile(){
+                axios.get("https://fdfdffbc.ngrok.io/")
+                    .then((result)=>{
+                        console.log(result.data);
+                        dialogs.alert('Votre photo a bien été upload :)').
+                        then(()=>{
+                            console.log('dialog closed');
+                            return true;
+                        })
+                    })
+                    .catch((err)=>{
+                        console.log(err);
+                        return false;
                     })
             }
         },
