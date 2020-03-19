@@ -7,6 +7,7 @@
       <div class="row">
         <h1 class="align-center">Série de photos</h1>
       </div>
+
       <!-- Ville -->
       <div class="row">
         <template v-if="currentCity !== null">
@@ -33,6 +34,39 @@
               {{serie.ville}}
             </span>
             <button class="btn" @click="currentCity = serie.ville">
+              <i class="fas fa-pen-square left"></i> Modifier
+            </button>
+          </div>
+        </template>
+      </div>
+
+       <!-- Distance -->
+      <div class="row">
+        <template v-if="currentDist !== null">
+          <div class="input-field col ">
+            <input
+              id="last_name"
+              type="number"
+              min="0"
+              class="validate"
+              autofocus="true"
+              v-model="currentDist">
+            <label for="last_name">Distance (en mètres)</label>
+          </div>
+          <button
+            class="btn"
+            @click="serie.dist = currentDist; currentDist = null; saveSerie()"
+            :disabled="!currentDist">
+              Valider
+          </button>
+        </template>
+        <template v-else>
+          <h4>Distance de perfection</h4>
+          <div class="row">
+            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+              {{serie.dist}} mètres
+            </span>
+            <button class="btn" @click="currentDist = serie.dist">
               <i class="fas fa-pen-square left"></i> Modifier
             </button>
           </div>
@@ -78,6 +112,7 @@ export default {
       error: null,
       currentMapPosition: null,
       currentCity: null,
+      currentDist: null,
     };
   },
   created() {
