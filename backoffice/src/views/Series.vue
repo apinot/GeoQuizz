@@ -1,11 +1,23 @@
 <template>
-    <div>
-        <p> coucou </p>
+    <div class="row" v-if="loading">
+      <spinner></spinner>
+    </div>
+    <div v-else>
+      <p> coucou</p>
+      <div v-for="serie in series" :key=serie.id>
+          <div> {{serie}} </div>
+      </div>
     </div>
 </template>
 
 <script>
+import Spinner from '../components/Spinner.vue';
+
 export default {
+
+  components: {
+    Spinner,
+  },
   data() {
     return {
       loading: true,
