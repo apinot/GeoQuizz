@@ -30,7 +30,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     // enregistrement dans la base de données
     this.$http
       .put(`/parties/${this.$store.getters.getPartie}`,
