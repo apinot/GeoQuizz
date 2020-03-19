@@ -120,7 +120,7 @@ export default {
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            this.$router.push({ name: 'signin' });
+            this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
             return;
           }
 
