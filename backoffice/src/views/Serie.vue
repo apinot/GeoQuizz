@@ -9,17 +9,20 @@
       </div>
       <!-- Ville -->
       <div class="row">
-        <template v-if="edit === 'ville'">
+        <template v-if="currentCity !== null">
           <div class="input-field col ">
             <input
               id="last_name"
               type="text"
               class="validate"
               autofocus="true"
-              v-model="serie.ville">
+              v-model="currentCity">
             <label for="last_name">Ville</label>
           </div>
-          <button class="btn" @click="saveSerie" :disabled="!serie.ville">
+          <button
+            class="btn"
+            @click="serie.ville = currentCity; currentCity = null; saveSerie()"
+            :disabled="!currentCity">
               Valider
           </button>
         </template>
@@ -29,7 +32,7 @@
             <span style="font-size: 1.5rem; margin-right: 1.5rem;">
               {{serie.ville}}
             </span>
-            <button class="btn" @click="edit = 'ville'">
+            <button class="btn" @click="currentCity = serie.ville">
               <i class="fas fa-pen-square left"></i> Modifier
             </button>
           </div>
@@ -73,8 +76,8 @@ export default {
     return {
       serie: null,
       error: null,
-      edit: null,
       currentMapPosition: null,
+      currentCity: null,
     };
   },
   created() {
