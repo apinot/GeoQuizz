@@ -30,6 +30,14 @@ const routes = [
     },
   },
   {
+    path: '/newserie',
+    name: 'newserie',
+    component: () => import('../views/NewSerie.vue'),
+    meta: {
+      requireAuth: true,
+    },
+  },
+  {
     path: '/series',
     name: 'series',
     component: () => import('../views/Series.vue'),
