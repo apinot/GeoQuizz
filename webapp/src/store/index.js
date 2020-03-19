@@ -41,7 +41,7 @@ export default new Vuex.Store({
 
     destroyToken(context) {
       return new Promise((resolve) => {
-        if (context.getters.loggedIn) {
+        if (context.getters.getToken) {
           localStorage.removeItem('token');
           localStorage.removeItem('partie');
           context.commit('destroyToken');
