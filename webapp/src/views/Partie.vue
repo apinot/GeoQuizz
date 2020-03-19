@@ -1,98 +1,78 @@
 <template>
   <div>
-  <div v-if="enCours">
-    <div class="row">
-      <div class="col s12 m6">
-        <div class="row">
-          <div class="col s12 m12">
-            <div class="card">
-              <div class="card-image">
-                <img :src="photoActuelle.url"
-                  v-if="photoActuelle" >
-              </div>
-              <div class="card-action center-align">
-                <a data-target="modal1" class="btn modal-trigger">Modal</a>
-              </div>
+    <div v-if="errored">
+      <error></error>
+    </div>
+    <div v-else>
+      <div v-if="loadCarte && loadPhoto">
+        <div v-if="enCours">
+          <photo-carte :options="options"
+            :markers="markers"
+            :photo="photoActuelle"
+            @point="updateMarker">
+          </photo-carte>
+          <div class="container">
+            <div class="card row">
+              <p class="col s6 m2"> Score: {{this.score}}</p>
+              <p class="col s6 m2">Temps: {{timer}}s</p>
+              <button
+                v-on:click="nextPhoto"
+                class="col s12 m2 offset-m5 btn waves-effect waves-light"
+                type="submit" name="action">
+                Valider
+              </button>
             </div>
           </div>
         </div>
+        <div v-else>
+          <fin-partie :score="score"></fin-partie>
+        </div>
       </div>
-     <leaflet
-        v-if="options"
-        class="col s12 m6"
-        :options="options"
-        :markers="markers"
-        @mapclick="saveLatLngClick"
-      />
-    </div>
-    <div class="container">
-      <div class="card row">
-        <p class="col s6 m2"> Score: {{this.score}}</p>
-        <p class="col s6 m2">Temps: {{timer}} s</p>
-        <button
-          v-on:click="nextPhoto"
-          class="col s12 m2 offset-m5 btn waves-effect waves-light"
-          type="submit" name="action">
-          Valider
-        </button>
-      </div>
-    </div>
-    <!-- Modal Structure -->
-      <div id="modal1" class="modal">
-        <div class="row">
-        <img class="col s12" :src="photoActuelle.url" v-if="photoActuelle">
+      <div v-else>
+        <spinner></spinner>
       </div>
     </div>
   </div>
-  <div v-else>
-    <div class="row container">
-    <div class="col s12 m8 offset-m2">
-      <div class="card">
-        <div class="card-image">
-          <img src="https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif">
-        </div>
-        <div class="card-content">
-          <p>Vous avez fait {{score}} pts !</p>
-        </div>
-        <div class="card-action center-align">
-          <a class="btn waves-effect waves-light" v-on:click="backAccueil">Retour à l'accueil</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div>
-</div>
 </template>
 
 <script>
 /* eslint-disable no-restricted-properties */
-import Leaflet from 'easy-vue-leaflet';
 import getDistance from 'geolib/es/getDistance';
+import PhotoCarte from '../components/partie/PhotoCarte.vue';
+import FinPartie from '../components/partie/FinPartie.vue';
+import Spinner from '../components/load/Spinner.vue';
+import Error from '../components/load/Error.vue';
 
 export default {
   name: 'Partie',
   components: {
-    Leaflet,
+    PhotoCarte,
+    FinPartie,
+    Spinner,
+    Error,
   },
 
   data() {
     return {
+      // chargement
+      loadPhoto: false,
+      loadCarte: false,
+      errored: false,
       // timer
       timer: 20,
       timeoutTimer: '',
       // Leaflet attribut
       markers: [],
-      token: '',
       // données de la partie
+      enCours: true,
       serie: 0,
       photos: [],
       numeroPhotoActuelle: -1,
       score: 0,
-      enCours: true,
       // coordonée du point sur la carte
+      dateAffichagePhoto: null,
       lat: '',
       lng: '',
-      dateAffichagePhoto: null,
     };
   },
   methods: {
@@ -100,7 +80,6 @@ export default {
      * Change de photo lorsque l'utilisateur sur valider
      */
     nextPhoto() {
-      // s'il n'y a plus de photo, afficher le score final
       // verifier qu'il a placé un point
       if (this.markers.length === 0) return;
 
@@ -110,10 +89,8 @@ export default {
       clearTimeout(this.timeoutTimer);
       this.timer = 20;
       this.countDownTimer();
-      if (this.numeroPhotoActuelle === this.photos.length - 1) {
-        this.enCours = false;
-        this.saveDataPartie();
-      }
+      // s'il n'y a plus de photo, afficher le score final
+      if (this.numeroPhotoActuelle === this.photos.length - 1) this.enCours = false;
 
       // afficher l'autre photo
       this.numeroPhotoActuelle += 1;
@@ -160,17 +137,10 @@ export default {
     /**
      * Enregistre la position du marler lors du clique
      */
-    saveLatLngClick(event) {
+    updateMarker(event) {
+      this.markers = [event];
       this.lat = event.position.lat;
       this.lng = event.position.lng;
-      this.markers = [
-        {
-          position: {
-            lat: this.lat,
-            lng: this.lng,
-          },
-        },
-      ];
     },
 
     /**
@@ -184,47 +154,34 @@ export default {
         }, 1000);
       }
     },
-
-    backAccueil() {
-      // TODO casser le localstorage
-      this.$store.dispatch('destroyToken');
-      this.$router.push({ name: 'home' });
-    },
-
-    saveDataPartie() {
-      this.$http
-        .put(`/parties/${this.$store.getters.getPartie}`,
-          { end: true, score: this.score },
-          { headers: { Authorization: `Bearer ${this.token}` } }).then((response) => {
-          console.log(response);
-        }).catch((error) => {
-          console.log(error);
-        });
-    },
-
   },
 
   created() {
-    this.token = this.$store.getters.getToken;
     // optention de toute les photos
     this.$http
       .get(`/parties/${this.$store.getters.getPartie}/photos`, {
-        headers: { Authorization: `Bearer ${this.token}` },
+        headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
       }).then((response) => {
         this.photos = response.data.partie.photos;
         this.numeroPhotoActuelle = 0;
         this.dateAffichagePhoto = new Date();
+        this.errored = false;
+        this.loadPhoto = true;
       }).catch((error) => {
+        this.errored = true;
         console.log(error);
       });
 
     // optention de la series
     this.$http
       .get(`/parties/${this.$store.getters.getPartie}/series`, {
-        headers: { Authorization: `Bearer ${this.token}` },
+        headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
       }).then((response) => {
         this.serie = response.data.serie;
+        this.loadCarte = true;
+        this.errored = false;
       }).catch((error) => {
+        this.errored = true;
         console.log(error);
       });
 
@@ -246,11 +203,6 @@ export default {
         },
       };
     },
-  },
-
-  mounted() {
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
   },
 };
 </script>
