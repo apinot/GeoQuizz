@@ -21,9 +21,10 @@ const routes = [
     component: () => import('../views/Signin.vue'),
   },
   {
-    path: '/serie:id',
+    path: '/serie/:id',
     name: 'serie',
     component: () => import('../views/Serie.vue'),
+    // TODO require logged
   },
 ];
 

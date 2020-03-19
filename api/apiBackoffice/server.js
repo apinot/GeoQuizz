@@ -13,10 +13,57 @@ const app = express();
 app.use(cors());
 app.use(parser.json());
 
+// connexion à la base de données
+mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
+    useCreateIndex: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+
 /* Models */
 const Utilisateur = require('./models/Utilisateur');
 const Serie = require('./models/Serie');
 
+
+/* Middelware d'authentification */
+app.use((req, res, next) => {
+    if(!req.headers.authorization) {
+        next();
+        return;
+    }
+
+    const [typeAuth, token] = req.headers.authorization.split(' ');
+    if(!typeAuth || typeAuth !== 'bearer' || !token) {
+        next();
+        return;
+    }
+
+    jwt.verify(token, config.jwtSecret, (err, decoded) => {
+
+        if (err) {
+          throw err;
+        }
+
+        if (!decoded && !decoded.user) {
+            next();
+            return;
+        }
+
+        Utilisateur.findById(decoded.user)
+        .then((user) => {
+            if (!user) {
+              next();
+              return;
+            }
+            req.authUser = user;
+            console.log(req.authUser);
+            next();
+        })
+        .catch((error) => {
+            throw error
+        })
+    });
+});
 
 /* Routes */
 app.get('/', (req, res) => {
@@ -103,21 +150,18 @@ app.post('/utilisateurs/auth', (req, res) => {
     setTimeout(() => {
         console.log(req.headers.authorization);
         if(!req.headers.authorization) {
-            console.log('j');
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
     
         const credentialsBase64 = req.headers.authorization.split(' ')[1];
         if(!credentialsBase64) {
-            console.log('u');
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
 
         const [email, password] = Buffer.from(credentialsBase64, 'base64').toString('utf-8').split(':');
         if(!email || !password) {
-            console.log('s');
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -126,7 +170,7 @@ app.post('/utilisateurs/auth', (req, res) => {
             if(err) throw err;
 
             if(users.length !== 1) {
-                res.status(404).json({status: 401, msg: 'Unauthorized'});
+                res.status(401).json({status: 401, msg: 'Unauthorized'});
                 return;
             } 
 
@@ -157,7 +201,8 @@ app.post('/utilisateurs/auth', (req, res) => {
     }, 2000);
 });
 
-/** Permet de récupérer les données d'une série
+/** 
+ * Permet de récupérer les données d'une série
  * 
  *  Query : 
  *   - id : id de la série
@@ -166,6 +211,11 @@ app.post('/utilisateurs/auth', (req, res) => {
 */
 app.get('/series/:id', (req, res) => {
     const { id } = req.params;
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -175,16 +225,140 @@ app.get('/series/:id', (req, res) => {
 
         res.status(200).json({
             serie: {
-                serie: {
-                    id: serie._id,
-                    ville: serie.ville,
-                    map: serie.map,
-                    nb_photos: serie.nb_photos.length,
-                    created_at: serie.created_at,
-                }
+                id: serie._id,
+                ville: serie.ville,
+                dist: serie.dist,
+                map: serie.map,
+                nb_photos: serie.photos.length,
+                created_at: serie.created_at,
             }
         });
     });
+});
+
+/**
+ * Met à jour les règles de la parie
+ * Query : 
+ *   - id : id de la série
+ * Body : 
+ *   - rules: {
+ *       ville
+ *       distance
+ *       map: {
+ *         lat
+ *         lng
+ *       }
+ *       zoom
+ *     }
+ */
+app.put('/series/:id/', (req, res) => {
+    const { id } = req.params;
+    const { rules } = req.body;
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+
+    //TODO verifier que rules possède la bonne architecture
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        serie.ville = rules.ville;
+        serie.dist = rules.dist;
+        serie.map.lat = rules.map.lat;
+        serie.map.lng = rules.map.lng;
+        serie.map.zoom = rules.map.zoom;
+        serie.save()
+            .then((saved) => {
+                res.status(200).json({
+                    serie: {
+                        id: req.body,
+                        ville: saved.ville,
+                        dist: saved.dist,
+                        map: {
+                            lat: saved.map.lat,
+                            lng: saved.map.lng,
+                        },
+                        zoom: saved.map.zoom,
+                    }    
+                });
+            })
+            .catch((error) => {
+                throw error;
+            });
+    });
+});
+
+/**
+ * Ajout une photo à la serie
+ * Query : 
+ *   - id : id de la série
+ * Body : 
+ *   - photo: {
+ *       position: {
+ *         lat
+ *         lng
+ *       }
+ *       url 
+ *     }
+ */
+app.put("/serie/:id/photo", (req, res) => {
+    const { id } = req.params;
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+
+    // TODO verifier la structure de l'objet photo
+    let photos = req.body.data[0];
+    if(!photos) {
+        res.status(400).json({ status: 400, msg: 'Bad Request' });
+        return;
+    }
+
+    // application du middleware
+    if(!res.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        // initialisation de la photo
+        const lat = photos.position.lat;
+        const lng = photos.position.lng;
+        const url = photos.url;
+        const newPhoto = new Photo({
+            position : {
+                lat: lat,
+                lng: lng
+            },
+            url: url,
+            create_at : new Date()
+        });
+        // sauvegarde l'id de la photo
+        newPhoto.save().then((photo) => {
+            serie.photos.push(photo.id)
+             // mise à jour de la serie
+            serie.save().then(() => {
+                res.status(200).json({photo})
+            });
+        }).catch((err) =>{
+            res.status(500).json({err})
+        });
+
+    });  
 });
 
 /* Gestion des erreurs */
@@ -208,13 +382,5 @@ app.use((error, req, res, next) => {
 
 /* Démarrage de l'api */
 app.listen(8080, () => {
-
-    // connexion à la base de données
-    mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
-        useCreateIndex: true,
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
-
     console.log('api backoffice is running !');
 });

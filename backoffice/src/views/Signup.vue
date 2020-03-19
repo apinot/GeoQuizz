@@ -11,7 +11,7 @@
       <!-- email -->
       <div class="row">
         <div class="input-field">
-          <input id="emailField" type="text" v-model="email"/>
+          <input id="emailField" type="text" v-model="email" autofocus/>
           <label for="emailField">Email</label>
         </div>
       </div>
@@ -22,7 +22,7 @@
           <label for="password">Mot de passe</label>
         </div>
       </div>
-      <!-- passowor confirm -->
+      <!-- password confirm -->
       <div class="row">
         <div class="input-field">
           <input id="passwordConfirm" type="password" v-model="passwordConfirm"/>
