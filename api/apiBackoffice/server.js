@@ -13,15 +13,9 @@ const app = express();
 app.use(cors());
 app.use(parser.json());
 
-// connexion à la base de données
-mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
-
 /* Models */
 const Utilisateur = require('./models/Utilisateur');
+const Serie = require('./models/Serie');
 
 
 /* Routes */
@@ -163,6 +157,35 @@ app.post('/utilisateurs/auth', (req, res) => {
     }, 2000);
 });
 
+/** Permet de récupérer les données d'une série
+ * 
+ *  Query : 
+ *   - id : id de la série
+ * @return
+ *      les données relatives à la série
+*/
+app.get('/series/:id', (req, res) => {
+    const { id } = req.params;
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+
+        res.status(200).json({
+            serie: {
+                serie: {
+                    id: serie._id,
+                    ville: serie.ville,
+                    map: serie.map,
+                    nb_photos: serie.nb_photos.length,
+                    created_at: serie.created_at,
+                }
+            }
+        });
+    });
+});
 
 /* Gestion des erreurs */
 
@@ -185,5 +208,13 @@ app.use((error, req, res, next) => {
 
 /* Démarrage de l'api */
 app.listen(8080, () => {
+
+    // connexion à la base de données
+    mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
+        useCreateIndex: true,
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+
     console.log('api backoffice is running !');
 });

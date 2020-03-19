@@ -20,6 +20,11 @@ const routes = [
     name: 'signin',
     component: () => import('../views/Signin.vue'),
   },
+  {
+    path: '/serie:id',
+    name: 'serie',
+    component: () => import('../views/Serie.vue'),
+  },
 ];
 
 const router = new VueRouter({
