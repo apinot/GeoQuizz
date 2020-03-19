@@ -276,6 +276,38 @@ app.get('/series/:id', (req, res) => {
     });
 });
 
+
+// TODO créer une serie
+/**
+ * Permet de créer une série
+ */
+app.post('/serie', (req, res) => {
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const { serie } = req.body;
+    // TODO verifier que serie possède la bonne architecture
+    const newSerie = new Serie({
+        ville: serie.ville,
+        dist: serie.dist,
+        map : {
+            lat: serie.map.lat,
+            lng: serie.map.lng,
+        },
+        photos: serie.photo,
+        create_at : new Date()
+    });
+
+    newSerie.save().then((data) => {
+        res.status(200).json({data})
+    }).catch((err) =>{
+        res.status(500).json({err})
+    });
+
+});
+
+
 /**
  * Met à jour les règles de la parie
  * Query : 
@@ -292,18 +324,18 @@ app.get('/series/:id', (req, res) => {
  *     }
  */
 app.put('/series/:id/', (req, res) => {
-    const { id } = req.params;
-    const { rules } = req.body;
-    if(!id.match(/^[0-9a-fA-F]{24}$/)){
-        res.status(404).json({status: 404, msg: 'Serie Not Found'});
-        return;
-    }
     if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-
-    //TODO verifier que rules possède la bonne architecture
+    const { id } = req.params;
+    const { rules } = req.body;
+    // TODO verifier que rules possède la bonne architecture
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+    
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -401,7 +433,6 @@ app.put("/series/:id/photos", (req, res) => {
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
-
     // TODO verifier la structure de l'objet photo
     let photos = req.body.data[0];
     if(!photos) {

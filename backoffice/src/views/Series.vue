@@ -8,18 +8,26 @@
       <div class="row" v-if="!isLoad">
         <spinner></spinner>
       </div>
-      <div v-else v-for="serie in series" :key="serie.id">
-        <div class="container">
-          <div class="row">
-            <div class="col s12 m3">{{serie.nom}}</div>
-            <div class="col s12 m3">{{serie.description}}</div>
-            <div class="col s12 m3">{{serie.ville}}</div>
-            <button
-              v-on:click="showSerie(serie._id)"
-              class="s12 m3 btn waves-effect waves-light"
-              type="submit"
-              name="action"
-            >Modifier</button>
+      <div v-else>
+        <button
+          v-on:click="createSerie"
+          class="s12 m3 btn waves-effect waves-light"
+          type="submit"
+          name="action"
+        >Créer une nouvelle série</button>
+        <div v-for="serie in series" :key="serie.id">
+          <div class="container">
+            <div class="row">
+              <div class="col s12 m3">{{serie.nom}}</div>
+              <div class="col s12 m3">{{serie.description}}</div>
+              <div class="col s12 m3">{{serie.ville}}</div>
+              <button
+                v-on:click="showSerie(serie._id)"
+                class="s12 m3 btn waves-effect waves-light"
+                type="submit"
+                name="action"
+              >Modifier</button>
+            </div>
           </div>
         </div>
       </div>
@@ -52,6 +60,9 @@ export default {
     showSerie(id) {
       console.log(id);
       this.$router.push({ name: 'serie', params: { id } });
+    },
+    createSerie() {
+      this.$router.push({ name: 'newserie' });
     },
   },
 
