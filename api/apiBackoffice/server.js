@@ -280,7 +280,7 @@ app.get('/series/:id', (req, res) => {
 /**
  * Permet de créer une série
  */
-app.post('/serie/', (req, res) => {
+app.post('/serie', (req, res) => {
     if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
