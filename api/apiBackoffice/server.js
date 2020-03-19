@@ -369,6 +369,53 @@ app.put('/series/:id/', (req, res) => {
 });
 
 /**
+ * Récupère les photos d'une série
+ * Query : 
+ *   - id : id de la série
+ * 
+ * @retun
+ *      tableau de photos
+ */
+app.get("/series/:id/photos", (req, res) => {
+    const { id } = req.params;
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+
+    // application du middleware
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+
+        Photo.find({ _id: serie.photos }, (error, photos) => {
+            if(error) throw error;
+            
+            res.status(200).json({
+                serie: {
+                    id: serie._id,
+                    photos: photos.map((photo) => ({
+                        id: photo._id,
+                        ntm: 'va te faire foutre',
+                        position: photo.position,
+                        desc: photo.desc,
+                        url: photo.url,
+                    })),
+                },
+            });
+        });
+    });
+});
+
+/**
  * Ajout une photo à la serie
  * Query : 
  *   - id : id de la série
@@ -381,12 +428,7 @@ app.put('/series/:id/', (req, res) => {
  *       url 
  *     }
  */
-app.put("/serie/:id/photo", (req, res) => {
-     // application du middleware
-     if(!res.authUser) {
-        res.status(401).json({status: 401, msg: 'Unauthorized'});
-        return;
-    }
+app.put("/series/:id/photos", (req, res) => {
     const { id } = req.params;
     if(!id.match(/^[0-9a-fA-F]{24}$/)){
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
@@ -398,6 +440,13 @@ app.put("/serie/:id/photo", (req, res) => {
         res.status(400).json({ status: 400, msg: 'Bad Request' });
         return;
     }
+
+    // application du middleware
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
