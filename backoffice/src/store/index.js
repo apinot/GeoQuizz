@@ -19,7 +19,7 @@ export default new Vuex.Store({
       return state.auth ? state.auth.token : null;
     },
     isLoading(state) {
-      return !!state.isLoading;
+      return state.loading;
     },
   },
   mutations: {
@@ -41,7 +41,6 @@ export default new Vuex.Store({
       context.commit('setAuth', null);
     },
     setLoading(context, loading) {
-      if (!loading) return;
       context.commit('setLoading', loading);
     },
   },

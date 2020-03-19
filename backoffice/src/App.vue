@@ -15,7 +15,7 @@
 <script>
 export default {
   computed: {
-    isloading() {
+    isLoading() {
       return this.$store.getters.isLoading;
     },
   },
