@@ -80,7 +80,7 @@
       <div class="row">
         <h4>Carte de la serie</h4>
         <div class="row">
-          <leaflet :options="leafletOptions"
+          <leaflet :options="leafletOptions" :markers="photos"
             @viewchanged="onMapViewChange"
           >
           </leaflet>
@@ -93,12 +93,27 @@
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Photos -->
-    <div class="row">
-      <!-- TODO ici afficher les photos -->
+      <!-- Photos -->
+      <div class="row">
+      <h4>Photos</h4>
+      <div class="row" v-if="photos.length <= 0">Cette série ne contient pas de photos</div>
+      <div class="row" v-else>
+        <div class="col col s12 m8 l6 offset-m2 offset-l3" v-for="photo in photos" :key="photo.id">
+          <div class="card">
+            <div class="card-image">
+              <img :src="photo.url">
+            </div>
+            <div class="card-content">
+              <p>{{photo.desc}}</p>
+              <!-- ICI les action -->
+              <!-- TODO en cours -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 </template>
 
@@ -112,6 +127,7 @@ export default {
   data() {
     return {
       serie: null,
+      photos: [],
       error: null,
       currentMapPosition: null,
       currentCity: null,
@@ -120,13 +136,25 @@ export default {
   },
   created() {
     this.$store.dispatch('setLoading', true);
-    this.$http.get(`/series/${this.idUrlParam}`)
+    this.$http.get(`/series/${this.idUrlParam}`, {
+      headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+    })
       .then((response) => {
         this.serie = response.data.serie;
+
+        return this.$http(`/series/${this.idUrlParam}/photos`, {
+          headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+        });
+      })
+      .then((response) => {
+        this.photos = response.data.serie.photos;
       })
       .catch((error) => {
         if (error.response && error.response.status === 404) {
           this.error = 'Désolé, cette série de photos n\'existe pas';
+          return;
+        } if (error.response && error.response.status === 401) {
+          this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
           return;
         }
         this.error = 'Impossible d\'afficher cette série de photos';
@@ -159,9 +187,6 @@ export default {
       this.$http.put(`/series/${this.serie.id}`, { rules: this.serie }, {
         headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
       })
-        .then(() => {
-
-        })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
             this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
