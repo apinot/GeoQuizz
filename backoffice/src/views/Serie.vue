@@ -7,6 +7,7 @@
       <div class="row">
         <h1 class="align-center">Série de photos</h1>
       </div>
+      <!-- Ville -->
       <div class="row">
         <template v-if="edit === 'ville'">
           <div class="input-field col ">
@@ -19,20 +20,46 @@
             <label for="last_name">Ville</label>
           </div>
           <button class="btn" @click="saveSerie" :disabled="!serie.ville">
-              <i class="fas fa-check-square left"></i> Valider
+              Valider
           </button>
         </template>
         <template v-else>
-          <p>
-            Ville :
-            {{serie.ville}}
+          <h4>Ville</h4>
+          <div class="row">
+            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+              {{serie.ville}}
+            </span>
             <button class="btn" @click="edit = 'ville'">
               <i class="fas fa-pen-square left"></i> Modifier
             </button>
-            </p>
+          </div>
         </template>
       </div>
+
+      <!-- carte -->
+      <div class="row">
+        <h4>Carte de la serie</h4>
+        <div class="row">
+          <leaflet :options="leafletOptions"
+            @viewchanged="onMapViewChange"
+          >
+          </leaflet>
+        </div>
+        <div class="row center-align">
+          <button
+            @click="defineNewMap"
+            class="btn">
+            Définir cette vue comme nouvelle carte
+          </button>
+        </div>
+      </div>
     </div>
+
+    <!-- Photos -->
+    <div class="row">
+      <!-- TODO ici afficher les photos -->
+    </div>
+
     <div class="row" v-if="loading">
       <spinner></spinner>
     </div>
@@ -40,11 +67,13 @@
 </template>
 
 <script>
+import Leaflet from 'easy-vue-leaflet';
 import Spinner from '../components/Spinner.vue';
 
 export default {
   components: {
     Spinner,
+    Leaflet,
   },
   data() {
     return {
@@ -52,6 +81,7 @@ export default {
       serie: null,
       error: null,
       edit: null,
+      currentMapPosition: null,
     };
   },
   created() {
@@ -73,6 +103,16 @@ export default {
   computed: {
     idUrlParam() {
       return this.$route.params.id;
+    },
+    leafletOptions() {
+      if (!this.serie) return null;
+      return {
+        view: {
+          lat: this.serie.map.lat,
+          lng: this.serie.map.lng,
+          zoom: this.serie.map.zoom,
+        },
+      };
     },
   },
   methods: {
@@ -96,6 +136,23 @@ export default {
           this.loading = false;
         });
     },
+    onMapViewChange(event) {
+      this.currentMapPosition = {
+        lat: event.view.center.lat,
+        lng: event.view.center.lng,
+        zoom: event.view.zoom,
+      };
+      this.mapChanged = true;
+    },
+    defineNewMap() {
+      if (!this.currentMapPosition) return;
+      this.serie.map = this.currentMapPosition;
+      this.saveSerie();
+    },
   },
 };
 </script>
+
+<style>
+    @import url('https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
+</style>

@@ -18,15 +18,14 @@
       <!-- password -->
       <div class="row">
         <div class="input-field">
-          <input id="password" type="text" v-model="password"/>
+          <input id="password" type="password" v-model="password"/>
           <label for="password">Mot de passe</label>
         </div>
       </div>
 
       <!-- submit -->
       <div class="row center-align">
-          <spinner v-if="loading"></spinner>
-          <input type="submit" value="S'inscrire" class="btn" v-else>
+          <input type="submit" value="S'inscrire" class="btn" :disabled="loading">
       </div>
     </form>
   </div>
@@ -34,25 +33,20 @@
 </template>
 
 <script>
-import Spinner from '../components/Spinner.vue';
 
 export default {
-  components: {
-    Spinner,
-  },
   data() {
     return {
       email: '',
       password: '',
       error: false,
-      loading: false,
     };
   },
   methods: {
     signup() {
       if (this.loading) return;
 
-      this.loading = true;
+      this.$store.dispatch('setLoading', true);
 
       this.$http.post('/utilisateurs/auth', {}, {
         headers: {
@@ -68,13 +62,16 @@ export default {
           this.error = true;
         })
         .finally(() => {
-          this.loading = false;
+          this.$store.dispatch('setLoading', false);
         });
     },
   },
   computed: {
     base64Credentials() {
       return Buffer.from(`${this.email}:${this.password}`, 'utf-8').toString('base64');
+    },
+    loading() {
+      return this.$store.getters.isLoading;
     },
   },
 };
