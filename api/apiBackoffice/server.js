@@ -295,7 +295,7 @@ app.post('/serie', (req, res) => {
             lat: serie.map.lat,
             lng: serie.map.lng,
         },
-        photos: serie.photo,
+        photos: serie.photos,
         create_at : new Date()
     });
 
