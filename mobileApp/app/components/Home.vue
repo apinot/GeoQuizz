@@ -96,7 +96,7 @@
                             });
                     })
                     .catch(e => {
-                        console.log('Error requesting permission');
+                        console.log('Error requesting permission :'+ e);
                     });
 
 
@@ -182,12 +182,9 @@
             respondedHandler(e) {
                 const result = JSON.parse(e.data);
                 const uploaded_image = result.data;
-                //console.log(uploaded_image.url); //url de l'image
                 this.urls.push(uploaded_image.url);
-                //console.log(this.urls);
                 if(this.images.length === this.urls.length){
                     this.setUrlToImg(this.urls);
-                    //console.log(this.images[0].location)
                     this.images = [];
                     this.urls = []
                 }
