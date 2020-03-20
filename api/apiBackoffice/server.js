@@ -288,6 +288,8 @@ app.post('/serie', (req, res) => {
     const newSerie = new Serie({
         ville: serie.ville,
         dist: serie.dist,
+        nom: serie.nom,
+        descr: serie.descr,
         map : {
             lat: serie.map.lat,
             lng: serie.map.lng,
@@ -308,7 +310,7 @@ app.post('/serie', (req, res) => {
 
 
 /**
- * Met à jour les règles de la parie
+ * Met à jour les règles de la serie
  * Query : 
  *   - id : id de la série
  * Body : 
