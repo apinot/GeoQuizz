@@ -279,7 +279,7 @@ app.get('/series/:id', (req, res) => {
 /**
  * Permet de créer une série
  */
-app.post('/serie', (req, res) => {
+app.post('/series', (req, res) => {
     if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
@@ -460,7 +460,7 @@ app.get("/series/:id/photos", (req, res) => {
  *       url 
  *     }
  */
-app.put("/serie/:id/photo", (req, res) => {
+app.put("/series/:id/photos", (req, res) => {
     if(!req.headers.authorization && !req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
@@ -510,6 +510,68 @@ app.put("/serie/:id/photo", (req, res) => {
 
     });  
 });
+
+/**
+ * Eleve une photo de la serie
+ * Query : 
+ *   - idSerie : id de la série
+ *   - idPhoto : id de la photo
+ */
+app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
+    if(!req.headers.authorization && !req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+
+    const { idSerie, idPhoto } = req.params;
+    if(!idPhoto || !idSerie) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+    }
+
+    if(!idSerie.match(/^[0-9a-fA-F]{24}$/) || !idPhoto.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+
+    Serie.findById(idSerie, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+
+        const indexOfPhoto = serie.photos.indexOf(idPhoto);
+        if(indexOfPhoto < 0) {
+            res.status(404).json({status: 404, msg: 'Photo Not Found'});
+            return;
+        }
+
+        serie.photos.splice(indexOfPhoto, 1);
+
+        serie.save()
+            .then((saved) => {
+                Photo.find({ _id: saved.photos }, (error, photos) => {
+                    if(error) throw error;
+                    
+                    res.status(200).json({
+                        serie: {
+                            id: saved._id,
+                            photos: photos.map((photo) => ({
+                                id: photo._id,
+                                position: photo.position,
+                                desc: photo.desc,
+                                url: photo.url,
+                            })),
+                        },
+                    });
+                });
+            })
+            .catch((error) => {
+                throw error;
+            });
+    });
+});
+
 
 /* Gestion des erreurs */
 

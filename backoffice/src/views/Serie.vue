@@ -36,7 +36,7 @@
               {{serie.nom}}
             </span>
             <button class="btn" @click="currentNom = serie.nom">
-              <i class="fas fa-pen-square left"></i> Modifier
+              <i class="fas fa-pen left"></i> Modifier
             </button>
           </div>
         </template>
@@ -68,7 +68,7 @@
               {{serie.descr}}
             </span>
             <button class="btn" @click="currentDescr = serie.descr">
-              <i class="fas fa-pen-square left"></i> Modifier
+              <i class="fas fa-pen left"></i> Modifier
             </button>
           </div>
         </template>
@@ -100,7 +100,7 @@
               {{serie.ville}}
             </span>
             <button class="btn" @click="currentCity = serie.ville">
-              <i class="fas fa-pen-square left"></i> Modifier
+              <i class="fas fa-pen left"></i> Modifier
             </button>
           </div>
         </template>
@@ -133,7 +133,7 @@
               {{serie.dist}} mètres
             </span>
             <button class="btn" @click="currentDist = serie.dist">
-              <i class="fas fa-pen-square left"></i> Modifier
+              <i class="fas fa-pen left"></i> Modifier
             </button>
           </div>
         </template>
@@ -158,7 +158,7 @@
             Définir cette vue comme nouvelle carte
           </button>
           <button  class="btn" @click="editMap = true" v-else>
-            Modifier la carte
+            <i class="fas fa-pen left"></i> Modifier
           </button>
         </div>
       </div>
@@ -178,8 +178,19 @@
               <!-- ICI les action -->
               <!-- TODO en cours -->
             </div>
-            <div class="card-action">
-              <a href="#"><i class="fas fa-trash"></i> Supprimer de la série</a>
+            <div class="card-action center-align" v-if="photoToDelete === photo.id">
+              <div class="row">Voulez-vous vraiement retirer cette photo de la série ?</div>
+              <div class="row">
+                <button class="btn left" @click="photoToDelete = null">Annuler</button>
+                <button class="red accent-4 btn right" @click="removePhoto">
+                  <i class="fas fa-trash left"></i> Supprimer
+                </button>
+              </div>
+            </div>
+            <div class="card-action center-align" v-else>
+              <button class="red accent-4 btn" @click="photoToDelete = photo.id">
+                <i class="fas fa-trash left"></i> Supprimer de la série
+              </button>
             </div>
           </div>
         </div>
@@ -207,6 +218,7 @@ export default {
       currentNom: null,
       currentCity: null,
       currentDist: null,
+      photoToDelete: null,
     };
   },
   created() {
@@ -311,6 +323,27 @@ export default {
       this.serie.nom = this.currentNom;
       this.currentNom = null;
       this.saveSerie();
+    },
+    removePhoto() {
+      if (!this.photoToDelete) return;
+      this.$store.dispatch('setLoading', true);
+      this.$http.delete(`/series/${this.serie.id}/photos/${this.photoToDelete}`, {
+        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+      })
+        .then((response) => {
+          this.photos = response.data.serie.photos;
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
+            return;
+          }
+
+          this.error = 'Impossible de supprimer la photo de la serie';
+        })
+        .finally(() => {
+          this.$store.dispatch('setLoading', false);
+        });
     },
   },
 };
