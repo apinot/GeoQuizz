@@ -7,8 +7,71 @@
       <div class="row">
         <h1 class="align-center">
           Série de photos
-          <i v-if="serie.nom">: {{serie.nom}}</i>
         </h1>
+      </div>
+
+      <!-- Nom -->
+      <div class="row">
+        <template v-if="currentNom !== null">
+          <div class="input-field col ">
+            <input
+              id="last_name"
+              type="text"
+              class="validate"
+              autofocus="true"
+              v-model="currentNom">
+            <label for="last_name">Nom</label>
+          </div>
+          <button
+            class="btn"
+            @click="defineNom"
+            :disabled="!currentNom">
+              Valider
+          </button>
+        </template>
+        <template v-else>
+          <h4>Nom de la serie</h4>
+          <div class="row">
+            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+              {{serie.nom}}
+            </span>
+            <button class="btn" @click="currentNom = serie.nom">
+              <i class="fas fa-pen-square left"></i> Modifier
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <!-- description -->
+      <div class="row">
+        <template v-if="currentDescr !== null">
+          <div class="input-field col ">
+             <textarea
+              id="last_name"
+              type="text"
+              class="materialize-textarea"
+              autofocus="true"
+              v-model="currentDescr"></textarea>
+            <label for="last_name">Description</label>
+          </div>
+          <button
+            class="btn"
+            @click="defineDescr"
+            :disabled="!currentDescr">
+              Valider
+          </button>
+        </template>
+        <template v-else>
+          <h4>Description</h4>
+          <div class="row">
+            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+              {{serie.descr}}
+            </span>
+            <button class="btn" @click="currentDescr = serie.descr">
+              <i class="fas fa-pen-square left"></i> Modifier
+            </button>
+          </div>
+        </template>
       </div>
 
       <!-- Ville -->
@@ -140,6 +203,8 @@ export default {
       error: null,
       editMap: false,
       currentMapPosition: null,
+      currentDescr: null,
+      currentNom: null,
       currentCity: null,
       currentDist: null,
     };
@@ -233,6 +298,18 @@ export default {
       if (!this.currentDist || this.isLoading) return;
       this.serie.dist = this.currentDist;
       this.currentDist = null;
+      this.saveSerie();
+    },
+    defineDescr() {
+      if (!this.currentDescr || this.isLoading) return;
+      this.serie.descr = this.currentDescr;
+      this.currentDescr = null;
+      this.saveSerie();
+    },
+    defineNom() {
+      if (!this.currentNom || this.isLoading) return;
+      this.serie.nom = this.currentNom;
+      this.currentNom = null;
       this.saveSerie();
     },
   },

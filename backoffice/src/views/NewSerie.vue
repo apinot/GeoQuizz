@@ -6,19 +6,37 @@
       </div>
 
       <div class="row">
-        <div class="input-field col s6">
-          <input placeholder="Placeholder"
+        <div class="input-field col s12">
+          <input
           id="first_name"
           type="text"
           class="validate"
-          v-model="currentCity">
+          v-model="nom">
+          <label for="first_name">Nom de la serie</label>
+        </div>
+        <div class="input-field col s12">
+           <textarea
+            class="materialize-textarea"
+            v-model="descr">
+           </textarea>
+          <label for="last_name">Description</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-field col s6">
+          <input
+          id="first_name"
+          type="text"
+          class="validate"
+          v-model="ville">
           <label for="first_name">Ville</label>
         </div>
         <div class="input-field col s6">
           <input id="last_name"
           type="text"
           class="validate"
-          v-model="currentDist">
+          v-model="dist">
           <label for="last_name">Distance en mêtre</label>
         </div>
       </div>
@@ -69,9 +87,11 @@ export default {
           zoom: 14,
         },
       },
+      nom: '',
+      descr: '',
       currentMapPosition: null,
-      currentCity: null,
-      currentDist: null,
+      ville: null,
+      dist: null,
       photos: [],
     };
   },
@@ -105,8 +125,10 @@ export default {
     },
     createSerie() {
       const newSerie = {
-        ville: this.currentCity,
-        dist: this.currentDist,
+        ville: this.ville,
+        nom: this.nom,
+        descr: this.descr,
+        dist: this.dist,
         map: {
           lat: this.currentMapPosition.lat,
           lng: this.currentMapPosition.lng,
@@ -115,15 +137,15 @@ export default {
         photos: this.photos,
       };
       console.log(newSerie);
-      this.$http.post('/serie', newSerie, {
-        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-      })
-        .then((response) => {
-          this.serie = response.data.serie;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      // this.$http.post('/serie', newSerie, {
+      //   headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+      // })
+      //   .then((response) => {
+      //     this.serie = response.data.serie;
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
     },
   },
 };
