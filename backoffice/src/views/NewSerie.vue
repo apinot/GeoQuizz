@@ -137,7 +137,7 @@ export default {
         photos: this.photos,
       };
       console.log(newSerie);
-      // this.$http.post('/serie', newSerie, {
+      // this.$http.post('/series', newSerie, {
       //   headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
       // })
       //   .then((response) => {
