@@ -37,7 +37,9 @@
                 images_uploaded: null,
                 urls: [],
                 data: [],
-                serie: null
+                serie: null,
+                url_api_mobile: "https://c9a62284.ngrok.io/",
+                url_api_backOffice: "https://c3163a4e.ngrok.io/"
             }
         },
         created(){
@@ -160,27 +162,31 @@
                     const data = {
                         data : this.images
                     };
+                    const config = {
+                        headers: {
+                            'Authorization': 'Bearer '+this.$store.state.tokenAuth
+                        },
+                        timeout: 10
+                    };
 
-                    axios.post("https://fdfdffbc.ngrok.io/photos", data)
+
+                    axios.post(this.url_api_mobile+"photos", data)
                         .then((result)=>{
-                            dialogs.alert('Votre photo a bien été sauvagrder dans la bdd :)');
                             this.data.push(result.data);
-                            axios.put('https://b3b4976d.ngrok.io/serie/'+this.serie._id+"/photo",{data: this.data},{
-                                headers: {
-                                    'Authorization': `Bearer ${this.$store.state.tokenAuth}`
-                                },
-                                timeout: 10
-                            })
+                            axios.put(this.url_api_backOffice+'serie/'+this.serie._id+"/photo",{data: this.data},config)
                                 .then((res) =>{
-                                    console.log("zinzin: " +res.data)
+                                    dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
                                 })
                                 .catch((err) =>{
-                                    console.log("ERRRRRR : "+err)
+                                    dialogs.alert("L'association à la série a été interompu !");
+                                    console.log(err)
                                 });
 
                         })
                         .catch((err)=>{
-                            console.log(err)
+                            console.log(err);
+                            dialogs.alert("La photo n'a pas été sauvgarder dans la base de donnée");
+
                         });
 
 
@@ -190,14 +196,8 @@
             logEvent(e) {
                 console.log(e.eventName);
                 if(e.eventName === 'error'){
-                    dialogs.alert("Une erreur est survenue avec l ")
+                    dialogs.alert("Une erreur est survenue avec l'upload de la photo ")
                 }
-
-                if(e.eventName === 'complete'){
-                    dialogs.alert('Votre photo a bien été upload :)')
-                }
-
-
             },
             respondedHandler(e) {
                 const result = JSON.parse(e.data);
@@ -211,6 +211,7 @@
                     this.images = [];
                     this.urls = []
                 }
+                dialogs.confirm('Votre photo a bien été upload dans le cloud :) ')
 
             },
             getName(path){
@@ -228,7 +229,7 @@
                     })
             },
             checkApiMobile(){
-                axios.get("https://fdfdffbc.ngrok.io/")
+                axios.get(this.url_api_mobile)
                     .then((result)=>{
                         return true;
                     })

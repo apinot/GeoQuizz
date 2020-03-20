@@ -1,5 +1,6 @@
 <template>
     <StackLayout>
+        <Label  text="Veuillez selectionner la serie dans laquelle vous voulez upload la serie : " textWrap="true" style="font-size: 20px;"></Label>
         <Button v-for="serie in series" :text="serie.ville" @tap="selectSerie(serie)"></Button>
     </StackLayout>
 </template>
@@ -14,7 +15,8 @@
           return {
               series: null,
               selected:true,
-              notselected:false
+              notselected:false,
+              url_api_backOffice: "https://c3163a4e.ngrok.io/"
           }
         },
 
@@ -23,7 +25,7 @@
         },
         methods: {
             getSerie(){
-                axios.get('https://b3b4976d.ngrok.io/series')
+                axios.get(this.url_api_backOffice+'series')
                     .then(res =>{
 
                          this.series = res.data.series;
