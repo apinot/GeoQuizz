@@ -346,6 +346,8 @@ app.put('/series/:id/', (req, res) => {
             return;
         }
         serie.ville = rules.ville;
+        serie.nom = rules.nom;
+        serie.descr = rules.descr;
         serie.dist = rules.dist;
         serie.map.lat = rules.map.lat;
         serie.map.lng = rules.map.lng;
@@ -356,6 +358,8 @@ app.put('/series/:id/', (req, res) => {
                     serie: {
                         id: req.body,
                         ville: saved.ville,
+                        nom : saved.nom,
+                        descr: saved.desr,
                         dist: saved.dist,
                         map: {
                             lat: saved.map.lat,
