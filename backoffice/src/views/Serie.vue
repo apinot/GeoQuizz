@@ -115,6 +115,9 @@
               <!-- ICI les action -->
               <!-- TODO en cours -->
             </div>
+            <div class="card-action">
+              <a href="#"><i class="fas fa-trash"></i> Supprimer de la série</a>
+            </div>
           </div>
         </div>
       </div>
