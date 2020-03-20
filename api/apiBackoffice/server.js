@@ -387,17 +387,9 @@ app.delete('/series/:id/', (req, res) => {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-    Serie.findById(id, (err, serie) => {
+    Serie.findOneAndRemove(id, (err) => {
         if(err) throw err;
-        if(!serie) {
-            res.status(404).json({status: 404, msg: 'Serie Not Found'});
-            return;
-        }
-        serie.remove().then((data) => {
-            res.status(200).json(data)
-        }).catch((err) =>{
-            res.status(500).json({err})
-        });
+        res.status(200).json('deleted');
     });
 });
 
