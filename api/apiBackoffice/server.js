@@ -155,7 +155,6 @@ app.post('/utilisateurs/auth', (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-
         const [email, password] = Buffer.from(credentialsBase64, 'base64').toString('utf-8').split(':');
         if(!email || !password) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
