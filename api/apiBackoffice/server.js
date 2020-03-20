@@ -266,6 +266,8 @@ app.get('/series/:id', (req, res) => {
         res.status(200).json({
             serie: {
                 id: serie._id,
+                nom: serie.nom,
+                descr: serie.descr,
                 ville: serie.ville,
                 dist: serie.dist,
                 map: serie.map,
@@ -411,7 +413,6 @@ app.get("/series/:id/photos", (req, res) => {
                     id: serie._id,
                     photos: photos.map((photo) => ({
                         id: photo._id,
-                        ntm: 'va te faire foutre',
                         position: photo.position,
                         desc: photo.desc,
                         url: photo.url,
