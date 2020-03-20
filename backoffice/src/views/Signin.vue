@@ -25,7 +25,7 @@
 
       <!-- submit -->
       <div class="row center-align">
-          <input type="submit" value="S'inscrire" class="btn" :disabled="loading">
+          <input type="submit" value="Se connecter" class="btn" :disabled="loading">
       </div>
     </form>
   </div>
