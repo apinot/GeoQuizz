@@ -32,7 +32,6 @@
                     type="submit"
                     name="action"
                   >Modifier</a>
-                   <!-- Modal Trigger -->
                   <a v-on:click="updateDeleteSerie(serie._id, serie.nom)"
                   data-target="modal1"
                   class="s12 m3 waves-effect
@@ -49,7 +48,7 @@
     <div id="modal1" class="modal">
       <div class="modal-content">
         <h4>Suppression</h4>
-        <p>Voulez-vous vraiment supprimer la serie {{nomDelete}}</p>
+        <p>Voulez-vous vraiment supprimer la serie "{{nomDelete}}"</p>
       </div>
       <div class="modal-footer">
         <a v-on:click="deleteSerie"
@@ -92,19 +91,33 @@ export default {
       this.$router.push({ name: 'newserie' });
     },
     deleteSerie() {
+      console.log(this.nomDelete);
+      console.log(this.idDelete);
       this.$http
         .delete(`/series/${this.idDelete}`, {
           headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
         })
         .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
+          if (response) {
+            this.$http
+              .get('/series')
+              .then((response2) => {
+                this.series = response2.data.series;
+                this.isLoad = true;
+              })
+              .catch((error) => {
+                this.isError = true;
+                console.log(error);
+              });
+          }
+        }).catch((error) => {
           this.isError = true;
           console.log(error);
         });
     },
     updateDeleteSerie(id, nom) {
+      console.log(id);
+      console.log(nom);
       this.idDelete = id;
       this.nomDelete = nom;
     },
