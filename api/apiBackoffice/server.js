@@ -383,11 +383,12 @@ app.put('/series/:id/', (req, res) => {
  * 
  */
 app.delete('/series/:id/', (req, res) => {
+    const { id } = req.params;
     if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-    Serie.findOneAndRemove(id, (err) => {
+    Serie.findByIdAndDelete(id, (err) => {
         if(err) throw err;
         res.status(200).json('deleted');
     });
