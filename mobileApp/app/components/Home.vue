@@ -48,6 +48,7 @@
         },
         methods:{
             selectPicture() {
+                //TODO Faire la selection des images et gerer les autaurisations
                 let context = imagepicker.create({
                     mode: 'multiple'
                 });
@@ -195,7 +196,7 @@
                 const string = path.split('/');
                 return string[string.length-1];
             },
-
+            //TODO ajouter les coordonées a une photo prise dans la galerie
             // addCoords(obj){
             //     this.$navigateTo(AddCoords)
             //         .then(coords => {
