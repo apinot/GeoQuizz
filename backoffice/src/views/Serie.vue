@@ -143,16 +143,22 @@
       <div class="row">
         <h4>Carte de la serie</h4>
         <div class="row">
-          <leaflet :options="leafletOptions" :markers="photos"
+          <leaflet :options="leafletOptions"
+            :markers="photos"
+            :disabled="!editMap"
             @viewchanged="onMapViewChange"
           >
           </leaflet>
         </div>
         <div class="row center-align">
           <button
+            v-if="editMap"
             @click="defineNewMap"
             class="btn">
             Définir cette vue comme nouvelle carte
+          </button>
+          <button  class="btn" @click="editMap = true" v-else>
+            Modifier la carte
           </button>
         </div>
       </div>
@@ -192,6 +198,7 @@ export default {
       serie: null,
       photos: [],
       error: null,
+      editMap: false,
       currentMapPosition: null,
       currentDescr: null,
       currentNom: null,
@@ -270,11 +277,12 @@ export default {
         lng: event.view.center.lng,
         zoom: event.view.zoom,
       };
-      this.mapChanged = true;
     },
     defineNewMap() {
-      if (!this.currentMapPosition) return;
+      if (!this.currentMapPosition || !this.editMap || this.isLoading) return;
       this.serie.map = this.currentMapPosition;
+      this.currentMapPosition = null;
+      this.editMap = false;
       this.saveSerie();
     },
     defineVille() {
