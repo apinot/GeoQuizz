@@ -104,14 +104,11 @@
             sendPictures(){
                 this.$showModal(SerieSelection)
                     .then( serie => {
-                       console.log(serie);
                         this.serie = serie;
                        if(serie){
                            const url = 'https://api.imgbb.com/1/upload';
                            const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
-
                            this.images.forEach((image) => {
-
                                const request = {
                                    url: url + "?key=" + api_key,
                                    method: "POST",
@@ -120,21 +117,15 @@
                                    },
                                    description: 'Uploading ' + this.getName(image.img.src.android)
                                };
-
                                const params = [
                                    {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
                                ];
-
                                const task = session.multipartUpload(params, request);
-
                                task.on("progress", this.logEvent);
                                task.on("error", this.logEvent);
                                task.on("complete", this.logEvent);
                                task.on("responded", this.respondedHandler);
-
                            });
-
-
                        }else{
                            dialogs.alert("Vous n'avez pas choisis de serie")
                        }
@@ -145,19 +136,12 @@
             setUrlToImg(urls){
 
                 if (this.checkApiMobile()){
-
                     dialogs.alert("Une erreur est survenue avec l'api ")
-
                 }else{
-
                     let compt = 0;
-
                     this.images.forEach((image) =>{
-
                         image.img.url = urls[compt];
                         compt++;
-                        //console.log('URL dans setURLTOIMG : '+image.img.url);
-
                     });
                     const data = {
                         data : this.images
@@ -168,7 +152,6 @@
                         },
                         timeout: 10
                     };
-
 
                     axios.post(this.url_api_mobile+"photos", data)
                         .then((result)=>{
@@ -181,15 +164,12 @@
                                     dialogs.alert("L'association à la série a été interompu !");
                                     console.log(err)
                                 });
-
                         })
                         .catch((err)=>{
                             console.log(err);
                             dialogs.alert("La photo n'a pas été sauvgarder dans la base de donnée");
 
                         });
-
-
                 }
 
             },
@@ -219,15 +199,15 @@
                 return string[string.length-1];
             },
 
-            addCoords(obj){
-                this.$navigateTo(AddCoords)
-                    .then(coords => {
-                        if (coords){
-                            obj.location = coords;
-                            this.images.push(obj)
-                        }
-                    })
-            },
+            // addCoords(obj){
+            //     this.$navigateTo(AddCoords)
+            //         .then(coords => {
+            //             if (coords){
+            //                 obj.location = coords;
+            //                 this.images.push(obj)
+            //             }
+            //         })
+            // },
             checkApiMobile(){
                 axios.get(this.url_api_mobile)
                     .then((result)=>{
