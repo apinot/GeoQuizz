@@ -27,17 +27,34 @@
                   <p>{{serie.descr}}</p>
                 </div>
                 <div class="card-action">
-                  <a
-                    v-on:click="showSerie(serie._id)"
+                  <a v-on:click="showSerie(serie._id)"
                     class="s12 m3 waves-effect waves-light"
                     type="submit"
                     name="action"
                   >Modifier</a>
+                   <!-- Modal Trigger -->
+                  <a v-on:click="updateDeleteSerie(serie._id, serie.nom)"
+                  data-target="modal1"
+                  class="s12 m3 waves-effect
+                  waves-light modal-trigger
+                  red-text text-darken-2">supprimer</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4>Suppression</h4>
+        <p>Voulez-vous vraiment supprimer la serie {{nomDelete}}</p>
+      </div>
+      <div class="modal-footer">
+        <a v-on:click="deleteSerie"
+        class="modal-close waves-effect waves-green btn-flat">Oui</a>
+        <a class="modal-close waves-effect waves-green btn-flat">Non</a>
       </div>
     </div>
   </div>
@@ -54,6 +71,8 @@ export default {
   },
   data() {
     return {
+      idDelete: '',
+      nomDelete: '',
       idSerie: '',
       isLoad: false,
       isError: false,
@@ -72,6 +91,23 @@ export default {
     createSerie() {
       this.$router.push({ name: 'newserie' });
     },
+    deleteSerie() {
+      this.$http
+        .delete(`/series/${this.idDelete}`, {
+          headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          this.isError = true;
+          console.log(error);
+        });
+    },
+    updateDeleteSerie(id, nom) {
+      this.idDelete = id;
+      this.nomDelete = nom;
+    },
   },
 
   created() {
@@ -86,5 +122,17 @@ export default {
         console.log(error);
       });
   },
+
+  mounted() {
+    // eslint-disable-next-line no-undef
+    M.AutoInit();
+  },
 };
 </script>
+
+<style>
+.card-action, .modal-footer {
+  display: flex;
+  justify-content: space-between;
+}
+</style>

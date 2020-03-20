@@ -327,16 +327,17 @@ app.post('/serie', (req, res) => {
  *     }
  */
 app.put('/series/:id/', (req, res) => {
-    const { id } = req.params;
-    const { rules } = req.body;
-    if(!id.match(/^[0-9a-fA-F]{24}$/)){
-        res.status(404).json({status: 404, msg: 'Serie Not Found'});
-        return;
-    }
     if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
+    const { id } = req.params;
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
+    const { rules } = req.body;
+    
 
     //TODO verifier que rules possède la bonne architecture
     Serie.findById(id, (err, serie) => {
@@ -372,6 +373,31 @@ app.put('/series/:id/', (req, res) => {
             .catch((error) => {
                 throw error;
             });
+    });
+});
+
+/**
+ * Supprime la serie
+ * Query : 
+ *   - id : id de la série
+ * 
+ */
+app.delete('/series/:id/', (req, res) => {
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        serie.remove().then((data) => {
+            res.status(200).json(data)
+        }).catch((err) =>{
+            res.status(500).json({err})
+        });
     });
 });
 
