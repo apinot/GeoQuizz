@@ -123,7 +123,9 @@ export default {
         },
         photos: this.photos,
       };
-      this.$http.post('/serie', { newserie })
+      this.$http.post('/serie', { newserie }, {
+        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+      })
         .then((response) => {
           this.serie = response.data.serie;
         })

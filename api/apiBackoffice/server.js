@@ -287,6 +287,7 @@ app.post('/serie', (req, res) => {
         return;
     }
     const { serie } = req.body;
+    console.log(req.body);
     // TODO verifier que serie possède la bonne architecture
     const newSerie = new Serie({
         ville: serie.ville,
@@ -304,6 +305,7 @@ app.post('/serie', (req, res) => {
     }).catch((err) =>{
         res.status(500).json({err})
     });
+    // TODO ajouté des photos
 
 });
 
