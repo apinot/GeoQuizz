@@ -410,7 +410,7 @@ app.get("/series/:id/photos", (req, res) => {
     }
 
     // application du middleware
-    if(!req.authUser) {
+    if(!req.authUser && !req.headers.authorization) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
