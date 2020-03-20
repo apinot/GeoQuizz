@@ -8,9 +8,7 @@
       <div class="row">
         <div class="input-field col s12">
           <input
-          id="first_name"
           type="text"
-          class="validate"
           v-model="nom">
           <label for="first_name">Nom de la serie</label>
         </div>
@@ -26,16 +24,13 @@
       <div class="row">
         <div class="input-field col s6">
           <input
-          id="first_name"
           type="text"
-          class="validate"
           v-model="ville">
           <label for="first_name">Ville</label>
         </div>
         <div class="input-field col s6">
           <input id="last_name"
           type="text"
-          class="validate"
           v-model="dist">
           <label for="last_name">Distance en mêtre</label>
         </div>
@@ -136,16 +131,15 @@ export default {
         },
         photos: this.photos,
       };
-      console.log(newSerie);
-      // this.$http.post('/serie', newSerie, {
-      //   headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-      // })
-      //   .then((response) => {
-      //     this.serie = response.data.serie;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
+      this.$http.post('/series', newSerie, {
+        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+      })
+        .then((response) => {
+          this.serie = response.data.serie;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };
