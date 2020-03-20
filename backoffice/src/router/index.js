@@ -22,6 +22,11 @@ const routes = [
     component: () => import('../views/Signin.vue'),
   },
   {
+    path: '/signout',
+    name: 'signout',
+    component: () => import('../views/Signout.vue'),
+  },
+  {
     path: '/serie/:id',
     name: 'serie',
     component: () => import('../views/Serie.vue'),

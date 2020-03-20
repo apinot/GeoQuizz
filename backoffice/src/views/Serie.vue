@@ -7,8 +7,71 @@
       <div class="row">
         <h1 class="align-center">
           Série de photos
-          <i v-if="serie.nom">: {{serie.nom}}</i>
         </h1>
+      </div>
+
+      <!-- Nom -->
+      <div class="row">
+        <template v-if="currentNom !== null">
+          <div class="input-field col ">
+            <input
+              id="last_name"
+              type="text"
+              class="validate"
+              autofocus="true"
+              v-model="currentNom">
+            <label for="last_name">Nom</label>
+          </div>
+          <button
+            class="btn"
+            @click="defineNom"
+            :disabled="!currentNom">
+              Valider
+          </button>
+        </template>
+        <template v-else>
+          <h4>Nom de la serie</h4>
+          <div class="row">
+            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+              {{serie.nom}}
+            </span>
+            <button class="btn" @click="currentNom = serie.nom">
+              <i class="fas fa-pen-square left"></i> Modifier
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <!-- description -->
+      <div class="row">
+        <template v-if="currentDescr !== null">
+          <div class="input-field col ">
+             <textarea
+              id="last_name"
+              type="text"
+              class="materialize-textarea"
+              autofocus="true"
+              v-model="currentDescr"></textarea>
+            <label for="last_name">Description</label>
+          </div>
+          <button
+            class="btn"
+            @click="defineDescr"
+            :disabled="!currentDescr">
+              Valider
+          </button>
+        </template>
+        <template v-else>
+          <h4>Description</h4>
+          <div class="row">
+            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+              {{serie.descr}}
+            </span>
+            <button class="btn" @click="currentDescr = serie.descr">
+              <i class="fas fa-pen-square left"></i> Modifier
+            </button>
+          </div>
+        </template>
       </div>
 
       <!-- Ville -->
@@ -80,16 +143,22 @@
       <div class="row">
         <h4>Carte de la serie</h4>
         <div class="row">
-          <leaflet :options="leafletOptions" :markers="photos"
+          <leaflet :options="leafletOptions"
+            :markers="photos"
+            :disabled="!editMap"
             @viewchanged="onMapViewChange"
           >
           </leaflet>
         </div>
         <div class="row center-align">
           <button
+            v-if="editMap"
             @click="defineNewMap"
             class="btn">
             Définir cette vue comme nouvelle carte
+          </button>
+          <button  class="btn" @click="editMap = true" v-else>
+            Modifier la carte
           </button>
         </div>
       </div>
@@ -108,6 +177,9 @@
               <p>{{photo.desc}}</p>
               <!-- ICI les action -->
               <!-- TODO en cours -->
+            </div>
+            <div class="card-action">
+              <a href="#"><i class="fas fa-trash"></i> Supprimer de la série</a>
             </div>
           </div>
         </div>
@@ -129,7 +201,10 @@ export default {
       serie: null,
       photos: [],
       error: null,
+      editMap: false,
       currentMapPosition: null,
+      currentDescr: null,
+      currentNom: null,
       currentCity: null,
       currentDist: null,
     };
@@ -205,11 +280,12 @@ export default {
         lng: event.view.center.lng,
         zoom: event.view.zoom,
       };
-      this.mapChanged = true;
     },
     defineNewMap() {
-      if (!this.currentMapPosition) return;
+      if (!this.currentMapPosition || !this.editMap || this.isLoading) return;
       this.serie.map = this.currentMapPosition;
+      this.currentMapPosition = null;
+      this.editMap = false;
       this.saveSerie();
     },
     defineVille() {
@@ -222,6 +298,18 @@ export default {
       if (!this.currentDist || this.isLoading) return;
       this.serie.dist = this.currentDist;
       this.currentDist = null;
+      this.saveSerie();
+    },
+    defineDescr() {
+      if (!this.currentDescr || this.isLoading) return;
+      this.serie.descr = this.currentDescr;
+      this.currentDescr = null;
+      this.saveSerie();
+    },
+    defineNom() {
+      if (!this.currentNom || this.isLoading) return;
+      this.serie.nom = this.currentNom;
+      this.currentNom = null;
       this.saveSerie();
     },
   },

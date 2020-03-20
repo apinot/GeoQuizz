@@ -273,6 +273,40 @@ app.get('/series/:id', (req, res) => {
     });
 });
 
+// TODO créer une serie
+/**
+ * Permet de créer une série
+ */
+app.post('/serie', (req, res) => {
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const serie = req.body;
+    console.log(req.body);
+    // TODO verifier que serie possède la bonne architecture
+    const newSerie = new Serie({
+        ville: serie.ville,
+        dist: serie.dist,
+        map : {
+            lat: serie.map.lat,
+            lng: serie.map.lng,
+            zoom: serie.map.lng
+        },
+        photos: serie.photos,
+        create_at : new Date()
+    });
+
+    newSerie.save().then((data) => {
+        res.status(200).json({data})
+    }).catch((err) =>{
+        res.status(500).json({err})
+    });
+    // TODO ajouté des photos
+
+});
+
+
 /**
  * Met à jour les règles de la parie
  * Query : 
@@ -308,6 +342,8 @@ app.put('/series/:id/', (req, res) => {
             return;
         }
         serie.ville = rules.ville;
+        serie.nom = rules.nom;
+        serie.descr = rules.descr;
         serie.dist = rules.dist;
         serie.map.lat = rules.map.lat;
         serie.map.lng = rules.map.lng;
@@ -318,6 +354,8 @@ app.put('/series/:id/', (req, res) => {
                     serie: {
                         id: req.body,
                         ville: saved.ville,
+                        nom : saved.nom,
+                        descr: saved.desr,
                         dist: saved.dist,
                         map: {
                             lat: saved.map.lat,

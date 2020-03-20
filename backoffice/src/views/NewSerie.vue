@@ -5,33 +5,41 @@
         <h1 class="align-center">Série de photos</h1>
       </div>
 
-      <!-- Ville -->
       <div class="row">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="text"
-              class="validate"
-              autofocus="true"
-              v-model="currentCity">
-            <label for="last_name">Ville</label>
-          </div>
+        <div class="input-field col s12">
+          <input
+          id="first_name"
+          type="text"
+          class="validate"
+          v-model="nom">
+          <label for="first_name">Nom de la serie</label>
+        </div>
+        <div class="input-field col s12">
+           <textarea
+            class="materialize-textarea"
+            v-model="descr">
+           </textarea>
+          <label for="last_name">Description</label>
+        </div>
       </div>
 
-       <!-- Distance -->
       <div class="row">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="number"
-              min="0"
-              class="validate"
-              autofocus="true"
-              v-model="currentDist">
-            <label for="last_name">Distance (en mètres)</label>
-          </div>
+        <div class="input-field col s6">
+          <input
+          id="first_name"
+          type="text"
+          class="validate"
+          v-model="ville">
+          <label for="first_name">Ville</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="last_name"
+          type="text"
+          class="validate"
+          v-model="dist">
+          <label for="last_name">Distance en mêtre</label>
+        </div>
       </div>
-
       <!-- carte -->
       <div class="row">
         <h4>Carte de la serie</h4>
@@ -79,9 +87,11 @@ export default {
           zoom: 14,
         },
       },
+      nom: '',
+      descr: '',
       currentMapPosition: null,
-      currentCity: null,
-      currentDist: null,
+      ville: null,
+      dist: null,
       photos: [],
     };
   },
@@ -114,22 +124,28 @@ export default {
       this.serie.map = this.currentMapPosition;
     },
     createSerie() {
-      const newserie = {
-        ville: this.currentCity,
-        dist: this.currentDist,
+      const newSerie = {
+        ville: this.ville,
+        nom: this.nom,
+        descr: this.descr,
+        dist: this.dist,
         map: {
-          lat: this.serie.lat,
-          dlng: this.serie.lng,
+          lat: this.currentMapPosition.lat,
+          lng: this.currentMapPosition.lng,
+          zoom: this.currentMapPosition.zoom,
         },
         photos: this.photos,
       };
-      this.$http.post('/serie', { newserie })
-        .then((response) => {
-          this.serie = response.data.serie;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      console.log(newSerie);
+      // this.$http.post('/serie', newSerie, {
+      //   headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+      // })
+      //   .then((response) => {
+      //     this.serie = response.data.serie;
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
     },
   },
 };
