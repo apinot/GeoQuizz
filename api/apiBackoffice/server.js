@@ -295,6 +295,7 @@ app.post('/serie', (req, res) => {
         map : {
             lat: serie.map.lat,
             lng: serie.map.lng,
+            zoom: serie.map.lng
         },
         photos: serie.photos,
         create_at : new Date()
