@@ -387,6 +387,9 @@ app.delete('/series/:id/', (req, res) => {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
+
+    const {id} = req.params;
+
     Serie.findOneAndRemove(id, (err) => {
         if(err) throw err;
         res.status(200).json('deleted');
