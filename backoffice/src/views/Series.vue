@@ -15,18 +15,26 @@
           type="submit"
           name="action"
         >Créer une nouvelle série</button>
-        <div v-for="serie in series" :key="serie.id">
-          <div class="container">
-            <div class="row">
-              <div class="col s12 m3">{{serie.nom}}</div>
-              <div class="col s12 m3">{{serie.description}}</div>
-              <div class="col s12 m3">{{serie.ville}}</div>
-              <button
-                v-on:click="showSerie(serie._id)"
-                class="s12 m3 btn waves-effect waves-light"
-                type="submit"
-                name="action"
-              >Modifier</button>
+        <div class="row">
+          <div v-for="serie in series" :key="serie.id">
+            <div class="col s12 m6">
+              <h2 class="header">{{serie.nom}}</h2>
+              <div class="card">
+                <div class="card-content">
+                  <h5>Ville</h5>
+                  <p>{{serie.ville}}</p>
+                  <h5>Description</h5>
+                  <p>{{serie.descr}}</p>
+                </div>
+                <div class="card-action">
+                  <a
+                    v-on:click="showSerie(serie._id)"
+                    class="s12 m3 waves-effect waves-light"
+                    type="submit"
+                    name="action"
+                  >Modifier</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
