@@ -35,13 +35,16 @@
                 images:[],
                 location: null,
                 images_uploaded: null,
-                urls: []
+                urls: [],
+                data: [],
+                serie: null,
+                url_api_mobile: "https://c9a62284.ngrok.io/",
+                url_api_backOffice: "https://c3163a4e.ngrok.io/"
             }
         },
         created(){
             geolocation.enableLocationRequest();
-
-
+            console.log(this.$store.state.tokenAuth)
         },
         methods:{
             selectPicture() {
@@ -101,7 +104,8 @@
             sendPictures(){
                 this.$showModal(SerieSelection)
                     .then( serie => {
-                        console.log(serie);
+                       console.log(serie);
+                        this.serie = serie;
                        if(serie){
                            const url = 'https://api.imgbb.com/1/upload';
                            const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
@@ -130,6 +134,7 @@
 
                            });
 
+
                        }else{
                            dialogs.alert("Vous n'avez pas choisis de serie")
                        }
@@ -157,25 +162,41 @@
                     const data = {
                         data : this.images
                     };
+                    const config = {
+                        headers: {
+                            'Authorization': 'Bearer '+this.$store.state.tokenAuth
+                        },
+                        timeout: 10
+                    };
 
-                    axios.post("https://fdfdffbc.ngrok.io/photos", data)
+
+                    axios.post(this.url_api_mobile+"photos", data)
                         .then((result)=>{
-                            dialogs.alert('Votre photo a bien été upload :)').
+                            this.data.push(result.data);
+                            axios.put(this.url_api_backOffice+'serie/'+this.serie._id+"/photo",{data: this.data},config)
+                                .then((res) =>{
+                                    dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
+                                })
+                                .catch((err) =>{
+                                    dialogs.alert("L'association à la série a été interompu !");
+                                    console.log(err)
+                                });
 
-                            then(()=>{
-                                console.log('dialog closed')
-                            })
                         })
                         .catch((err)=>{
-                            console.log(err)
-                        })
+                            console.log(err);
+                            dialogs.alert("La photo n'a pas été sauvgarder dans la base de donnée");
+
+                        });
+
+
                 }
 
             },
             logEvent(e) {
                 console.log(e.eventName);
                 if(e.eventName === 'error'){
-                    dialogs.alert("Une erreur est survenue avec l ")
+                    dialogs.alert("Une erreur est survenue avec l'upload de la photo ")
                 }
             },
             respondedHandler(e) {
@@ -190,6 +211,7 @@
                     this.images = [];
                     this.urls = []
                 }
+                dialogs.confirm('Votre photo a bien été upload dans le cloud :) ')
 
             },
             getName(path){
@@ -207,14 +229,9 @@
                     })
             },
             checkApiMobile(){
-                axios.get("https://fdfdffbc.ngrok.io/")
+                axios.get(this.url_api_mobile)
                     .then((result)=>{
-                        console.log(result.data);
-                        dialogs.alert('Votre photo a bien été upload :)').
-                        then(()=>{
-                            console.log('dialog closed');
-                            return true;
-                        })
+                        return true;
                     })
                     .catch((err)=>{
                         console.log(err);

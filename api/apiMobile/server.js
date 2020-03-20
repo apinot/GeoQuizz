@@ -52,7 +52,7 @@ app.post("/photos", (req, res) =>{
     //enregistrement de la photo
     newPhoto.save()
         .then((photo) => {
-            res.status(200).json({photo})
+            res.status(200).json(photo);
         })
         .catch((err) =>{
             res.status(500).json({err})
