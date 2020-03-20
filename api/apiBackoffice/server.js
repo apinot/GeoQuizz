@@ -286,7 +286,7 @@ app.post('/serie', (req, res) => {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-    const { serie } = req.body;
+    const serie = req.body;
     console.log(req.body);
     // TODO verifier que serie possède la bonne architecture
     const newSerie = new Serie({

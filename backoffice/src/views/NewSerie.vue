@@ -5,33 +5,23 @@
         <h1 class="align-center">Série de photos</h1>
       </div>
 
-      <!-- Ville -->
       <div class="row">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="text"
-              class="validate"
-              autofocus="true"
-              v-model="currentCity">
-            <label for="last_name">Ville</label>
-          </div>
+        <div class="input-field col s6">
+          <input placeholder="Placeholder"
+          id="first_name"
+          type="text"
+          class="validate"
+          v-model="currentCity">
+          <label for="first_name">Ville</label>
+        </div>
+        <div class="input-field col s6">
+          <input id="last_name"
+          type="text"
+          class="validate"
+          v-model="currentDist">
+          <label for="last_name">Distance en mêtre</label>
+        </div>
       </div>
-
-       <!-- Distance -->
-      <div class="row">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="number"
-              min="0"
-              class="validate"
-              autofocus="true"
-              v-model="currentDist">
-            <label for="last_name">Distance (en mètres)</label>
-          </div>
-      </div>
-
       <!-- carte -->
       <div class="row">
         <h4>Carte de la serie</h4>
@@ -114,16 +104,18 @@ export default {
       this.serie.map = this.currentMapPosition;
     },
     createSerie() {
-      const newserie = {
+      const newSerie = {
         ville: this.currentCity,
         dist: this.currentDist,
         map: {
-          lat: this.serie.lat,
-          dlng: this.serie.lng,
+          lat: this.currentMapPosition.lat,
+          lng: this.currentMapPosition.lng,
+          zoom: this.currentMapPosition.zoom,
         },
         photos: this.photos,
       };
-      this.$http.post('/serie', { newserie }, {
+      console.log(newSerie);
+      this.$http.post('/serie', newSerie, {
         headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
       })
         .then((response) => {
