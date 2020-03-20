@@ -48,6 +48,7 @@
         },
         methods:{
             selectPicture() {
+                //TODO Faire la selection des images et gerer les autaurisations
                 let context = imagepicker.create({
                     mode: 'multiple'
                 });
@@ -96,7 +97,7 @@
                             });
                     })
                     .catch(e => {
-                        console.log('Error requesting permission');
+                        console.log('Error requesting permission :'+ e);
                     });
 
 
@@ -182,12 +183,9 @@
             respondedHandler(e) {
                 const result = JSON.parse(e.data);
                 const uploaded_image = result.data;
-                //console.log(uploaded_image.url); //url de l'image
                 this.urls.push(uploaded_image.url);
-                //console.log(this.urls);
                 if(this.images.length === this.urls.length){
                     this.setUrlToImg(this.urls);
-                    //console.log(this.images[0].location)
                     this.images = [];
                     this.urls = []
                 }
@@ -198,7 +196,7 @@
                 const string = path.split('/');
                 return string[string.length-1];
             },
-
+            //TODO ajouter les coordonées a une photo prise dans la galerie
             // addCoords(obj){
             //     this.$navigateTo(AddCoords)
             //         .then(coords => {
