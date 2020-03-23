@@ -359,7 +359,7 @@ app.put('/series/:id/', (req, res) => {
                         id: req.body,
                         ville: saved.ville,
                         nom : saved.nom,
-                        descr: saved.desr,
+                        descr: saved.descr,
                         dist: saved.dist,
                         map: {
                             lat: saved.map.lat,
@@ -454,10 +454,11 @@ app.get("/series/:id/photos", (req, res) => {
  *     }
  */
 app.put("/series/:id/photos", (req, res) => {
-    if(!req.headers.authorization && !req.authUser) {
-        res.status(401).json({status: 401, msg: 'Unauthorized'});
-        return;
-    }
+    setTimeout(()=>{
+        if(!req.headers.authorization && !req.authUser) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+        }},2000);
+
     const { id } = req.params;
     if(!id.match(/^[0-9a-fA-F]{24}$/)){
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
@@ -465,6 +466,7 @@ app.put("/series/:id/photos", (req, res) => {
     }
     // TODO verifier la structure de l'objet photo
     let photos = req.body.data[0];
+    console.log(photos)
     if(!photos) {
         res.status(400).json({ status: 400, msg: 'Bad Request' });
         return;
