@@ -10,6 +10,7 @@ const schema = new mongoose.Schema({
         zoom: { type: Number, required: true },
     },
     photos: [{type: String}],
+    idUtilisateur: { type: String, required: true }
 });
 
 module.exports = mongoose.model("Serie", schema);

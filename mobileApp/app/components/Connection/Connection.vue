@@ -24,7 +24,7 @@
             return{
                 email:'',
                 password: '',
-                url_api_backOffice: "https://c3163a4e.ngrok.io/",
+                url_api_mobile: "https://9278aa32.ngrok.io/",
                 isBusy: false,
             }
         },
@@ -45,11 +45,12 @@
                         Authorization: `basic ${this.base64Credentials()}`
                     }
                 };
-                axios.post(this.url_api_backOffice+"utilisateurs/auth", {}, config )
+                axios.post(this.url_api_mobile+"utilisateurs/auth", {}, config )
                     .then((res) => {
                         console.log(res.data.token);
                         this.$store.state.authToken = res.data.token;
-                        console.log(this.$store.state.authToken)
+                        console.log(this.$store.state.authToken);
+                        this.$store.state.idUtilisateur = res.data.user.id;
                         this.$navigateTo(Home)
                     })
                     .catch((err) => {

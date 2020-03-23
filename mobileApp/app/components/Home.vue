@@ -39,8 +39,7 @@
                 urls: [],
                 data: [],
                 serie: null,
-                url_api_mobile: "https://c9a62284.ngrok.io/",
-                url_api_backOffice: "https://c3163a4e.ngrok.io/"
+                url_api_mobile: "https://9278aa32.ngrok.io/",
             }
         },
         created(){
@@ -52,22 +51,23 @@
             selectPicture() {
                 //TODO Faire la selection des images et gerer les autaurisations
                 let context = imagepicker.create({
-                    mode: 'multiple'
+                    mode: 'single'
                 });
                 context.authorize()
                     .then(function() {
                         return context.present();
                     })
                     .then(selection => {
-                        console.log("sleetction: " + selection[0]);
                         selection.forEach(selected => {
-                            console.log(selected);
                             let img = new Image();
                             img.src = selected;
                             let obj = {img: img};
+                            obj.idUtilisateur = this.$store.state.idUtilisateur;
                             this.images.push(obj);
                             console.log(obj.img);
-                            console.log(this.images.length)
+                            console.log(this.images.length);
+                            this.$navigateTo(AddCoords)
+
                         });
                     }).catch(function (e) {
                     console.log('error in selectPicture', e);
@@ -92,6 +92,8 @@
                                     });
 
                                 this.images.push(obj);
+                                console.log(this.images.length);
+
 
                             })
                             .catch(e => {
@@ -103,7 +105,7 @@
                     });
             },
             sendPictures(){
-                if(this.images.length === 0){
+                if(this.images.length > 0){
                     this.$showModal(SerieSelection)
                         .then( serie => {
                             this.serie = serie;
@@ -149,7 +151,11 @@
                         compt++;
                     });
                     const data = {
-                        data : this.images
+                        data : {
+                            images: this.images,
+                            id : this.$store.state.idUtilisateur
+                        },
+
                     };
                     const config = {
                         headers: {
@@ -158,22 +164,13 @@
                         timeout: 10
                     };
 
-                    axios.post(this.url_api_mobile+"photos", data)
-                        .then((result)=>{
-                            this.data.push(result.data);
-                            axios.put(this.url_api_backOffice+'serie/'+this.serie._id+"/photo",{data: this.data},config)
-                                .then((res) =>{
-                                    dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
-                                })
-                                .catch((err) =>{
-                                    dialogs.alert("L'association à la série a été interompu !");
-                                    console.log(err)
-                                });
+                    axios.put(this.url_api_mobile+'series/'+this.serie._id+"/photos",data,config)
+                        .then((res) =>{
+                            dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
                         })
-                        .catch((err)=>{
-                            console.log(err);
-                            dialogs.alert("La photo n'a pas été sauvgarder dans la base de donnée");
-
+                        .catch((err) =>{
+                            dialogs.alert("L'association à la série a été interompu !");
+                            console.log(err)
                         });
                 }
 
