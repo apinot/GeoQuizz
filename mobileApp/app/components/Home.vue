@@ -1,6 +1,6 @@
 <template>
     <Page>
-        <ActionBar title="Camera Tests FTW!"/>
+        <ActionBar title="GeoQuiz"/>
         <StackLayout>
             <Button text="Take Picture" @tap="takePicture" />
             <Button text="Choose Picture" @tap="selectPicture" />
@@ -11,7 +11,8 @@
 
         </StackLayout>
     </Page>
-</template>/storage/emulated/0/DCIM/Camera/IMG_20200316_174255.jpg
+</template>
+
 
 <script>
     import * as camera from "nativescript-camera";
@@ -44,7 +45,8 @@
         },
         created(){
             geolocation.enableLocationRequest();
-            console.log(this.$store.state.tokenAuth)
+            console.log(this.$store.state.tokenAuth);
+            this.$showModal(AddCoords)
         },
         methods:{
             selectPicture() {
@@ -99,39 +101,41 @@
                     .catch(e => {
                         console.log('Error requesting permission :'+ e);
                     });
-
-
             },
             sendPictures(){
-                this.$showModal(SerieSelection)
-                    .then( serie => {
-                        this.serie = serie;
-                       if(serie){
-                           const url = 'https://api.imgbb.com/1/upload';
-                           const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
-                           this.images.forEach((image) => {
-                               const request = {
-                                   url: url + "?key=" + api_key,
-                                   method: "POST",
-                                   header: {
-                                       "Content-Type": "application/octet-stream",
-                                   },
-                                   description: 'Uploading ' + this.getName(image.img.src.android)
-                               };
-                               const params = [
-                                   {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
-                               ];
-                               const task = session.multipartUpload(params, request);
-                               task.on("progress", this.logEvent);
-                               task.on("error", this.logEvent);
-                               task.on("complete", this.logEvent);
-                               task.on("responded", this.respondedHandler);
-                           });
-                       }else{
-                           dialogs.alert("Vous n'avez pas choisis de serie")
-                       }
-                    });
+                if(this.images.length === 0){
+                    this.$showModal(SerieSelection)
+                        .then( serie => {
+                            this.serie = serie;
+                            if(serie){
+                                const url = 'https://api.imgbb.com/1/upload';
+                                const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
+                                this.images.forEach((image) => {
+                                    const request = {
+                                        url: url + "?key=" + api_key,
+                                        method: "POST",
+                                        header: {
+                                            "Content-Type": "application/octet-stream",
+                                        },
+                                        description: 'Uploading ' + this.getName(image.img.src.android)
+                                    };
+                                    const params = [
+                                        {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
+                                    ];
+                                    const task = session.multipartUpload(params, request);
+                                    task.on("progress", this.logEvent);
+                                    task.on("error", this.logEvent);
+                                    task.on("complete", this.logEvent);
+                                    task.on("responded", this.respondedHandler);
+                                });
+                            }else{
+                                dialogs.alert("Vous n'avez pas choisis de serie")
+                            }
+                        });
 
+                }else{
+                    dialogs.alert("Aucune photos selectionnées")
+                }
             },
 
             setUrlToImg(urls){

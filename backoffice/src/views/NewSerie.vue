@@ -136,6 +136,7 @@ export default {
       })
         .then((response) => {
           this.serie = response.data.serie;
+          this.$router.push({ name: 'series' });
         })
         .catch((error) => {
           console.log(error);
