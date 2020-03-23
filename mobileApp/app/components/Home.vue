@@ -40,7 +40,6 @@
                 data: [],
                 serie: null,
                 url_api_mobile: "https://9278aa32.ngrok.io/",
-                url_api_backOffice: "https://d2848aa3.ngrok.io/"
             }
         },
         created(){
@@ -63,6 +62,7 @@
                             let img = new Image();
                             img.src = selected;
                             let obj = {img: img};
+                            obj.idUtilisateur = this.$store.state.idUtilisateur;
                             this.images.push(obj);
                             console.log(obj.img);
                             console.log(this.images.length);
@@ -151,7 +151,11 @@
                         compt++;
                     });
                     const data = {
-                        data : this.images
+                        data : {
+                            images: this.images,
+                            id : this.$store.state.idUtilisateur
+                        },
+
                     };
                     const config = {
                         headers: {
@@ -160,22 +164,13 @@
                         timeout: 10
                     };
 
-                    axios.post(this.url_api_mobile+"photos", data)
-                        .then((result)=>{
-                            this.data.push(result.data);
-                            axios.put(this.url_api_backOffice+'series/'+this.serie._id+"/photos",{data: this.data},config)
-                                .then((res) =>{
-                                    dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
-                                })
-                                .catch((err) =>{
-                                    dialogs.alert("L'association à la série a été interompu !");
-                                    console.log(err)
-                                });
+                    axios.put(this.url_api_mobile+'series/'+this.serie._id+"/photos",data,config)
+                        .then((res) =>{
+                            dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
                         })
-                        .catch((err)=>{
-                            console.log(err);
-                            dialogs.alert("La photo n'a pas été sauvgarder dans la base de donnée");
-
+                        .catch((err) =>{
+                            dialogs.alert("L'association à la série a été interompu !");
+                            console.log(err)
                         });
                 }
 

@@ -12,6 +12,7 @@
   "license": "SEE LICENSE IN <your-license-filename>",
   "repository": "<fill-your-repository-here>",
   "dependencies": {
+    "@nativescript/core": "^6.5.0",
     "@nativescript/theme": "~2.2.1",
     "axios": "^0.19.2",
     "base-64": "^0.1.0",

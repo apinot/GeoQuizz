@@ -13,10 +13,10 @@
         },
         data(){
           return {
-              series: null,
               selected:true,
               notselected:false,
-              url_api_backOffice: "https://c3163a4e.ngrok.io/"
+              url_api_mobile: "https://9278aa32.ngrok.io/",
+              series: null
           }
         },
 
@@ -24,15 +24,18 @@
           this.getSerie()
         },
         methods: {
-            getSerie(){
-                axios.get(this.url_api_backOffice+'series')
-                    .then(res =>{
-
-                         this.series = res.data.series;
-                         console.log(this.series)
+            getSerie() {
+                console.log(this.$store.state.idUtilisateur);
+                const data = {
+                    params: {id : this.$store.state.idUtilisateur}
+                };
+                axios.get(this.url_api_mobile + 'series', data)
+                    .then(res => {
+                        console.log(res.data);
+                        this.series = res.data.series;
 
                     })
-                    .catch(err =>{
+                    .catch(err => {
                         console.log(err)
                     })
             },
