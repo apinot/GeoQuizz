@@ -66,7 +66,18 @@
                             this.images.push(obj);
                             console.log(obj.img);
                             console.log(this.images.length);
-                            this.$navigateTo(AddCoords)
+                            this.$showModal(AddCoords)
+                                .then((coords) =>{
+                                    console.log(coords.lat);
+                                    console.log(coords.lng);
+                                    obj.location = {
+                                        latitude: coords.lat,
+                                        longitude: coords.lng
+                                    };
+                                    console.log(obj)
+                                })
+
+
 
                         });
                     }).catch(function (e) {
@@ -124,6 +135,7 @@
                                     const params = [
                                         {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
                                     ];
+
                                     const task = session.multipartUpload(params, request);
                                     task.on("progress", this.logEvent);
                                     task.on("error", this.logEvent);

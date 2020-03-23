@@ -8,6 +8,8 @@ const schema = new mongoose.Schema({
     },
     url: { type: String, required: true },
     idUtilisateur : { type: String, required: true },
+    created_at: { type: Date, required: true},
+
 });
 
 module.exports = mongoose.model("Photo", schema);
