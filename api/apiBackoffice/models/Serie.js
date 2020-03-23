@@ -11,8 +11,8 @@ const schema = new mongoose.Schema({
         lng: { type: Number, required: true },
         zoom: { type: Number, required: true },
     },
-    photos: [{type: String}],
-    idUtilisateur: { type: String, required: true },
+    photos: [{ type: String }],
+    user: { type: String, required: true },
 });
 
 module.exports = mongoose.model("Serie", schema);
