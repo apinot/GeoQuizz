@@ -216,7 +216,7 @@ app.get('/series', (req, res) => {
     Serie.count((err, count) => {
         if(err) throw err;
         //récupère les séries
-        Serie.find({ idUtilisateur: req.authUser.id }).limit(Number(limit)).skip(Number(offset)).exec()
+        Serie.find({ user: req.authUser.id }).limit(Number(limit)).skip(Number(offset)).exec()
             .then((series) => {
                 if(!series){
                     res.status(200).json({
@@ -258,7 +258,7 @@ app.get('/series/:id', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.idUtilisateur !== req.authUser.id) {
+        if(serie.user !== req.authUser.id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -301,7 +301,7 @@ app.post('/series', (req, res) => {
             zoom: serie.map.lng
         },
         photos: serie.photos,
-        idUtilisateur: req.authUser.id,
+        user: req.authUser.id,
         create_at : new Date()
     });
 
@@ -400,7 +400,7 @@ app.delete('/series/:id/', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.idUtilisateur !== req.authUser.id) {
+        if(serie.user !== req.authUser.id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -434,7 +434,7 @@ app.post("/photos", (req, res) => {
             lng: photo.lng
         },
         photo: photo.url,
-        idUtilisateur: req.authUser.id,
+        user: req.authUser.id,
         create_at : new Date()
     });
     newPhoto.save().then((photo) => {
@@ -464,7 +464,7 @@ app.delete("/photos/:id", (req, res) => {
             res.status(404).json({status: 404, msg: 'Photo Not Found'});
             return;
         }
-        if(photo.idUtilisateur !== req.authUser.id) {
+        if(photo.user !== req.authUser.id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -506,7 +506,7 @@ app.get("/series/:id/photos", (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.idUtilisateur !== req.authUser.id) {
+        if(serie.user !== req.authUser.id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -566,7 +566,7 @@ app.put("/series/:id/photos", (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.idUtilisateur !== req.authUser.id) {
+        if(serie.user !== req.authUser.id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -580,7 +580,7 @@ app.put("/series/:id/photos", (req, res) => {
                 lng: lng
             },
             url: url,
-            idUtilisateur: req.authUser.id,
+            user: req.authUser.id,
             create_at : new Date()
         });
         // sauvegarde l'id de la photo
@@ -625,7 +625,7 @@ app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.idUtilisateur !== req.authUser.id) {
+        if(serie.user !== req.authUser.id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
