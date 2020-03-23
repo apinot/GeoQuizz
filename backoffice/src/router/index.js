@@ -50,6 +50,22 @@ const routes = [
       requireAuth: true,
     },
   },
+  {
+    path: '/galerie',
+    name: 'galerie',
+    component: () => import('../views/Galerie.vue'),
+    meta: {
+      requireAuth: true,
+    },
+  },
+  {
+    path: '/upload',
+    name: 'upload',
+    component: () => import('../views/AddPhoto.vue'),
+    meta: {
+      requireAuth: true,
+    },
+  },
 ];
 
 const router = new VueRouter({

@@ -5,7 +5,7 @@
       <error></error>
     </div>
     <div v-else>
-      <div class="row" v-if="!isLoad">
+      <div class="row" v-if="!loading">
         <spinner></spinner>
       </div>
       <div v-else>
@@ -15,6 +15,12 @@
           type="submit"
           name="action"
         >Créer une nouvelle série</button>
+        <button
+          v-on:click="showGallerie"
+          class="s12 m3 btn waves-effect waves-light"
+          type="submit"
+          name="action"
+        >Voir la gallerie</button>
         <div class="row">
           <div v-for="serie in series" :key="serie.id">
             <div class="col s12 m6">
@@ -73,9 +79,8 @@ export default {
       idDelete: '',
       nomDelete: '',
       idSerie: '',
-      isLoad: false,
+      loading: false,
       isError: false,
-      serie: null,
       error: null,
       edit: null,
       series: '',
@@ -90,9 +95,11 @@ export default {
     createSerie() {
       this.$router.push({ name: 'newserie' });
     },
+    showGallerie() {
+      this.$router.push({ name: 'galerie' });
+    },
     deleteSerie() {
-      console.log(this.nomDelete);
-      console.log(this.idDelete);
+      this.loading = false;
       this.$http
         .delete(`/series/${this.idDelete}`)
         .then((response) => {
@@ -101,7 +108,7 @@ export default {
               .get('/series')
               .then((response2) => {
                 this.series = response2.data.series;
-                this.isLoad = true;
+                this.loading = true;
               })
               .catch((error) => {
                 this.isError = true;
@@ -111,11 +118,11 @@ export default {
         }).catch((error) => {
           this.isError = true;
           console.log(error);
+        }).finnaly(() => {
+          this.loading = true;
         });
     },
     updateDeleteSerie(id, nom) {
-      console.log(id);
-      console.log(nom);
       this.idDelete = id;
       this.nomDelete = nom;
     },
@@ -126,7 +133,7 @@ export default {
       .get('/series')
       .then((response) => {
         this.series = response.data.series;
-        this.isLoad = true;
+        this.loading = true;
       })
       .catch((error) => {
         this.isError = true;
