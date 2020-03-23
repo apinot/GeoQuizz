@@ -70,12 +70,12 @@ app.get('/', (req, res) => {
 
 /**
  * Permet la création d'un utilisateur (inscription)
- * 
- * Body 
+ *
+ * Body
  *  - email : email de l'utilisateur (identifiant)
  *  - password : mot de passe de l'utilisateur
  *  - passwordConfirm : confirmation du mot de passe (doit être identique à password)
- * 
+ *
  * @return
  *      utilisateur créé
  */
@@ -132,13 +132,13 @@ app.post('/utilisateurs', (req, res) => {
 
 /**
  * Permet la connexion d'un utilisateur
- * 
+ *
  * Query
  *  - id: id de l'utilisateur
- * 
- * Autorization 
+ *
+ * Autorization
  *  - basic email:password
- * 
+ *
  * @return
  *      - utilisateur
  *      - token
@@ -149,7 +149,7 @@ app.post('/utilisateurs/auth', (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-    
+
         const credentialsBase64 = req.headers.authorization.split(' ')[1];
         if(!credentialsBase64) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
@@ -167,7 +167,7 @@ app.post('/utilisateurs/auth', (req, res) => {
             if(users.length !== 1) {
                 res.status(401).json({status: 401, msg: 'Unauthorized'});
                 return;
-            } 
+            }
 
             const [user] = users;
 
@@ -197,11 +197,11 @@ app.post('/utilisateurs/auth', (req, res) => {
 
 /**
  * Permet de récupérer la liste des séries
- * 
+ *
  * Query:
  *  limit: nombre d'éléments à recupérer (optionel, max 25)
  *  offset: (optionel, 0 par défault)
- * 
+ *
  *  @return
  *      la liste des series
  */
@@ -242,10 +242,10 @@ app.get('/series', (req, res) => {
     });
 });
 
-/** 
+/**
  * Permet de récupérer les données d'une série
- * 
- *  Query : 
+ *
+ *  Query :
  *   - id : id de la série
  * @return
  *      les données relatives à la série
@@ -326,9 +326,9 @@ app.post('/series', (req, res) => {
 
 /**
  * Met à jour les règles de la serie
- * Query : 
+ * Query :
  *   - id : id de la série
- * Body : 
+ * Body :
  *   - rules: {
  *       ville
  *       distance
@@ -350,7 +350,7 @@ app.put('/series/:id/', (req, res) => {
         return;
     }
     const { rules } = req.body;
-    
+
 
     //TODO verifier que rules possède la bonne architecture
     Serie.findById(id, (err, serie) => {
@@ -386,7 +386,7 @@ app.put('/series/:id/', (req, res) => {
                             lng: saved.map.lng,
                         },
                         zoom: saved.map.zoom,
-                    }    
+                    }
                 });
             })
             .catch((error) => {
@@ -397,9 +397,9 @@ app.put('/series/:id/', (req, res) => {
 
 /**
  * Supprime la serie
- * Query : 
+ * Query :
  *   - id : id de la série
- * 
+ *
  */
 app.delete('/series/:id/', (req, res) => {
     const { id } = req.params;
@@ -421,7 +421,7 @@ app.delete('/series/:id/', (req, res) => {
             return;
         }
     });
-    
+
     Serie.findByIdAndDelete(id, (err) => {
         if(err) throw err;
         res.status(200).json('deleted');
@@ -430,7 +430,7 @@ app.delete('/series/:id/', (req, res) => {
 
 /**
  * Ajoute une photo à la galerie de l'utilisateur
- * Body : 
+ * Body :
  *   - photo: {
  *       lat
  *       lng
@@ -462,7 +462,7 @@ app.post("/photos", (req, res) => {
 
 /**
  * Supprime une photo de la galerie
- * Query : 
+ * Query :
  *   - id : id de la photo
  */
 app.delete("/photos/:id", (req, res) => {
@@ -492,7 +492,7 @@ app.delete("/photos/:id", (req, res) => {
         }
         res.status(200).json('deleted');
     });
-    
+
 });
 
 app.put("/photos/:id", (req, res) => {
@@ -526,7 +526,7 @@ app.put("/photos/:id", (req, res) => {
                         },
                         desc: saved.desc,
                         url: saved.url,
-                    }    
+                    }
                 });
             })
             .catch((error) => {
@@ -538,9 +538,9 @@ app.put("/photos/:id", (req, res) => {
 
 /**
  * Récupère les photos d'une série
- * Query : 
+ * Query :
  *   - id : id de la série
- * 
+ *
  * @retun
  *      tableau de photos
  */
@@ -586,7 +586,7 @@ app.get("/series/:id/photos", (req, res) => {
 
 /**
  * Ajout une photo à la serie
- * Query : 
+ * Query :
  *   - id : id de la série
  *   - idPhoto : id de la photo
  */
@@ -647,7 +647,7 @@ app.put("/series/:id/photos/:idPhoto", (req, res) => {
                 .then((saved) => {
                     Photo.find({ _id: saved.photos }, (error, photos) => {
                         if(error) throw error;
-                        
+
                         res.status(200).json({
                             serie: {
                                 id: saved._id,
@@ -666,12 +666,12 @@ app.put("/series/:id/photos/:idPhoto", (req, res) => {
                 });
         })
 
-    });  
+    });
 });
 
 /**
  * Eleve une photo de la serie
- * Query : 
+ * Query :
  *   - idSerie : id de la série
  *   - idPhoto : id de la photo
  */
@@ -714,7 +714,7 @@ app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
             .then((saved) => {
                 Photo.find({ _id: saved.photos }, (error, photos) => {
                     if(error) throw error;
-                    
+
                     res.status(200).json({
                         serie: {
                             id: saved._id,
