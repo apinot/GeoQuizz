@@ -451,7 +451,7 @@ app.post("/photos", (req, res) => {
         },
         photo: photo.url,
         user: req.authUser._id,
-        create_at : new Date()
+        created_at : new Date()
     });
     newPhoto.save().then((photo) => {
         res.status(200).json(photo);
@@ -477,7 +477,6 @@ app.delete("/photos/:id", (req, res) => {
         return;
     }
 
-    //TODO faire en une seul requette
     Photo.findById(id, (err, photo) => {
         if(err) throw err;
         if(!photo) {
