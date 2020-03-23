@@ -11,7 +11,7 @@ const schema = new mongoose.Schema({
         lng: { type: Number, required: true },
         zoom: { type: Number, required: true },
     },
-    photos: [{type: String}],
+    photos: [{ type: String }],
     idUtilisateur: { type: String, required: true },
 });
 

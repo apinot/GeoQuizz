@@ -413,6 +413,74 @@ app.delete('/series/:id/', (req, res) => {
 });
 
 /**
+ * Ajoute une photo à la galerie de l'utilisateur
+ * Body : 
+ *   - photo: {
+ *       lat
+ *       lng
+ *       url
+ *     }
+ */
+app.post("/photos", (req, res) => {
+    // application du middleware
+    if(!req.authUser && !req.headers.authorization) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const { photo } = req.params;
+    const newPhoto = new Photo({
+        position : {
+            lat: photo.lat,
+            lng: photo.lng
+        },
+        photo: photo.url,
+        idUtilisateur: req.authUser.id,
+        create_at : new Date()
+    });
+    newPhoto.save().then((photo) => {
+        res.status(200).json(photo);
+    }).catch((err) =>{
+        res.status(500).json({err});
+    });
+});
+
+/**
+ * Supprime une photo de la galerie
+ * Query : 
+ *   - id : id de la photo
+ */
+app.delete("/photos/:id", (req, res) => {
+    // application du middleware
+    if(!req.authUser && !req.headers.authorization) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const { id } = req.params;
+
+    //TODO faire en une seul requette
+    Photo.findById(id, (err, photo) => {
+        if(err) throw err;
+        if(!photo) {
+            res.status(404).json({status: 404, msg: 'Photo Not Found'});
+            return;
+        }
+        if(photo.idUtilisateur !== req.authUser.id) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
+    });
+
+    Photo.findByIdAndDelete(id, (err) => {
+        if(err) {
+            throw err;
+        }
+        res.status(200).json('deleted');
+    });
+    
+});
+
+
+/**
  * Récupère les photos d'une série
  * Query : 
  *   - id : id de la série
@@ -421,18 +489,17 @@ app.delete('/series/:id/', (req, res) => {
  *      tableau de photos
  */
 app.get("/series/:id/photos", (req, res) => {
+    // application du middleware
+    if(!req.authUser && !req.headers.authorization) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
     const { id } = req.params;
     if(!id.match(/^[0-9a-fA-F]{24}$/)){
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
 
-    // application du middleware
-    if(!req.authUser && !req.headers.authorization) {
-        res.status(401).json({status: 401, msg: 'Unauthorized'});
-        return;
-    }
-    
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -446,7 +513,6 @@ app.get("/series/:id/photos", (req, res) => {
 
         Photo.find({ _id: serie.photos }, (error, photos) => {
             if(error) throw error;
-            
             res.status(200).json({
                 serie: {
                     id: serie._id,
@@ -514,6 +580,7 @@ app.put("/series/:id/photos", (req, res) => {
                 lng: lng
             },
             url: url,
+            idUtilisateur: req.authUser.id,
             create_at : new Date()
         });
         // sauvegarde l'id de la photo
