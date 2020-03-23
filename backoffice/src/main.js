@@ -8,7 +8,7 @@ Vue.config.productionTip = false;
 
 /* Configuration d'axios */
 // Nom de domaine et port de l'api Player
-const apiHost = 'https://5b38172c.ngrok.io/';
+const apiHost = 'https://c8a9ca68.ngrok.io/';
 axios.defaults.baseURL = apiHost;
 
 axios.defaults.crossDomain = true;

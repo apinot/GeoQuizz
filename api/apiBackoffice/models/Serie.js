@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
     ville: { type: String, required: true },
-    nom : { type: String, required: true },
+    nom: { type: String, required: true },
     descr: { type: String, required: true },
     dist: { type: Number, required: true },
     map: {
@@ -12,6 +12,7 @@ const schema = new mongoose.Schema({
         zoom: { type: Number, required: true },
     },
     photos: [{type: String}],
+    idUtilisateur: { type: String, required: true },
 });
 
 module.exports = mongoose.model("Serie", schema);

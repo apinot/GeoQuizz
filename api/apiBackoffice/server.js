@@ -216,7 +216,7 @@ app.get('/series', (req, res) => {
     Serie.count((err, count) => {
         if(err) throw err;
         //récupère les séries
-        Serie.find().limit(Number(limit)).skip(Number(offset)).exec()
+        Serie.find({ idUtilisateur: req.authUser.id }).limit(Number(limit)).skip(Number(offset)).exec()
             .then((series) => {
                 if(!series){
                     res.status(200).json({
@@ -258,6 +258,10 @@ app.get('/series/:id', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
+        if(serie.idUtilisateur !== req.authUser.id) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
 
         res.status(200).json({
             serie: {
@@ -297,6 +301,7 @@ app.post('/series', (req, res) => {
             zoom: serie.map.lng
         },
         photos: serie.photos,
+        idUtilisateur: req.authUser.id,
         create_at : new Date()
     });
 
@@ -387,6 +392,19 @@ app.delete('/series/:id/', (req, res) => {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
+
+    //TODO faire en une requete
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        if(serie.idUtilisateur !== req.authUser.id) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
+    });
     
     Serie.findByIdAndDelete(id, (err) => {
         if(err) throw err;
@@ -419,6 +437,10 @@ app.get("/series/:id/photos", (req, res) => {
         if(err) throw err;
         if(!serie) {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        if(serie.idUtilisateur !== req.authUser.id) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
 
@@ -478,6 +500,10 @@ app.put("/series/:id/photos", (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
+        if(serie.idUtilisateur !== req.authUser.id) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
         // initialisation de la photo
         const lat = photos.position.lat;
         const lng = photos.position.lng;
@@ -530,6 +556,10 @@ app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
         if(err) throw err;
         if(!serie) {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        if(serie.idUtilisateur !== req.authUser.id) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
 
