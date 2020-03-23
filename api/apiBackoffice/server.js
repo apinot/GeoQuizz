@@ -445,29 +445,25 @@ app.get("/series/:id/photos", (req, res) => {
  * Ajout une photo à la serie
  * Query : 
  *   - id : id de la série
- * Body : 
- *   - photo: {
- *       position: {
- *         lat
- *         lng
- *       }
- *       url 
- *     }
+ *   - idPhoto : id de la photo
  */
-app.put("/series/:id/photos", (req, res) => {
+app.put("/series/:id/photos/:idPhoto", (req, res) => {
     if(!req.headers.authorization && !req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-    const { id } = req.params;
+    const { id, idPhoto } = req.params;
     if(!id.match(/^[0-9a-fA-F]{24}$/)){
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
     // TODO verifier la structure de l'objet photo
-    let photos = req.body.data[0];
-    if(!photos) {
+    if(!idPhoto) {
         res.status(400).json({ status: 400, msg: 'Bad Request' });
+        return;
+    }
+    if(!idPhoto.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Photo Not Found'});
         return;
     }
 
@@ -479,28 +475,40 @@ app.put("/series/:id/photos", (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        // initialisation de la photo
-        const lat = photos.position.lat;
-        const lng = photos.position.lng;
-        const url = photos.url;
-        const newPhoto = new Photo({
-            position : {
-                lat: lat,
-                lng: lng
-            },
-            url: url,
-            create_at : new Date()
-        });
-        // sauvegarde l'id de la photo
-        newPhoto.save().then((photo) => {
-            serie.photos.push(photo.id)
-             // mise à jour de la serie
-            serie.save().then(() => {
-                res.status(200).json(photo)
-            });
-        }).catch((err) =>{
-            res.status(500).json({err})
-        });
+
+        Photo.findById(idPhoto, (error, photo) => {
+            if(error) throw error;
+            if(!photo) {
+                res.status(404).json({status: 404, msg: 'Photo Not Found'});
+                return;
+            }
+
+            if(!serie.photos.includes(idPhoto)) {
+                serie.photos.push(idPhoto);
+            }
+
+            serie.save()
+                .then((saved) => {
+                    Photo.find({ _id: saved.photos }, (error, photos) => {
+                        if(error) throw error;
+                        
+                        res.status(200).json({
+                            serie: {
+                                id: saved._id,
+                                photos: photos.map((photo) => ({
+                                    id: photo._id,
+                                    position: photo.position,
+                                    desc: photo.desc,
+                                    url: photo.url,
+                                })),
+                            },
+                        });
+                    });
+                })
+                .catch((err2) => {
+                    throw err2;
+                });
+        })
 
     });  
 });
@@ -566,6 +574,23 @@ app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
     });
 });
 
+/**
+ * Permet de récupérer les photos de l'utilisateur
+ */
+app.get('/photos', (req, res) => {
+    // TODO pagination
+    Photo.find({}, (err, photos) => {
+        res.status(200).json({
+            total: photos.length,
+            photos: photos.map(p => ({
+                id: p._id,
+                position: p.position,
+                url: p.url,
+                desc: p.desc,
+            })),
+        });
+    });
+});
 
 /* Gestion des erreurs */
 

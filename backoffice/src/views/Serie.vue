@@ -166,6 +166,11 @@
       <!-- Photos -->
       <div class="row">
       <h4>Photos</h4>
+      <div class="row">
+        <button class="btn modal-trigger" data-target="modalAddPhotos" @click="getUserPhotos">
+          <i class="fas fa-plus left"></i>Ajouter
+        </button>
+      </div>
       <div class="row" v-if="photos.length <= 0">Cette série ne contient pas de photos</div>
       <div class="row" v-else>
         <div class="col col s12 m8 l6 offset-m2 offset-l3" v-for="photo in photos" :key="photo.id">
@@ -175,8 +180,6 @@
             </div>
             <div class="card-content">
               <p>{{photo.desc}}</p>
-              <!-- ICI les action -->
-              <!-- TODO en cours -->
             </div>
             <div class="card-action center-align" v-if="photoToDelete === photo.id">
               <div class="row">Voulez-vous vraiement retirer cette photo de la série ?</div>
@@ -197,6 +200,56 @@
       </div>
     </div>
   </div>
+
+   <!-- Modal d'ajout de photo -->
+    <div id="modalAddPhotos" class="modal">
+      <div class="modal-content">
+        <h4>Ajouter des photos</h4>
+        <!-- Spinner -->
+        <div class="row center-align" v-if="!userPhotos">
+          <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue-only">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div><div class="gap-patch">
+                <div class="circle"></div>
+              </div><div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row center-align red-text text-accent-4" v-if="modalError">
+          {{modalError}}
+        </div>
+
+        <div class="row center-align">
+          <div
+            v-for="img in userPhotos" :key="img.id"
+            @click="selectedPhotoInGalllery = img"
+            :class="
+              selectedPhotoInGalllery === img
+                ? 'photo-selected col s12 m6 l4 img-tile'
+                : 'col s12 m6 l4 img-tile'"
+          >
+            <img :src="img.url" :alt="img.desc" class="gallery-image">
+            <i class="fas fa-check-circle selected-icone"></i>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a class="modal-close waves-effect waves-green btn-flat">
+          Fermer
+        </a>
+        <a class="btn modal-close waves-effect waves-green"
+          :disabled="!selectedPhotoInGalllery"
+          @click="addPhoto"
+        >
+          Ajouter
+        </a>
+      </div>
+    </div>
 </div>
 </template>
 
@@ -219,6 +272,9 @@ export default {
       currentCity: null,
       currentDist: null,
       photoToDelete: null,
+      modalError: null,
+      userPhotos: null,
+      selectedPhotoInGalllery: null,
     };
   },
   created() {
@@ -249,6 +305,10 @@ export default {
       .finally(() => {
         this.$store.dispatch('setLoading', false);
       });
+  },
+  mounted() {
+    // eslint-disable-next-line no-undef
+    M.AutoInit();
   },
   computed: {
     idUrlParam() {
@@ -345,10 +405,64 @@ export default {
           this.$store.dispatch('setLoading', false);
         });
     },
+    getUserPhotos() {
+      this.$http.get('/photos', {
+        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+      })
+        .then((response) => {
+          this.userPhotos = response.data.photos;
+        })
+        .catch(() => {
+          this.modalError = 'Impossible de récupérer vos photos';
+          this.userPhotos = [];
+        });
+    },
+    addPhoto() {
+      this.$store.dispatch('setLoading', true);
+      this.$http.put(`/series/${this.serie.id}/photos/${this.selectedPhotoInGalllery.id}`, {}, {
+        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
+      })
+        .then((response) => {
+          this.photos = response.data.serie.photos;
+          this.selectedPhotoInGalllery = null;
+        })
+        .catch(() => {
+          this.error = 'Impossible d\'ajouter la photos';
+        })
+        .finally(() => {
+          this.$store.dispatch('setLoading', false);
+        });
+    },
   },
 };
 </script>
 
-<style>
+<style lang="scss">
     @import url('https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
+
+    .gallery-image {
+      max-width: 100%;
+    }
+
+    .photo-selected {
+      position: relative;
+      border: 1px solid #26a69a;
+
+      .selected-icone {
+        display: inline;
+        position: absolute;
+        right: 0.5em;
+        bottom: 0.5em;
+        font-size: 2em;
+        color: darken(#26a69a, 10%);
+      }
+    }
+
+    .selected-icone {
+      display: none;
+    }
+
+    .img-tile {
+      height: 100%;
+    }
 </style>
