@@ -279,15 +279,11 @@ export default {
   },
   created() {
     this.$store.dispatch('setLoading', true);
-    this.$http.get(`/series/${this.idUrlParam}`, {
-      headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-    })
+    this.$http.get(`/series/${this.idUrlParam}`)
       .then((response) => {
         this.serie = response.data.serie;
 
-        return this.$http(`/series/${this.idUrlParam}/photos`, {
-          headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-        });
+        return this.$http(`/series/${this.idUrlParam}/photos`);
       })
       .then((response) => {
         this.photos = response.data.serie.photos;
@@ -331,9 +327,7 @@ export default {
   methods: {
     saveSerie() {
       this.$store.dispatch('setLoading', true);
-      this.$http.put(`/series/${this.serie.id}`, { rules: this.serie }, {
-        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-      })
+      this.$http.put(`/series/${this.serie.id}`, { rules: this.serie })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
             this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
@@ -387,9 +381,7 @@ export default {
     removePhoto() {
       if (!this.photoToDelete) return;
       this.$store.dispatch('setLoading', true);
-      this.$http.delete(`/series/${this.serie.id}/photos/${this.photoToDelete}`, {
-        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-      })
+      this.$http.delete(`/series/${this.serie.id}/photos/${this.photoToDelete}`)
         .then((response) => {
           this.photos = response.data.serie.photos;
         })
@@ -406,9 +398,7 @@ export default {
         });
     },
     getUserPhotos() {
-      this.$http.get('/photos', {
-        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-      })
+      this.$http.get('/photos')
         .then((response) => {
           this.userPhotos = response.data.photos;
         })
@@ -419,9 +409,7 @@ export default {
     },
     addPhoto() {
       this.$store.dispatch('setLoading', true);
-      this.$http.put(`/series/${this.serie.id}/photos/${this.selectedPhotoInGalllery.id}`, {}, {
-        headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-      })
+      this.$http.put(`/series/${this.serie.id}/photos/${this.selectedPhotoInGalllery.id}`)
         .then((response) => {
           this.photos = response.data.serie.photos;
           this.selectedPhotoInGalllery = null;

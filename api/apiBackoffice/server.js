@@ -211,16 +211,21 @@ app.get('/series', (req, res) => {
     if(!limit || !Number(limit) || limit > 25) limit = 25;
     if(!offset || !Number(offset) || offset < 0) offset = 0;
 
+    if(!req.authUser) {
+        console.log(req.authUser)
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
 
     // Compte le nombre totals de séries
     Serie.count((err, count) => {
         if(err) throw err;
         //récupère les séries
-        Serie.find({ user: req.authUser.id }).limit(Number(limit)).skip(Number(offset)).exec()
+        Serie.find({ user: req.authUser._id }).limit(Number(limit)).skip(Number(offset)).exec()
             .then((series) => {
                 if(!series){
                     res.status(200).json({
-                        count,
+                        count: 0,
                         series: [],
                     })
                     return;
@@ -251,6 +256,10 @@ app.get('/series/:id', (req, res) => {
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
 
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
@@ -258,7 +267,7 @@ app.get('/series/:id', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.user !== req.authUser.id) {
+        if(serie.user !== req.authUser._id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -301,7 +310,7 @@ app.post('/series', (req, res) => {
             zoom: serie.map.lng
         },
         photos: serie.photos,
-        user: req.authUser.id,
+        user: req.authUser._id,
         create_at : new Date()
     });
 
@@ -350,6 +359,12 @@ app.put('/series/:id/', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
+
+        if(req.thUser.id !== serie.user) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
+
         serie.ville = rules.ville;
         serie.nom = rules.nom;
         serie.descr = rules.descr;
@@ -400,7 +415,7 @@ app.delete('/series/:id/', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.user !== req.authUser.id) {
+        if(serie.user !== req.authUser._id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -423,7 +438,7 @@ app.delete('/series/:id/', (req, res) => {
  */
 app.post("/photos", (req, res) => {
     // application du middleware
-    if(!req.authUser && !req.headers.authorization) {
+    if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
@@ -434,7 +449,7 @@ app.post("/photos", (req, res) => {
             lng: photo.lng
         },
         photo: photo.url,
-        user: req.authUser.id,
+        user: req.authUser._id,
         create_at : new Date()
     });
     newPhoto.save().then((photo) => {
@@ -464,7 +479,7 @@ app.delete("/photos/:id", (req, res) => {
             res.status(404).json({status: 404, msg: 'Photo Not Found'});
             return;
         }
-        if(photo.user !== req.authUser.id) {
+        if(photo.user !== req.authUser._id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -506,7 +521,7 @@ app.get("/series/:id/photos", (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.user !== req.authUser.id) {
+        if(serie.user !== req.authUser._id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -535,7 +550,7 @@ app.get("/series/:id/photos", (req, res) => {
  *   - idPhoto : id de la photo
  */
 app.put("/series/:id/photos/:idPhoto", (req, res) => {
-    if(!req.headers.authorization && !req.authUser) {
+    if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
@@ -563,10 +578,20 @@ app.put("/series/:id/photos/:idPhoto", (req, res) => {
             return;
         }
 
+        if(serie.user !== req.authUser._id) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
+
         Photo.findById(idPhoto, (error, photo) => {
             if(error) throw error;
             if(!photo) {
                 res.status(404).json({status: 404, msg: 'Photo Not Found'});
+                return;
+            }
+
+            if(photo.user !== req.authUser._id) {
+                res.status(401).json({status: 401, msg: 'Unauthorized'});
                 return;
             }
 
@@ -607,7 +632,7 @@ app.put("/series/:id/photos/:idPhoto", (req, res) => {
  *   - idPhoto : id de la photo
  */
 app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
-    if(!req.headers.authorization && !req.authUser) {
+    if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
@@ -628,7 +653,7 @@ app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.user !== req.authUser.id) {
+        if(serie.user !== req.authUser._id) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -669,8 +694,12 @@ app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
  * Permet de récupérer les photos de l'utilisateur
  */
 app.get('/photos', (req, res) => {
+    if(!req.authUser) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
     // TODO pagination
-    Photo.find({}, (err, photos) => {
+    Photo.find({user: req.authUser._id}, (err, photos) => {
         res.status(200).json({
             total: photos.length,
             photos: photos.map(p => ({

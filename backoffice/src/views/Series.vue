@@ -94,9 +94,7 @@ export default {
       console.log(this.nomDelete);
       console.log(this.idDelete);
       this.$http
-        .delete(`/series/${this.idDelete}`, {
-          headers: { Authorization: `bearer ${this.$store.getters.authToken}` },
-        })
+        .delete(`/series/${this.idDelete}`)
         .then((response) => {
           if (response) {
             this.$http
