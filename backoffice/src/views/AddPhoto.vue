@@ -70,16 +70,10 @@ export default {
       const apiKey = 'bf1794aedb1cd3df011c27ee66f9c5e8';
       this.getSelectedBase64()
         .then((img64) => {
-          const data = new FormData();
-          data.append('image', img64);
-          return Axios({
-            method: 'post',
-            url: `${url}?key=${apiKey}`,
-            headers: {
-              'Content-Type': 'application/octet-stream',
-            },
-            data,
-          });
+          const params = new FormData();
+          params.append('image', img64);
+          console.log('ok');
+          return Axios.create().post(`${url}?key=${apiKey}`, params);
         })
         .then((response) => {
           // const photo = {
