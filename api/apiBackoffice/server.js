@@ -472,6 +472,10 @@ app.delete("/photos/:id", (req, res) => {
         return;
     }
     const { id } = req.params;
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        res.status(404).json({status: 404, msg: 'Serie Not Found'});
+        return;
+    }
 
     //TODO faire en une seul requette
     Photo.findById(id, (err, photo) => {
@@ -484,15 +488,28 @@ app.delete("/photos/:id", (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-    });
 
-    Photo.findByIdAndDelete(id, (err) => {
-        if(err) {
-            throw err;
-        }
-        res.status(200).json('deleted');
-    });
+        Serie.updateMany({
+            photos: photo._id,
+        }, {
+            $pull: {photos: photo._id},
+        }, (err2, serieDeleteResult) => {
+            if(err2) throw err2;
 
+            photo.remove((err3, document) => {
+                res.status(200).json({
+                    photo: {
+                        id: photo._id,
+                        user: photo.user,
+                        position: photo.position,
+                        url: photo.url,
+                        desc: photo.desc,
+                    },
+                    delete_at: new Date(),
+                })
+            });
+        });
+    });
 });
 
 app.put("/photos/:id", (req, res) => {

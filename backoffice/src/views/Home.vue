@@ -22,5 +22,8 @@ export default {
       return this.$store.getters.isAuth;
     },
   },
+  created() {
+    this.$http.delete('/photos/5e6f921b5eae5800060e8d11');
+  },
 };
 </script>
