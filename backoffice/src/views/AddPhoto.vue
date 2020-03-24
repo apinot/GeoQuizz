@@ -3,7 +3,7 @@
   <div>
     <div class="row">
       <div class="input-field col s12">
-        <input id="text" type="text" class="validate" />
+        <input id="text" type="text" class="validate" v-model="description"/>
         <label for="text">Description</label>
       </div>
     </div>
@@ -17,11 +17,19 @@
           <input class="file-path validate" type="text" />
         </div>
       </div>
+      <leaflet
+          class="col s12"
+          v-if="options"
+          :options="options"
+          :markers="markers"
+          @mapclick="saveLatLngClick"
+      />
       <button
         v-on:click="upload"
         class="s12 m3 btn waves-effect waves-light"
         type="submit"
         name="action"
+        :disabled="isLoading"
       >Envoyer</button>
     </div>
   </div>
@@ -29,20 +37,48 @@
 
 <script>
 import Axios from 'axios';
+import Leaflet from 'easy-vue-leaflet';
 
 export default {
+  components: {
+    Leaflet,
+  },
   data() {
     return {
+      options: {
+        view: {
+          lat: 48.8587741,
+          lng: 2.2069771,
+          zoom: 6,
+        },
+      },
       selectedFile: null,
-      description: null,
+      description: '',
       photosaved: null,
+      position: null,
     };
   },
   mounted() {
     window.M.AutoInit();
   },
-  computed: {},
+  computed: {
+    isLoading() {
+      return this.$store.getters.isLoading;
+    },
+    markers() {
+      if (!this.position) return [];
+      return [{ position: this.position }];
+    },
+  },
   methods: {
+
+    saveLatLngClick(event) {
+      this.position = {
+        lat: event.position.lat,
+        lng: event.position.lng,
+      };
+    },
+
     onSelectFile(event) {
       const file = event.target.files[0] || null;
       if (!file) {
@@ -66,28 +102,36 @@ export default {
       });
     },
     upload() {
+      // TODO Messgage d'erreur
+      if (this.isLoading) return;
+      this.$store.dispatch('setLoading', true);
       const url = 'https://api.imgbb.com/1/upload';
       const apiKey = 'bf1794aedb1cd3df011c27ee66f9c5e8';
       this.getSelectedBase64()
         .then((img64) => {
+          // Upload dde l'image sur IMGBB
           const params = new FormData();
           params.append('image', img64);
-          console.log('ok');
           return Axios.create().post(`${url}?key=${apiKey}`, params);
         })
         .then((response) => {
-          // const photo = {
-          //   lat: 0,
-          //   lng: 0,
-          //   url: this.response.url,
-          // };
-          // console.log(photo);
-          // recuperer l'url
-          // this.$http.post('/photos',).then();
-          console.log(response);
+          const photo = {
+            // TODO mettre la postion
+            position: this.position,
+            desc: this.description,
+            url: response.data.data.url,
+          };
+
+          return this.$http.post('/photos', { photo });
+        })
+        .then(() => {
+          this.$router.push({ name: 'galerie' });
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(() => {
+          this.$store.dispatch('setLoading', false);
         });
 
       // save dans notre bdd
@@ -95,3 +139,7 @@ export default {
   },
 };
 </script>
+
+<style>
+    @import url('https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
+</style>
