@@ -206,33 +206,39 @@ app.post('/utilisateurs/auth', (req, res) => {
  *      la liste des series
  */
 app.get('/series', (req, res) => {
-    let {limit, offset} = req.query;
-
-    if(!limit || !Number(limit) || limit > 25) limit = 25;
+    let {size, offset} = req.query;
+    console.log(req.query.offset)
+    if(!size || !Number(size) || size > 50 || size < 1) size = 10;
     if(!offset || !Number(offset) || offset < 0) offset = 0;
-
     if(!req.authUser) {
         console.log(req.authUser)
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-    //récupère les séries
-    Serie.find({ user: req.authUser._id }).limit(Number(limit)).skip(Number(offset)).exec()
+
+    Serie.countDocuments({ user: req.authUser._id }).exec((errCount, count) => {
+        if(errCount) throw errCount;
+
+        //récupère les séries
+        Serie.find({ user: req.authUser._id }).limit(Number(size)).skip(Number(offset)).exec()
         .then((series) => {
             if(!series){
                 res.status(200).json({
+                    total: 0,
                     series: [],
                 })
                 return;
             }
 
             res.status(200).json({
+                total: count,
                 series,
             })
         })
         .catch((error) => {
             throw error;
         });
+    });
 });
 
 /**

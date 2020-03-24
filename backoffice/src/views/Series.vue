@@ -41,6 +41,12 @@
             </div>
           </div>
         </div>
+        <div class="row center-align">
+          <button class="btn" v-if="series.length < maxNbSerie" @click="getNextSerie">
+            <i class="fas fa-chevron-down left"></i>
+            Voir plus de photos
+          </button>
+        </div>
       </div>
     </div>
     <!-- Modal Structure -->
@@ -74,6 +80,8 @@ export default {
       error: null,
       edit: null,
       series: '',
+      maxNbSerie: -1,
+      offset: 0,
     };
   },
 
@@ -94,6 +102,8 @@ export default {
         .then(() => {
           const index = this.series.findIndex((e) => this.idSerie === e.id);
           this.series.splice(index, 1);
+          this.offset -= 1;
+          this.maxNbSerie -= 1;
         }).catch((error) => {
           this.isError = true;
           console.log(error);
@@ -105,6 +115,25 @@ export default {
       this.idDelete = id;
       this.nomDelete = nom;
     },
+    getNextSerie() {
+      if (this.series.length >= this.maxNbSerie) return;
+      this.$store.dispatch('setLoading', true);
+      this.$http
+        .get(`/series?offset=${this.offset}`)
+        .then((response) => {
+          response.data.series.forEach((p) => { this.series.push(p); });
+          this.maxNbSerie = response.data.total;
+          this.offset += response.data.series.length;
+          this.loading = true;
+        })
+        .catch((error) => {
+          this.isError = true;
+          console.log(error);
+        })
+        .finally(() => {
+          this.$store.dispatch('setLoading', false);
+        });
+    },
   },
 
   created() {
@@ -113,6 +142,9 @@ export default {
       .get('/series')
       .then((response) => {
         this.series = response.data.series;
+        this.loading = true;
+        this.maxNbSerie = response.data.total;
+        this.offset += response.data.series.length;
         this.loading = true;
       })
       .catch((error) => {

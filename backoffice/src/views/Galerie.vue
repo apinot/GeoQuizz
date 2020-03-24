@@ -110,7 +110,7 @@ export default {
         .then((response) => {
           response.data.photos.forEach((p) => { this.photos.push(p); });
           this.maxNbPhoto = response.data.total;
-          this.offset += 10;
+          this.offset += response.data.photos.length;
           this.loading = true;
         })
         .catch((error) => {

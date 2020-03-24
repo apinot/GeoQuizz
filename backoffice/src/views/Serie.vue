@@ -201,6 +201,8 @@
     </div>
   </div>
 
+
+  <!-- TODO pb bouton ajouter + pagination-->
    <!-- Modal d'ajout de photo -->
     <div id="modalAddPhotos" class="modal">
       <div class="modal-content">
@@ -263,7 +265,6 @@ export default {
   data() {
     return {
       serie: null,
-      // TODO prendre en compte la pagination
       photos: [],
       error: null,
       editMap: false,
