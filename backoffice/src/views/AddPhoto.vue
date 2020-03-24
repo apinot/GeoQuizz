@@ -1,11 +1,8 @@
 
 <template>
   <div>
-    <div class="row">
-      <div class="input-field col s12">
-        <input id="text" type="text" class="validate" v-model="description"/>
-        <label for="text">Description</label>
-      </div>
+    <div class="row center-align head">
+      <h1>Upload d'une image</h1>
     </div>
     <div class="row">
       <div class="file-field input-field">
@@ -14,16 +11,41 @@
           <input type="file" @change="onSelectFile" />
         </div>
         <div class="file-path-wrapper">
-          <input class="file-path validate" type="text" />
+          <input class="file-path validate" type="text" placeholder="Selectionner une image"/>
         </div>
       </div>
-      <leaflet
+    </div>
+    <div class="row">
+      <div class="input-field col s12">
+        <input id="text" type="text" class="validate" v-model="description"/>
+        <label for="text">Description</label>
+      </div>
+    </div>
+    <div class="row center-align">
+      <div class="row left-align">
+        Localisation<br>
+        <small>Cliquez sur la carte pour positionner la photo</small>
+      </div>
+      <div class="row">
+        <leaflet
           class="col s12"
           v-if="options"
           :options="options"
           :markers="markers"
           @mapclick="saveLatLngClick"
-      />
+          :disabled="!!position"
+        />
+      </div>
+      <div class="row">
+        <button v-if="!!position" class="btn" @click="position = null">
+          Changer la localisation
+        </button>
+      </div>
+    </div>
+    <div class="row red accent-4 white-text p-5 center-align" v-if="error">
+      {{error}}
+    </div>
+    <div class="row center-align mb-5">
       <button
         v-on:click="upload"
         class="s12 m3 btn waves-effect waves-light"
@@ -56,6 +78,7 @@ export default {
       description: '',
       photosaved: null,
       position: null,
+      error: '',
     };
   },
   mounted() {
@@ -102,8 +125,23 @@ export default {
       });
     },
     upload() {
-      // TODO Messgage d'erreur
+      if (!this.selectedFile) {
+        this.error = 'Veuillez selectionner une image';
+        return;
+      }
+
+      if (!this.description) {
+        this.error = 'Veuillez renseigner une description de la photo';
+        return;
+      }
+
+      if (!this.position) {
+        this.error = 'Veuillez renseigner la localistation de la photo';
+        return;
+      }
+
       if (this.isLoading) return;
+
       this.$store.dispatch('setLoading', true);
       const url = 'https://api.imgbb.com/1/upload';
       const apiKey = 'bf1794aedb1cd3df011c27ee66f9c5e8';
@@ -129,12 +167,11 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+          this.error = 'Erreur lors de la mise en ligne. Vérifier les informations fournis';
         })
         .finally(() => {
           this.$store.dispatch('setLoading', false);
         });
-
-      // save dans notre bdd
     },
   },
 };
