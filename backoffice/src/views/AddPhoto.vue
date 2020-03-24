@@ -74,6 +74,7 @@ export default {
           data.append('image', img64);
           return Axios({
             method: 'post',
+            mode: 'no-cors',
             url: `${url}?key=${apiKey}`,
             headers: {
               'Content-Type': 'application/octet-stream',
