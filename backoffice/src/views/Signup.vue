@@ -1,5 +1,5 @@
 <template>
-<div id="singup">
+<div class="container">
   <div class="row center-align">
     <h1>Inscription</h1>
   </div>
@@ -32,7 +32,8 @@
 
       <!-- submit -->
       <div class="row center-align">
-          <input type="submit" value="S'inscrire" class="btn" :disabled="loading">
+        <input type="submit" value="S'inscrire" class="btn red darken-3 waves-effect waves-light"
+        :disabled="loading">
       </div>
     </form>
   </div>

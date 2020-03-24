@@ -9,25 +9,27 @@
           <template v-if="isAuth">
             <li>
               <router-link class="btn red darken-3 waves-effect waves-light"
-                :to="{name: 'home'}">Accueil
-                <i class="fas fa-home right" style="line-height: inherit"></i>
+                :to="{name: 'home'}">
+                <i class="fas fa-home left" style="line-height: inherit"></i> Accueil
               </router-link>
             </li>
             <li>
               <router-link class="btn red darken-3 waves-effect waves-light"
-                :to="{name: 'galerie'}">Gallerie
-                <i class="fas fa-images right" style="line-height: inherit"></i>
+                :to="{name: 'galerie'}">
+                <i class="fas fa-images left" style="line-height: inherit"></i> Gallerie
               </router-link>
             </li>
             <li>
               <router-link class="btn red darken-3 waves-effect waves-light"
-                :to="{name: 'series'}">Series
-                <i class="fas fa-list-alt right" style="line-height: inherit"></i></router-link>
+                :to="{name: 'series'}">
+                <i class="fas fa-list-alt left" style="line-height: inherit"></i> Series
+                </router-link>
             </li>
             <li>
               <router-link class="btn red darken-3 waves-effect waves-light"
-                :to="{name: 'signout'}">Déconnexion
-                <i class="fas fa-sign-out-alt right icon" style="line-height: inherit"></i>
+                :to="{name: 'signout'}">
+                <i class="fas fa-sign-out-alt left icon" style="line-height: inherit"></i>
+                 Déconnexion
               </router-link>
             </li>
           </template>

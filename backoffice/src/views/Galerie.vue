@@ -1,17 +1,21 @@
 <template>
   <div>
-    <h3>Galerie</h3>
+    <h3 class="center-align">Galerie</h3>
     <div v-if="isError">
       <error></error>
     </div>
     <div v-else>
       <div>
-        <button
-          v-on:click="addPhoto"
-          class="s12 m3 btn waves-effect waves-light"
-          type="submit"
-          name="action"
-        >Ajouté une photo</button>
+        <div class="center-align">
+          <button
+            v-on:click="addPhoto"
+            class="s12 m3 btn waves-effect waves-light red darken-3"
+            type="submit"
+            name="action"
+          >
+          <i class="fas fa-plus left "></i>Ajouter une photo
+          </button>
+        </div>
         <div class="row">
           <div class="col s12 m6 l4" v-for="photo in photos" :key="photo.id">
             <h2 class="header"></h2>
@@ -32,7 +36,8 @@
           </div>
         </div>
         <div class="row center-align">
-          <button class="btn" v-if="photos.length < maxNbPhoto" @click="getNextPhoto">
+          <button class="btn waves-light red darken-3"
+          v-if="photos.length < maxNbPhoto" @click="getNextPhoto">
             <i class="fas fa-chevron-down left"></i>
             Voir plus de photos
           </button>

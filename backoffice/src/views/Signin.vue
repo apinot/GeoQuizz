@@ -1,35 +1,39 @@
 <template>
-<div id="singin">
-  <div class="row center-align">
-    <h1>Connexion</h1>
-  </div>
-  <div class="row red accent-4 white-text p-5 center-align" v-if="error">
-    Email ou mot de passe incorrect !
-  </div>
-  <div class="row">
-    <form @submit.prevent="signup">
-      <!-- email -->
-      <div class="row">
-        <div class="input-field">
-          <input id="emailField" type="text" v-model="email" autofocus/>
-          <label for="emailField">Email</label>
+  <div class="container">
+    <div class="row center-align">
+      <h1>Connection</h1>
+    </div>
+    <div class="row red accent-4 white-text p-5 center-align" v-if="error">
+      Email ou mot de passe incorrect !
+    </div>
+    <div class="row">
+      <form @submit.prevent="signup">
+        <!-- email -->
+        <div class="row">
+          <div class="input-field">
+            <input id="emailField" type="text" v-model="email" autofocus/>
+            <label for="emailField">Email</label>
+          </div>
         </div>
-      </div>
-      <!-- password -->
-      <div class="row">
-        <div class="input-field">
-          <input id="password" type="password" v-model="password"/>
-          <label for="password">Mot de passe</label>
+        <!-- password -->
+        <div class="row">
+          <div class="input-field">
+            <input id="password" type="password" v-model="password"/>
+            <label for="password">Mot de passe</label>
+          </div>
         </div>
-      </div>
 
-      <!-- submit -->
-      <div class="row center-align">
-          <input type="submit" value="Se connecter" class="btn" :disabled="loading">
-      </div>
-    </form>
+        <!-- submit -->
+        <div class="row center-align">
+            <input
+              type="submit"
+              value="Se connecter"
+              class="btn red darken-3 waves-effect waves-light"
+              :disabled="loading">
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 </template>
 
 <script>

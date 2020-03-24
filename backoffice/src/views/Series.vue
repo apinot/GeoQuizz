@@ -1,27 +1,23 @@
 <template>
   <div>
-    <h3>Liste de serie</h3>
+    <h1 class="center-align">Vos series</h1>
     <div v-if="isError">
       <error></error>
     </div>
     <div v-else>
       <div>
-        <button
-          v-on:click="createSerie"
-          class="s12 m3 btn waves-effect waves-light"
-          type="submit"
-          name="action"
-        >Créer une nouvelle série</button>
-        <button
-          v-on:click="showGallerie"
-          class="s12 m3 btn waves-effect waves-light"
-          type="submit"
-          name="action"
-        >Voir la gallerie</button>
+        <div class="center-align">
+          <button
+            v-on:click="createSerie"
+            class="s12 m3 btn waves-effect waves-light red darken-3"
+            type="submit"
+            name="action"
+          ><i class="fas fa-plus left "></i>Créer une nouvelle série</button>
+        </div>
         <div class="row">
           <div v-for="serie in series" :key="serie.id">
             <div class="col s12 m6">
-              <h2 class="header">{{serie.nom}}</h2>
+              <h4 class="header">{{serie.nom}}</h4>
               <div class="card">
                 <div class="card-content">
                   <h5>Ville</h5>

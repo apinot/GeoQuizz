@@ -2,61 +2,67 @@
 <div class="serie">
     <div>
       <div class="row">
-        <h1 class="align-center">Série de photos</h1>
+        <h1 class="center-align">Série de photos</h1>
       </div>
+     <div class="container">
+        <div class="row">
+          <div class="input-field col s12">
+            <input
+            type="text"
+            v-model="nom">
+            <label>Nom de la serie</label>
+          </div>
+          <div class="input-field col s12">
+            <textarea
+              class="materialize-textarea"
+              v-model="descr">
+            </textarea>
+            <label>Description</label>
+          </div>
+        </div>
 
-      <div class="row">
-        <div class="input-field col s12">
-          <input
-          type="text"
-          v-model="nom">
-          <label for="first_name">Nom de la serie</label>
-        </div>
-        <div class="input-field col s12">
-           <textarea
-            class="materialize-textarea"
-            v-model="descr">
-           </textarea>
-          <label for="last_name">Description</label>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="input-field col s6">
-          <input
-          type="text"
-          v-model="ville">
-          <label for="first_name">Ville</label>
-        </div>
-        <div class="input-field col s6">
-          <input id="last_name"
-          type="text"
-          v-model="dist">
-          <label for="last_name">Distance en mêtre</label>
+        <div class="row">
+          <div class="input-field col s6">
+            <input
+            type="text"
+            v-model="ville">
+            <label>Ville</label>
+          </div>
+          <div class="input-field col s6">
+            <input
+            type="text"
+            v-model="dist">
+            <label>Distance</label>
+            <small>en mètre</small>
+          </div>
         </div>
       </div>
 
       <!-- TODO valider la carte-->
       <!-- carte -->
       <div class="row">
-        <h4>Carte de la serie</h4>
-        <div class="row">
+        <h4 class="center-align">Carte de la serie</h4>
+        <div class="container">
           <leaflet :options="leafletOptions"
             @viewchanged="onMapViewChange"
           >
           </leaflet>
         </div>
         <div class="row center-align">
-          <button
-            @click="defineNewMap"
-            class="btn">
-            Valider la carte
-          </button>
-          <button
-            @click="createSerie"
-            class="btn">
-            Créer la serie
-          </button>
+          <div class="center-align">
+            <button
+              @click="defineNewMap"
+              class="btn red darken-3 waves-effect waves-light">
+              Valider la carte <i class="fas fa-map-marked-alt left"></i>
+            </button>
+          </div>
+          <div class="center-align">
+            <button
+              @click="createSerie"
+              class="btn red darken-3 waves-effect waves-light">
+              Créer la serie <i class="fas fa-chevron-circle-right left"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>

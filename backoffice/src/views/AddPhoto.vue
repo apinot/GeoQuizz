@@ -1,32 +1,27 @@
-
 <template>
   <div>
     <div class="row center-align head">
       <h1>Upload d'une image</h1>
     </div>
-    <div class="row">
-      <div class="file-field input-field">
-        <div class="btn">
-          <span>File</span>
-          <input type="file" @change="onSelectFile" />
-        </div>
-        <div class="file-path-wrapper">
-          <input class="file-path validate" type="text" placeholder="Selectionner une image"/>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="input-field col s12">
-        <input id="text" type="text" class="validate" v-model="description"/>
-        <label for="text">Description</label>
-      </div>
-    </div>
-    <div class="row center-align">
-      <div class="row left-align">
-        Localisation<br>
-        <small>Cliquez sur la carte pour positionner la photo</small>
-      </div>
+    <div class="container">
       <div class="row">
+        <div class="file-field input-field">
+          <div class="btn red darken-3 waves-effect waves-light">
+            <span>File</span><i class="fas fa-image left"></i>
+            <input type="file" @change="onSelectFile" />
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text" placeholder="Selectionner une image"/>
+          </div>
+        </div>
+        <div class="input-field col s12">
+          <input id="text" type="text" class="validate" v-model="description"/>
+          <label for="text">Description</label>
+        </div>
+      </div>
+    </div>
+      <div class="container">
+        <h4 class="center-align">Géolocation de la photo</h4>
         <leaflet
           class="col s12"
           v-if="options"
@@ -35,11 +30,18 @@
           @mapclick="saveLatLngClick"
           :disabled="!!position"
         />
+        <div class="row left-align">
+        Localisation<br>
+        <small>Cliquez sur la carte pour positionner la photo, cela va faire apparaître
+          un marker.</small>
       </div>
       <div class="row">
-        <button v-if="!!position" class="btn" @click="position = null">
-          Changer la localisation
-        </button>
+        <div class="center-align">
+          <button v-if="!!position" class="btn red darken-3 waves-effect waves-light"
+            @click="position = null">
+            <i class="fas fa-map-marker-alt left"></i> Changer la localisation
+          </button>
+        </div>
       </div>
     </div>
     <div class="row red accent-4 white-text p-5 center-align" v-if="error">
@@ -48,11 +50,12 @@
     <div class="row center-align mb-5">
       <button
         v-on:click="upload"
-        class="s12 m3 btn waves-effect waves-light"
+        class="s12 m3 btn red darken-3 waves-effect waves-light"
         type="submit"
         name="action"
         :disabled="isLoading"
-      >Envoyer</button>
+      >Envoyer<i class="fas fa-chevron-circle-right left"></i>
+      </button>
     </div>
   </div>
 </template>
