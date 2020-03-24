@@ -1,7 +1,9 @@
 <template>
     <StackLayout>
         <Label  text="Veuillez selectionner la serie dans laquelle vous voulez upload la serie : " textWrap="true" style="font-size: 20px;"></Label>
-        <Button v-for="serie in series" :text="serie.ville" @tap="selectSerie(serie)"></Button>
+        <Button v-if="isBusy === false" v-for="serie in series" :text="serie.ville" @tap="selectSerie(serie)"></Button>
+        <ActivityIndicator :busy="isBusy" ></ActivityIndicator>
+
     </StackLayout>
 </template>
 
@@ -15,8 +17,9 @@
           return {
               selected:true,
               notselected:false,
-              url_api_mobile: "https://9278aa32.ngrok.io/",
-              series: null
+              url_api_mobile: "https://f68f868d.ngrok.io/",
+              series: null,
+              isBusy: false
           }
         },
 
@@ -25,6 +28,7 @@
         },
         methods: {
             getSerie() {
+                this.isBusy = true
                 console.log(this.$store.state.idUtilisateur);
                 const data = {
                     params: {id : this.$store.state.idUtilisateur}
@@ -37,6 +41,11 @@
                     })
                     .catch(err => {
                         console.log(err)
+                        this.isbusy = false
+                    })
+                    .finally(()=>{
+                        setTimeout(() => {this.isBusy = false}, 3000);
+
                     })
             },
             selectSerie(serie){

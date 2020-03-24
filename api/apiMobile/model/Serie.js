@@ -4,13 +4,16 @@ const mongoose = require("mongoose");
 const schema = new mongoose.Schema({
     ville: { type: String, required: true },
     dist: { type: Number, required: true },
+    nom :{ type: String, required: true },
+    descr: { type: String, required: true },
     map: {
-        lat: { type: Number, required: true },
-        lng: { type: Number, required: true },
-        zoom: { type: Number, required: true },
+        //lat: { type: Number, required: true },
+        //lng: { type: Number, required: true },
+        //zoom: { type: Number, required: true },
     },
     photos: [{type: String}],
-    idUtilisateur: { type: String, required: true }
+    user: { type: String, required: true },
+    created_at: { type: Date, required: true},
 });
 
 module.exports = mongoose.model("Serie", schema);
