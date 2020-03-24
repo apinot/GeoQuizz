@@ -772,7 +772,7 @@ app.get('/photos', (req, res) => {
     if(offset && Number(offset) && offset >= 0) pagination.offset = Number(offset);
     if(size && Number(size) && size >= 1 && size <= 50) pagination.size = Number(size);
 
-    Photo.find({user: req.authUser._id}).countDocuments().exec((errCount, count) => {
+    Photo.count({user: req.authUser._id}).exec((errCount, count) => {
         if(errCount) throw errCount;
         
         Photo.find({user: req.authUser._id})

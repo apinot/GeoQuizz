@@ -5,10 +5,7 @@
       <error></error>
     </div>
     <div v-else>
-      <div class="row" v-if="!loading">
-        <spinner></spinner>
-      </div>
-      <div v-else>
+      <div>
         <button
           v-on:click="addPhoto"
           class="s12 m3 btn waves-effect waves-light"
@@ -26,7 +23,7 @@
                   {{photo.desc}}
               </div>
               <div class="card-action">
-                <a v-on:click="updateDeletePhoto(photo._id, photo.url)"
+                <a v-on:click="updateDeletePhoto(photo.id, photo.url)"
                   data-target="modal1"
                   class="s12 m3 waves-effect waves-light modal-trigger red-text text-darken-2"
                 >supprimer</a>
@@ -50,26 +47,22 @@
          <p>Voulez-vous vraiment supprimer cette photo ?</p>
       </div>
       <div class="modal-footer">
-        <a v-on:click="deletePhoto"
-        class="modal-close waves-effect waves-green btn-flat">Oui</a>
-        <a class="modal-close waves-effect waves-green btn-flat">Non</a>
+        <button v-on:click="deletePhoto"
+        class="modal-close waves-effect waves-green btn-flat">Oui</button>
+        <button class="modal-close waves-effect waves-green btn-flat">Non</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Spinner from '../components/Spinner.vue';
-
 export default {
   components: {
-    Spinner,
     Error,
   },
 
   data() {
     return {
-      loading: false,
       isError: false,
       idDelete: '',
       photoDelete: '',
@@ -84,36 +77,29 @@ export default {
     addPhoto() {
       this.$router.push({ name: 'upload' });
     },
-
     updateDeletePhoto(id, photo) {
       this.idDelete = id;
       this.photoDelete = photo;
     },
     deletePhoto() {
-      this.loading = false;
+      this.$store.dispatch('setLoading', true);
       this.$http
         .delete(`/photos/${this.idDelete}`)
-        .then((response) => {
-          if (response) {
-            this.$http
-              .get('/photos')
-              .then((response2) => {
-                this.photos = response2.data.photos;
-                this.loading = true;
-              })
-              .catch((error) => {
-                this.isError = true;
-                console.log(error);
-              });
-          }
+        .then(() => {
+          const indexPhoto = this.photos.findIndex((e) => e.id === this.idDelete);
+          this.photos.splice(indexPhoto, 1);
+          this.offset -= 1;
+          this.maxNbPhoto -= 1;
         }).catch((error) => {
           this.isError = true;
           console.log(error);
-        }).finnaly(() => {
-          this.loading = true;
+        }).finally(() => {
+          this.$store.dispatch('setLoading', false);
         });
     },
     getNextPhoto() {
+      if (this.photos.length >= this.maxNbPhoto) return;
+      this.$store.dispatch('setLoading', true);
       this.$http
         .get(`/photos?offset=${this.offset}`)
         .then((response) => {
@@ -125,10 +111,14 @@ export default {
         .catch((error) => {
           this.isError = true;
           console.log(error);
+        })
+        .finally(() => {
+          this.$store.dispatch('setLoading', false);
         });
     },
   },
   created() {
+    this.$store.dispatch('setLoading', true);
     this.$http
       .get('/photos')
       .then((response) => {
@@ -140,6 +130,9 @@ export default {
       .catch((error) => {
         this.isError = true;
         console.log(error);
+      })
+      .finally(() => {
+        this.$store.dispatch('setLoading', false);
       });
   },
   mounted() {
