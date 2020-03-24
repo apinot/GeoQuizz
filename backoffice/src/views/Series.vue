@@ -5,10 +5,7 @@
       <error></error>
     </div>
     <div v-else>
-      <div class="row" v-if="!loading">
-        <spinner></spinner>
-      </div>
-      <div v-else>
+      <div>
         <button
           v-on:click="createSerie"
           class="s12 m3 btn waves-effect waves-light"
@@ -66,12 +63,10 @@
 </template>
 
 <script>
-import Spinner from '../components/Spinner.vue';
 import Error from '../components/Error.vue';
 
 export default {
   components: {
-    Spinner,
     Error,
   },
   data() {
@@ -79,7 +74,6 @@ export default {
       idDelete: '',
       nomDelete: '',
       idSerie: '',
-      loading: false,
       isError: false,
       error: null,
       edit: null,
@@ -89,7 +83,6 @@ export default {
 
   methods: {
     showSerie(id) {
-      console.log(id);
       this.$router.push({ name: 'serie', params: { id } });
     },
     createSerie() {
@@ -99,16 +92,16 @@ export default {
       this.$router.push({ name: 'galerie' });
     },
     deleteSerie() {
-      this.loading = false;
+      this.$store.dispatch('setLoading', true);
       this.$http
         .delete(`/series/${this.idDelete}`)
         .then((response) => {
           if (response) {
+            // TODO a changer
             this.$http
               .get('/series')
               .then((response2) => {
                 this.series = response2.data.series;
-                this.loading = true;
               })
               .catch((error) => {
                 this.isError = true;
@@ -118,8 +111,8 @@ export default {
         }).catch((error) => {
           this.isError = true;
           console.log(error);
-        }).finnaly(() => {
-          this.loading = true;
+        }).finally(() => {
+          this.$store.dispatch('setLoading', false);
         });
     },
     updateDeleteSerie(id, nom) {
@@ -129,6 +122,7 @@ export default {
   },
 
   created() {
+    this.$store.dispatch('setLoading', true);
     this.$http
       .get('/series')
       .then((response) => {
@@ -138,6 +132,9 @@ export default {
       .catch((error) => {
         this.isError = true;
         console.log(error);
+      })
+      .finally(() => {
+        this.$store.dispatch('setLoading', false);
       });
   },
 
