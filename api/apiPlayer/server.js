@@ -80,14 +80,13 @@ app.get('/series', (req, res) => {
  *      token de la partie
  */
 app.post("/parties", (req, res) => {
-    let { username } = req.body;
+    const { username } = req.body;
     if(!username) {
         res.status(400).json({ status: 400, msg: 'Bad Request' });
         return;
     }
-
+    const { idSerie } = req.body;
     // récupération de la série
-    const idSerie = "5e6f900f5eae5800060e8d10";
     Serie.findById(idSerie, (err, serie) => {
         if(err) throw err;
         if(!serie) {
