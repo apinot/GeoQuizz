@@ -201,6 +201,8 @@
     </div>
   </div>
 
+
+  <!-- TODO pb bouton ajouter + pagination-->
    <!-- Modal d'ajout de photo -->
     <div id="modalAddPhotos" class="modal">
       <div class="modal-content">
