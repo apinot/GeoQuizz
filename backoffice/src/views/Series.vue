@@ -95,19 +95,9 @@ export default {
       this.$store.dispatch('setLoading', true);
       this.$http
         .delete(`/series/${this.idDelete}`)
-        .then((response) => {
-          if (response) {
-            // TODO a changer
-            this.$http
-              .get('/series')
-              .then((response2) => {
-                this.series = response2.data.series;
-              })
-              .catch((error) => {
-                this.isError = true;
-                console.log(error);
-              });
-          }
+        .then(() => {
+          const index = this.series.findIndex((e) => this.idSerie === e.id);
+          this.series.splice(index, 1);
         }).catch((error) => {
           this.isError = true;
           console.log(error);
