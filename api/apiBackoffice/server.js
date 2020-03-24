@@ -33,7 +33,7 @@ app.use((req, res, next) => {
     }
 
     const [typeAuth, token] = req.headers.authorization.split(' ');
-    if(!typeAuth || typeAuth !== 'bearer' || !token) {
+    if(!typeAuth || typeAuth.toLocaleLowerCase() !== 'bearer' || !token) {
         next();
         return;
     }
@@ -216,30 +216,23 @@ app.get('/series', (req, res) => {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-
-    // Compte le nombre totals de séries
-    Serie.count((err, count) => {
-        if(err) throw err;
-        //récupère les séries
-        Serie.find({ user: req.authUser._id }).limit(Number(limit)).skip(Number(offset)).exec()
-            .then((series) => {
-                if(!series){
-                    res.status(200).json({
-                        count: 0,
-                        series: [],
-                    })
-                    return;
-                }
-
+    //récupère les séries
+    Serie.find({ user: req.authUser._id }).limit(Number(limit)).skip(Number(offset)).exec()
+        .then((series) => {
+            if(!series){
                 res.status(200).json({
-                    count,
-                    series,
+                    series: [],
                 })
+                return;
+            }
+
+            res.status(200).json({
+                series,
             })
-            .catch((error) => {
-                throw error;
-            });
-    });
+        })
+        .catch((error) => {
+            throw error;
+        });
 });
 
 /**
@@ -758,24 +751,47 @@ app.delete('/series/:idSerie/photos/:idPhoto', (req, res) => {
 
 /**
  * Permet de récupérer les photos de l'utilisateur
+ * 
+ * Query
+ *  - offset: décalage en nombre de photos (defaut: 0, min: 0)
+ *  - size: nombre de photos a renvoyer (defaut: 10, min: 1, max: 50)
  */
+
 app.get('/photos', (req, res) => {
     if(!req.authUser) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-    // TODO pagination
-    Photo.find({user: req.authUser._id}, (err, photos) => {
-        res.status(200).json({
-            total: photos.length,
-            photos: photos.map(p => ({
-                id: p._id,
-                position: p.position,
-                url: p.url,
-                desc: p.desc,
-            })),
+
+    // gestion de la pagination
+    const pagination = {
+        offset: 0,
+        size: 10,
+    }
+    const {offset, size} = req.query
+    if(offset && Number(offset) && offset >= 0) pagination.offset = Number(offset);
+    if(size && Number(size) && size >= 1 && size <= 50) pagination.size = Number(size);
+
+    Photo.find({user: req.authUser._id}).countDocuments().exec((errCount, count) => {
+        if(errCount) throw errCount;
+        
+        Photo.find({user: req.authUser._id})
+        .sort({created_at: 'desc'})
+        .skip(pagination.offset)
+        .limit(pagination.size)
+        .exec((err, photos) => {
+            if(err) throw err;
+            res.status(200).json({
+                total: count,
+                photos: photos.map(p => ({
+                    id: p._id,
+                    position: p.position,
+                    url: p.url,
+                    desc: p.desc,
+                })),
+            });
         });
-    });
+    })
 });
 
 /* Gestion des erreurs */

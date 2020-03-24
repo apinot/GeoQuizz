@@ -263,6 +263,7 @@ export default {
   data() {
     return {
       serie: null,
+      // TODO prendre en compte la pagination
       photos: [],
       error: null,
       editMap: false,

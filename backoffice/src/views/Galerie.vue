@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Gallerie</h3>
+    <h3>Galerie</h3>
     <div v-if="isError">
       <error></error>
     </div>
@@ -15,10 +15,10 @@
           type="submit"
           name="action"
         >Ajouté une photo</button>
-        <div class="row" v-for="photo in photos" :key="photo.id">
-          <div class="col s12 m6">
+        <div class="row">
+          <div class="col s12 m6 l4" v-for="photo in photos" :key="photo.id">
             <h2 class="header"></h2>
-            <div class="card">
+            <div class="card medium">
                 <div class="card-image">
                     <img v-bind:src="photo.url">
                 </div>
@@ -33,6 +33,12 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="row center-align">
+          <button class="btn" v-if="photos.length < maxNbPhoto" @click="getNextPhoto">
+            <i class="fas fa-chevron-down left"></i>
+            Voir plus de photos
+          </button>
         </div>
       </div>
     </div>
@@ -67,15 +73,16 @@ export default {
       isError: false,
       idDelete: '',
       photoDelete: '',
-      photos: null,
+      photos: [],
       error: null,
       edit: null,
+      maxNbPhoto: -1,
+      offset: 0,
     };
   },
   methods: {
     addPhoto() {
       this.$router.push({ name: 'upload' });
-      console.log('oh mince');
     },
 
     updateDeletePhoto(id, photo) {
@@ -106,13 +113,28 @@ export default {
           this.loading = true;
         });
     },
+    getNextPhoto() {
+      this.$http
+        .get(`/photos?offset=${this.offset}`)
+        .then((response) => {
+          response.data.photos.forEach((p) => { this.photos.push(p); });
+          this.maxNbPhoto = response.data.total;
+          this.offset += 10;
+          this.loading = true;
+        })
+        .catch((error) => {
+          this.isError = true;
+          console.log(error);
+        });
+    },
   },
-
   created() {
     this.$http
       .get('/photos')
       .then((response) => {
         this.photos = response.data.photos;
+        this.maxNbPhoto = response.data.total;
+        this.offset += 10;
         this.loading = true;
       })
       .catch((error) => {
@@ -120,7 +142,6 @@ export default {
         console.log(error);
       });
   },
-
   mounted() {
     // eslint-disable-next-line no-undef
     M.AutoInit();
