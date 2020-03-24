@@ -2,11 +2,8 @@
   <div class="home">
     <nav>
       <div class="nav-wrapper red darken-4">
-        <a href="#!" class="brand-logo">Backoffice GeoQuizz</a>
-        <a href="#" data-target="mobile-demo" class="sidenav-trigger">
-          <i class="material-icons">menu</i>
-        </a>
-        <ul class="right hide-on-med-and-down">
+        <a href="/" class="brand-logo">Backoffice GeoQuizz</a>
+        <ul class="right">
           <template v-if="isAuth">
             <li>
               <router-link class="btn red darken-3 waves-effect waves-light"
@@ -19,7 +16,7 @@
             <li>
               <router-link :to="{name: 'signout'}">
                 <button class="btn waves-effect waves-light">
-                  Se déconnecter<i class="fas fa-sign-out-alt right"></i>
+                  Déconnexion<i class="fas fa-sign-out-alt right" style="line-height: inherit"></i>
                 </button>
               </router-link>
             </li>
