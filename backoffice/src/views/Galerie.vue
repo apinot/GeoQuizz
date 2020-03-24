@@ -143,8 +143,7 @@ export default {
       });
   },
   mounted() {
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
+    window.M.AutoInit();
   },
 
 };
