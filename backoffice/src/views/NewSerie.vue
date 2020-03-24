@@ -35,6 +35,8 @@
           <label for="last_name">Distance en mêtre</label>
         </div>
       </div>
+
+      <!-- TODO valider la carte-->
       <!-- carte -->
       <div class="row">
         <h4>Carte de la serie</h4>
@@ -119,6 +121,7 @@ export default {
       this.serie.map = this.currentMapPosition;
     },
     createSerie() {
+      this.$store.dispatch('setLoading', true);
       const newSerie = {
         ville: this.ville,
         nom: this.nom,
@@ -138,6 +141,9 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(() => {
+          this.$store.dispatch('setLoading', false);
         });
     },
   },
