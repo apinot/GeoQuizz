@@ -11,6 +11,7 @@ Vue.config.productionTip = false;
 const apiHost = 'http://ab08b506.ngrok.io';
 axios.defaults.baseURL = apiHost;
 
+
 // passe le token dans le header si il existe
 axios.interceptors.request.use(
   (config) => {

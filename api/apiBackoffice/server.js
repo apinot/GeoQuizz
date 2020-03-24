@@ -432,8 +432,8 @@ app.delete('/series/:id/', (req, res) => {
  * Ajoute une photo à la galerie de l'utilisateur
  * Body :
  *   - photo: {
- *       lat
- *       lng
+ *       position
+ *       desc
  *       url
  *     }
  */
@@ -443,20 +443,26 @@ app.post("/photos", (req, res) => {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
-    const { photo } = req.params;
+    const { photo } = req.body;
+    if(!photo.url || !photo.position || !photo.position.lng || !photo.position.lat || !photo.desc) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
+
     const newPhoto = new Photo({
         position : {
-            lat: photo.lat,
-            lng: photo.lng
+            lat: photo.position.lat,
+            lng: photo.position.lng
         },
-        photo: photo.url,
+        desc: photo.desc,
+        url: photo.url,
         user: req.authUser._id,
         created_at : new Date()
     });
     newPhoto.save().then((photo) => {
         res.status(200).json(photo);
     }).catch((err) =>{
-        res.status(500).json({err});
+        throw err;
     });
 });
 
@@ -784,7 +790,7 @@ app.all('*', (req, res) => {
 
 // Lorsqu'une erreur 500 est renvoyée
 app.use((error, req, res, next) => {
-    console.log(error);
+    // console.log(error.message);
     res.status(500).json({
         status: 500,
         msg: 'Internal Server Error',
