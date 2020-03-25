@@ -227,29 +227,44 @@
         </div>
 
         <div class="row center-align">
-          <div
-            v-for="img in userPhotos" :key="img.id"
-            @click="selectedPhotoInGalllery = img"
-            :class="
-              selectedPhotoInGalllery === img
-                ? 'photo-selected col s12 m6 l4 img-tile'
-                : 'col s12 m6 l4 img-tile'"
-          >
-            <img :src="img.url" :alt="img.desc" class="gallery-image">
-            <i class="fas fa-check-circle selected-icone"></i>
+          <div class="col s12 m6 l4"  v-for="img in userPhotos" :key="img.id">
+            <div
+              :class="'card small ' +
+                        (selectedPhotoInGalllery.includes(img)
+                        ? 'selected' : '')"
+            >
+              <div class="card-image card-cover-image">
+                <img :src="img.url" :alt="img.desc">
+              </div>
+              <div class="card-action">
+                <a href="" v-if="selectedPhotoInGalllery.includes(img)"
+                  class="blue-text text-accent-4"
+                  @click.prevent="
+                    selectedPhotoInGalllery.splice(selectedPhotoInGalllery.indexOf(img),1)"
+                >
+                  Désélectionner
+                </a>
+                <a href="" v-else
+                  class="blue-text text-accent-4"
+                  @click.prevent="selectedPhotoInGalllery.push(img)"
+                >
+                  Sélectionner
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <a class="modal-close waves-effect waves-green btn-flat">
-          Fermer
-        </a>
-        <a class="btn modal-close waves-effect waves-green"
-          :disabled="!selectedPhotoInGalllery"
-          @click="addPhoto"
-        >
-          Ajouter
-        </a>
+        <div class="modal-footer">
+          <a class="modal-close waves-effect waves-green btn-flat">
+            Fermer
+          </a>
+          <a class="btn modal-close waves-effect waves-green"
+            :disabled="!selectedPhotoInGalllery"
+            @click="addPhoto"
+          >
+            Ajouter
+          </a>
+        </div>
       </div>
     </div>
 </div>
@@ -276,7 +291,7 @@ export default {
       photoToDelete: null,
       modalError: null,
       userPhotos: null,
-      selectedPhotoInGalllery: null,
+      selectedPhotoInGalllery: [],
     };
   },
   created() {
@@ -410,18 +425,20 @@ export default {
         });
     },
     addPhoto() {
-      this.$store.dispatch('setLoading', true);
-      this.$http.put(`/series/${this.serie.id}/photos/${this.selectedPhotoInGalllery.id}`)
-        .then((response) => {
-          this.photos = response.data.serie.photos;
-          this.selectedPhotoInGalllery = null;
-        })
-        .catch(() => {
-          this.error = 'Impossible d\'ajouter la photos';
-        })
-        .finally(() => {
-          this.$store.dispatch('setLoading', false);
-        });
+      this.selectedPhotoInGalllery.forEach((p) => {
+        this.$store.dispatch('setLoading', true);
+        this.$http.put(`/series/${this.serie.id}/photos/${p.id}`)
+          .then((response) => {
+            this.photos = response.data.serie.photos;
+          })
+          .catch(() => {
+            this.error = 'Impossible d\'ajouter la photos';
+          })
+          .finally(() => {
+            this.$store.dispatch('setLoading', false);
+          });
+      });
+      this.selectedPhotoInGalllery = [];
     },
   },
 };
@@ -430,29 +447,14 @@ export default {
 <style lang="scss">
     @import url('https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
 
-    .gallery-image {
-      max-width: 100%;
-    }
+.card.small{
+     .card-image {
+       max-height: 100%;
+       max-width: 100%;
+     }
 
-    .photo-selected {
-      position: relative;
-      border: 1px solid #26a69a;
-
-      .selected-icone {
-        display: inline;
-        position: absolute;
-        right: 0.5em;
-        bottom: 0.5em;
-        font-size: 2em;
-        color: darken(#26a69a, 10%);
-      }
-    }
-
-    .selected-icone {
-      display: none;
-    }
-
-    .img-tile {
-      height: 100%;
-    }
+     &.selected {
+       border: 1px solid blue;
+     }
+}
 </style>
