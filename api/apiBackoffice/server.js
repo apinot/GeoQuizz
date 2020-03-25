@@ -80,8 +80,6 @@ app.get('/', (req, res) => {
  *      utilisateur créé
  */
 app.post('/utilisateurs', (req, res) => {
-    // TODO verifier que c'est un email
-
     const {email, password, passwordConfirm} = req.body;
     // verifie que les données sont présentes
     if(!email || !password || !passwordConfirm || password !== passwordConfirm) {
@@ -286,7 +284,7 @@ app.get('/series/:id', (req, res) => {
     });
 });
 
-// TODO créer une serie
+
 /**
  * Permet de créer une série
  */
@@ -349,7 +347,14 @@ app.put('/series/:id/', (req, res) => {
         return;
     }
     const { rules } = req.body;
-
+    if(!rules.ville
+        || !rules.dist || !Number(rules.dist) || !rules.map
+        || !rules.map.lat || !rules.map.lng || !rules.map.zoom
+        || !Number(rules.map.lat) || !Number(rules.map.lng) || !Number(rules.map.zoom)
+    ) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
 
     //TODO verifier que rules possède la bonne architecture
     Serie.findById(id, (err, serie) => {
@@ -407,7 +412,6 @@ app.delete('/series/:id/', (req, res) => {
         return;
     }
 
-    //TODO faire en une requete
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -419,11 +423,15 @@ app.delete('/series/:id/', (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-    });
 
-    Serie.findByIdAndDelete(id, (err) => {
-        if(err) throw err;
-        res.status(200).json('deleted');
+        serie.remove((err2, deleted) => {
+            if(err2) throw err2;
+
+            res.status(200).json({
+                serie: deleted,
+                deleted_at: new Date(),
+            });
+        });
     });
 });
 
@@ -623,7 +631,6 @@ app.put("/series/:id/photos/:idPhoto", (req, res) => {
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
-    // TODO verifier la structure de l'objet photo
 
     if(!idPhoto) {
         res.status(400).json({ status: 400, msg: 'Bad Request' });

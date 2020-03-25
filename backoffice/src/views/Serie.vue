@@ -166,10 +166,11 @@
 
       <!-- Photos -->
       <div class="row">
-      <h4 class="center-align">Photos</h4>
-      <div class="row center-align">
-        <button class="btn red darken-3 waves-effect waves-light modal-trigger"
-        data-target="modalAddPhotos" @click="getUserPhotos">
+      <h4>Photos</h4>
+      <div class="row">
+        <button class="btn modal-trigger red darken-3" data-target="modalAddPhotos"
+          @click="userOffset <= 0 ? getUserPhotos() : ''"
+        >
           <i class="fas fa-plus left"></i>Ajouter
         </button>
       </div>
@@ -187,14 +188,14 @@
               <div class="row">Voulez-vous vraiement retirer cette photo de la série ?</div>
               <div class="row">
                 <button class="btn left" @click="photoToDelete = null">Annuler</button>
-                <button class="btn red darken-3 waves-effect waves-light right"
+                <button class="btn red accent-4  waves-effect waves-light right"
                 @click="removePhoto">
                   <i class="fas fa-trash left"></i> Supprimer
                 </button>
               </div>
             </div>
             <div class="card-action center-align" v-else>
-              <button class="btn red darken-3 waves-effect waves-light"
+              <button class="btn red accent-4 waves-effect waves-light"
               @click="photoToDelete = photo.id">
                 <i class="fas fa-trash left"></i> Supprimer de la série
               </button>
@@ -206,55 +207,74 @@
   </div>
 
 
-  <!-- TODO pb bouton ajouter + pagination-->
    <!-- Modal d'ajout de photo -->
-    <div id="modalAddPhotos" class="modal">
+    <div id="modalAddPhotos" class="modal modal-fixed-footer">
       <div class="modal-content">
         <h4>Ajouter des photos</h4>
-        <!-- Spinner -->
-        <div class="row center-align" v-if="!userPhotos">
-          <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-blue-only">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div><div class="gap-patch">
-                <div class="circle"></div>
-              </div><div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div class="row center-align red-text text-accent-4" v-if="modalError">
           {{modalError}}
         </div>
 
         <div class="row center-align">
-          <div
-            v-for="img in userPhotos" :key="img.id"
-            @click="selectedPhotoInGalllery = img"
-            :class="
-              selectedPhotoInGalllery === img
-                ? 'photo-selected col s12 m6 l4 img-tile'
-                : 'col s12 m6 l4 img-tile'"
-          >
-            <img :src="img.url" :alt="img.desc" class="gallery-image">
-            <i class="fas fa-check-circle selected-icone"></i>
+          <div class="col s12 m6 l4"  v-for="img in userPhotos" :key="img.id">
+            <div
+              :class="'card small ' +
+                        (selectedPhotoInGalllery.includes(img)
+                        ? 'selected' : '')"
+            >
+              <div class="card-image card-cover-image">
+                <img :src="img.url" :alt="img.desc">
+              </div>
+              <div class="card-action">
+                <a href="" v-if="selectedPhotoInGalllery.includes(img)"
+                  class="blue-text text-accent-4"
+                  @click.prevent="
+                    selectedPhotoInGalllery.splice(selectedPhotoInGalllery.indexOf(img),1)"
+                >
+                  Désélectionner
+                </a>
+                <a href="" v-else
+                  class="blue-text text-accent-4"
+                  @click.prevent="selectedPhotoInGalllery.push(img)"
+                >
+                  Sélectionner
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <a class="modal-close waves-effect waves-green btn-flat">
-          Fermer
-        </a>
-        <a class="btn modal-close waves-effect waves-green"
-          :disabled="!selectedPhotoInGalllery"
-          @click="addPhoto"
-        >
-          Ajouter
-        </a>
-      </div>
+             <!-- Spinner -->
+            <div class="row center-align" v-if="modalLoading">
+              <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div><div class="gap-patch">
+                    <div class="circle"></div>
+                  </div><div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row center-align" v-if="!modalLoading">
+              <button class="btn" @click="getUserPhotos" v-if="userPhotos.length < totalUserPhoto">
+                <i class="fas fa-arrow-down left"></i> Plus de photos
+              </button>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <a class="modal-close waves-effect waves-green btn-flat">
+            Fermer
+          </a>
+          <a class="btn modal-close waves-effect waves-green"
+            :disabled="!selectedPhotoInGalllery"
+            @click="addPhoto"
+          >
+            Ajouter
+          </a>
+        </div>
     </div>
 </div>
 </template>
@@ -279,8 +299,11 @@ export default {
       currentDist: null,
       photoToDelete: null,
       modalError: null,
-      userPhotos: null,
-      selectedPhotoInGalllery: null,
+      userPhotos: [],
+      selectedPhotoInGalllery: [],
+      userOffset: 0,
+      totalUserPhoto: -1,
+      modalLoading: true,
     };
   },
   created() {
@@ -403,28 +426,35 @@ export default {
         });
     },
     getUserPhotos() {
-      this.$http.get('/photos')
+      this.modalLoading = true;
+      this.$http.get(`/photos?offset=${this.userOffset}`)
         .then((response) => {
-          this.userPhotos = response.data.photos;
+          response.data.photos.forEach((p) => { this.userPhotos.push(p); });
+          this.userOffset += response.data.photos.length;
+          this.totalUserPhoto = response.data.total;
         })
         .catch(() => {
           this.modalError = 'Impossible de récupérer vos photos';
-          this.userPhotos = [];
+        })
+        .finally(() => {
+          this.modalLoading = false;
         });
     },
     addPhoto() {
-      this.$store.dispatch('setLoading', true);
-      this.$http.put(`/series/${this.serie.id}/photos/${this.selectedPhotoInGalllery.id}`)
-        .then((response) => {
-          this.photos = response.data.serie.photos;
-          this.selectedPhotoInGalllery = null;
-        })
-        .catch(() => {
-          this.error = 'Impossible d\'ajouter la photos';
-        })
-        .finally(() => {
-          this.$store.dispatch('setLoading', false);
-        });
+      this.selectedPhotoInGalllery.forEach((p) => {
+        this.$store.dispatch('setLoading', true);
+        this.$http.put(`/series/${this.serie.id}/photos/${p.id}`)
+          .then((response) => {
+            this.photos = response.data.serie.photos;
+          })
+          .catch(() => {
+            this.error = 'Impossible d\'ajouter la photos';
+          })
+          .finally(() => {
+            this.$store.dispatch('setLoading', false);
+          });
+      });
+      this.selectedPhotoInGalllery = [];
     },
   },
 };
@@ -433,29 +463,14 @@ export default {
 <style lang="scss">
     @import url('https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
 
-    .gallery-image {
-      max-width: 100%;
-    }
+.card.small{
+     .card-image {
+       max-height: 100%;
+       max-width: 100%;
+     }
 
-    .photo-selected {
-      position: relative;
-      border: 1px solid #26a69a;
-
-      .selected-icone {
-        display: inline;
-        position: absolute;
-        right: 0.5em;
-        bottom: 0.5em;
-        font-size: 2em;
-        color: darken(#26a69a, 10%);
-      }
-    }
-
-    .selected-icone {
-      display: none;
-    }
-
-    .img-tile {
-      height: 100%;
-    }
+     &.selected {
+       border: 1px solid blue;
+     }
+}
 </style>
