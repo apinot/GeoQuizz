@@ -326,7 +326,7 @@ app.put("/series/:id/photos", (req, res) => {
         }
         console.log('2');
 
-        const photos = [];
+        const newphotos = [];
         photos.forEach((photo) => {
             // initialisation de la photo
             const lat = photo.location.latitude;
@@ -345,7 +345,7 @@ app.put("/series/:id/photos", (req, res) => {
             newPhoto.save().then((phot) => {
                 console.log('id de la photo')
                 console.log(phot.id);
-                photos.push(phot.id);
+                newphotos.push(phot.id);
                 // mise à jour de la serie
             }).catch((err) =>{
                 res.status(500).json({err})
@@ -353,8 +353,8 @@ app.put("/series/:id/photos", (req, res) => {
         });
         console.log('3');
 
-        console.log(photos);
-        serie.photos = photos;
+        console.log(newphotos);
+        serie.photos = newphotos;
 
         serie.save().then((saved) => {
             console.log('4');
