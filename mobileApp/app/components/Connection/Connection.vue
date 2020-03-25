@@ -24,7 +24,7 @@
             return{
                 email:'',
                 password: '',
-                url_api_mobile: "https://f68f868d.ngrok.io/",
+                url_api_mobile: "https://00d46766.ngrok.io/",
                 isBusy: false,
             }
         },

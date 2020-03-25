@@ -5,161 +5,162 @@
     </div>
     <div v-if="serie">
       <div class="row">
-        <h1 class="align-center">
+        <h1 class="center-align">
           Série de photos
         </h1>
       </div>
 
-      <!-- Nom -->
-      <div class="row">
-        <template v-if="currentNom !== null">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="text"
-              class="validate"
-              autofocus="true"
-              v-model="currentNom">
-            <label for="last_name">Nom</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineNom"
-            :disabled="!currentNom">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Nom de la serie</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.nom}}
-            </span>
-            <button class="btn" @click="currentNom = serie.nom">
-              <i class="fas fa-pen left"></i> Modifier
+      <div class="container center-align">
+        <!-- Nom -->
+        <div class="row">
+          <template v-if="currentNom !== null">
+            <div class="input-field col s12 m8">
+              <input
+                type="text"
+                class="validate"
+                autofocus="true"
+                v-model="currentNom">
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineNom"
+              :disabled="!currentNom">
+                Valider
             </button>
-          </div>
-        </template>
-      </div>
+          </template>
+          <template v-else>
+            <h4>Nom de la serie</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.nom}}
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentNom = serie.nom">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
 
-      <!-- description -->
-      <div class="row">
-        <template v-if="currentDescr !== null">
-          <div class="input-field col ">
-             <textarea
-              id="last_name"
-              type="text"
-              class="materialize-textarea"
-              autofocus="true"
-              v-model="currentDescr"></textarea>
-            <label for="last_name">Description</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineDescr"
-            :disabled="!currentDescr">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Description</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.descr}}
-            </span>
-            <button class="btn" @click="currentDescr = serie.descr">
-              <i class="fas fa-pen left"></i> Modifier
+        <!-- description -->
+        <div class="row">
+          <template v-if="currentDescr !== null">
+            <div class="input-field col s12 m8">
+              <textarea
+                type="text"
+                class="materialize-textarea"
+                autofocus="true"
+                v-model="currentDescr"></textarea>
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineDescr"
+              :disabled="!currentDescr">
+                Valider
             </button>
-          </div>
-        </template>
-      </div>
+          </template>
+          <template v-else>
+            <h4>Description</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.descr}}
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentDescr = serie.descr">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
 
-      <!-- Ville -->
-      <div class="row">
-        <template v-if="currentCity !== null">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="text"
-              class="validate"
-              autofocus="true"
-              v-model="currentCity">
-            <label for="last_name">Ville</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineVille"
-            :disabled="!currentCity">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Ville</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.ville}}
-            </span>
-            <button class="btn" @click="currentCity = serie.ville">
-              <i class="fas fa-pen left"></i> Modifier
+        <!-- Ville -->
+        <div class="row">
+          <template v-if="currentCity !== null">
+            <div class="input-field col s12 m8">
+              <input
+                type="text"
+                class="validate"
+                autofocus="true"
+                v-model="currentCity">
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineVille"
+              :disabled="!currentCity">
+                Valider
             </button>
-          </div>
-        </template>
-      </div>
+          </template>
+          <template v-else>
+            <h4>Ville</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.ville}}
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentCity = serie.ville">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
 
-       <!-- Distance -->
-      <div class="row">
-        <template v-if="currentDist !== null">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="number"
-              min="0"
-              class="validate"
-              autofocus="true"
-              v-model="currentDist">
-            <label for="last_name">Distance (en mètres)</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineDist"
-            :disabled="!currentDist">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Distance de perfection</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.dist}} mètres
-            </span>
-            <button class="btn" @click="currentDist = serie.dist">
-              <i class="fas fa-pen left"></i> Modifier
+        <!-- Distance -->
+        <div class="row">
+          <template v-if="currentDist !== null">
+            <div class="input-field col s12 m8">
+              <input
+                type="number"
+                min="0"
+                class="validate"
+                autofocus="true"
+                v-model="currentDist">
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineDist"
+              :disabled="!currentDist">
+                Valider
             </button>
-          </div>
-        </template>
+          </template>
+          <template v-else>
+            <h4>Distance de perfection</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.dist}} mètres
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentDist = serie.dist">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
       </div>
 
       <!-- carte -->
-      <div class="row">
-        <h4>Carte de la serie</h4>
+      <div class="container">
         <div class="row">
-          <leaflet :options="leafletOptions"
-            :markers="photos"
-            :disabled="!editMap"
-            @viewchanged="onMapViewChange"
-          >
-          </leaflet>
-        </div>
-        <div class="row center-align">
-          <button
-            v-if="editMap"
-            @click="defineNewMap"
-            class="btn">
-            Définir cette vue comme nouvelle carte
-          </button>
-          <button  class="btn" @click="editMap = true" v-else>
-            <i class="fas fa-pen left"></i> Modifier
-          </button>
+          <h4>Carte de la serie</h4>
+          <div class="row">
+            <leaflet :options="leafletOptions"
+              :markers="photos"
+              :disabled="!editMap"
+              @viewchanged="onMapViewChange"
+            >
+            </leaflet>
+          </div>
+          <div class="row center-align">
+            <button
+              v-if="editMap"
+              @click="defineNewMap"
+              class="btn red darken-3 waves-effect waves-light">
+              Définir cette vue comme nouvelle carte
+            </button>
+            <button  class="btn red darken-3 waves-effect waves-light"
+            @click="editMap = true" v-else>
+              <i class="fas fa-pen left"></i> Modifier
+            </button>
+          </div>
         </div>
       </div>
 
@@ -187,13 +188,15 @@
               <div class="row">Voulez-vous vraiement retirer cette photo de la série ?</div>
               <div class="row">
                 <button class="btn left" @click="photoToDelete = null">Annuler</button>
-                <button class="red accent-4 btn right" @click="removePhoto">
+                <button class="btn red darken-3 waves-effect waves-light right"
+                @click="removePhoto">
                   <i class="fas fa-trash left"></i> Supprimer
                 </button>
               </div>
             </div>
             <div class="card-action center-align" v-else>
-              <button class="red accent-4 btn" @click="photoToDelete = photo.id">
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="photoToDelete = photo.id">
                 <i class="fas fa-trash left"></i> Supprimer de la série
               </button>
             </div>
@@ -329,8 +332,7 @@ export default {
       });
   },
   mounted() {
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
+    window.M.AutoInit();
   },
   computed: {
     idUrlParam() {
