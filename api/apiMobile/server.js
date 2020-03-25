@@ -314,6 +314,7 @@ app.put("/series/:id/photos", (req, res) => {
     const idUtilisateur = req.body.data.id;
 
     Serie.findById(id, (err, serie) => {
+        console.log('1');
         if(err) throw err;
         if(!serie) {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
@@ -323,7 +324,9 @@ app.put("/series/:id/photos", (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
+        console.log('2');
 
+        const photos = [];
         photos.forEach((photo) => {
             // initialisation de la photo
             const lat = photo.location.latitude;
@@ -340,16 +343,33 @@ app.put("/series/:id/photos", (req, res) => {
             });
             // sauvegarde l'id de la photo
             newPhoto.save().then((phot) => {
-                serie.photos.push(phot.id);
-                console.log(serie)
+                console.log('id de la photo')
+                console.log(phot.id);
+                photos.push(phot.id);
                 // mise à jour de la serie
             })
-
-
         });
-        console.log(serie)
-        serie.save().then((ser) => {
-            res.status(200).json(ser)
+        console.log('3');
+
+        console.log(photos);
+        serie.photos = photos;
+
+        serie.save().then((saved) => {
+            console.log('4');
+            res.status(200).json({
+                serie: {
+                    id: saved._id,
+                    ville: saved.ville,
+                    nom : saved.nom,
+                    descr: saved.descr,
+                    dist: saved.dist,
+                    map: {
+                        lat: saved.map.lat,
+                        lng: saved.map.lng,
+                    },
+                    zoom: saved.map.zoom,
+                }
+            });
         }).catch((err) =>{
             res.status(500).json({err})
         });
