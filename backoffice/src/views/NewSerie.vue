@@ -49,7 +49,7 @@
           >
           </leaflet>
         </div>
-        <div class="row center-align">
+        <div class="row">
           <div class="center-align">
             <button
               @click="defineNewMap"
@@ -57,6 +57,8 @@
               Valider la carte <i class="fas fa-map-marked-alt left"></i>
             </button>
           </div>
+        </div>
+        <div class="row">
           <div class="center-align">
             <button
               @click="createSerie"

@@ -166,8 +166,8 @@
 
       <!-- Photos -->
       <div class="row">
-      <h4>Photos</h4>
-      <div class="row">
+      <h4 class="center-align">Photos</h4>
+      <div class="row center-align">
         <button class="btn modal-trigger red darken-3" data-target="modalAddPhotos"
           @click="userOffset <= 0 ? getUserPhotos() : ''"
         >

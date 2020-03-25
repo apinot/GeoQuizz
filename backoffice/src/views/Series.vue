@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="center-align">Vos series</h1>
+    <h1 class="center-align">Vos séries</h1>
     <div v-if="isError">
       <error></error>
     </div>
