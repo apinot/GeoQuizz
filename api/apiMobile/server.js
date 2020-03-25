@@ -65,6 +65,7 @@ app.use((req, res, next) => {
 });
 
 app.post('/utilisateurs/auth', (req, res) => {
+    console.log('zinzin')
     setTimeout(() => {
         if(!req.headers.authorization) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
@@ -155,6 +156,99 @@ app.get("/", (req,res) =>{
 //             res.status(500).json({err})
 //         });
 // });
+app.put('/serie/:id', (req,res)=>{
+    if (!req.headers.authorization) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const {id} = req.params;
+    const updateSerie = req.body;
+    const idUtilisateur = req.body.user;
+    console.log(req.body.user)
+    console.log(req.body)
+    Serie.findById(id, (err, serie) => {
+        if (err) throw err;
+        if (!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        // vérification du propriétaire de la série
+        if (serie.user !== idUtilisateur) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
+        console.log('---------------------------------------------------------')
+        serie.ville =  updateSerie.ville;
+        serie.dist = updateSerie.dist;
+        serie.descr = updateSerie.descr;
+        serie.map.lat = updateSerie.lat;
+        serie.map.lng = updateSerie.lng;
+        serie.map.zoom = updateSerie.zoom;
+        serie.user = updateSerie.user;
+        serie.created_at = new Date();
+
+        serie.save().then((serie) => {
+            res.status(200).json(serie)
+        }).catch((err)=>{
+            res.status(500).json({err})
+        })
+    })
+
+});
+
+app.post('/series', (req, res) => {
+    if (!req.headers.authorization) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const serie = req.body;
+    const newSerie = new Serie({
+        ville: serie.ville,
+        dist: serie.dist,
+        nom: serie.nom,
+        descr: serie.descr,
+        map: {
+            lat: serie.lat,
+            lng: serie.lng,
+            zoom: serie.lng
+        },
+        photos: serie.photos,
+        user: serie.user,
+        created_at: new Date()
+    });
+    newSerie.save().then((serie)=>{
+        res.status(200).json({serie})
+    }).catch((err) => {
+        res.status(500).json({err})
+    })
+});
+
+app.delete('/series/:id/', (req, res) => {
+    const { id } = req.params;
+    if (!req.headers.authorization) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    const idUtilisateur = req.query.id;
+
+    Serie.findById(id, (err, serie) => {
+        if(err) throw err;
+        if(!serie) {
+            res.status(404).json({status: 404, msg: 'Serie Not Found'});
+            return;
+        }
+        // vérification du propriétaire de la série
+        if(serie.user !== idUtilisateur) {
+            res.status(401).json({status: 401, msg: 'Unauthorized'});
+            return;
+        }
+    });
+
+    Serie.findByIdAndDelete(id, (err) => {
+        if(err) throw err;
+        res.status(200).json('deleted');
+    });
+});
 
 app.get('/series', (req, res) => {
     let {limit, offset} = req.query;
@@ -168,7 +262,7 @@ app.get('/series', (req, res) => {
     Serie.count((err, count) => {
         if(err) throw err;
         //récupère les séries
-        Serie.find({ idUtilisateur: idUtilisateur }).limit(Number(limit)).skip(Number(offset)).exec()
+        Serie.find({ user: idUtilisateur }).limit(Number(limit)).skip(Number(offset)).exec()
             .then((series) => {
                 if(!series){
                     res.status(200).json({
@@ -188,8 +282,6 @@ app.get('/series', (req, res) => {
             });
     });
 });
-
-
 
 app.put("/series/:id/photos", (req, res) => {
     setTimeout(()=>{
@@ -219,7 +311,7 @@ app.put("/series/:id/photos", (req, res) => {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
-        if(serie.idUtilisateur !== idUtilisateur) {
+        if(serie.user !== idUtilisateur) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
@@ -233,9 +325,10 @@ app.put("/series/:id/photos", (req, res) => {
                 lng: lng
             },
             url: url,
-            idUtilisateur : idUtilisateur,
-            create_at : new Date()
+            user : idUtilisateur,
+            created_at : new Date()
         });
+        console.log(newPhoto);
         // sauvegarde l'id de la photo
         newPhoto.save().then((photo) => {
             serie.photos.push(photo.id);

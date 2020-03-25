@@ -1,13 +1,15 @@
 <template>
     <Page>
-        <ActionBar title="GeoQuiz"/>
+        <ActionBar title="GeoQuiz"></ActionBar>
         <StackLayout>
-            <Button text="Take Picture" @tap="takePicture" />
-            <Button text="Choose Picture" @tap="selectPicture" />
+            <Button text="Gestion des serie" @tap="goToSerie"></Button>
+            <Button text="Prendre une photo" @tap="takePicture" />
+            <Button text="Choisir une photo" @tap="selectPicture" />
             <WrapLayout>
                 <Image v-for="img in images" :src="img.img.src" width="75" height="75" />
             </WrapLayout>
             <Button text="Upload" @tap="sendPictures" />
+            <ActivityIndicator :busy="isBusy" ></ActivityIndicator>
 
         </StackLayout>
     </Page>
@@ -19,17 +21,19 @@
     import * as imagepicker from "nativescript-imagepicker";
     import { Image } from "tns-core-modules/ui/image";
     import * as geolocation from "nativescript-geolocation";
-    const bghttp = require("nativescript-background-http");
-    const session = bghttp.session("image-upload");
+    import SerieSelection from "./SerieSelection/SerieSelection";
+    import Series from './Series/Series'
     import AddCoords from "./AddCoords/AddCoords";
     import axios from 'axios/dist/axios';
-    const dialogs = require("tns-core-modules/ui/dialogs");
-    import SerieSelection from "./SerieSelection/SerieSelection";
 
+    const bghttp = require("nativescript-background-http");
+    const session = bghttp.session("image-upload");
+    const dialogs = require("tns-core-modules/ui/dialogs");
     export default {
         components: {
-           AddCoords,
-           SerieSelection
+            AddCoords,
+            SerieSelection,
+            Series,
         },
         data() {
             return {
@@ -39,17 +43,18 @@
                 urls: [],
                 data: [],
                 serie: null,
-                url_api_mobile: "https://9278aa32.ngrok.io/",
+                url_api_mobile: "https://f68f868d.ngrok.io/",
+                isBusy: false
             }
         },
         created(){
             geolocation.enableLocationRequest();
-            console.log(this.$store.state.tokenAuth);
-            this.$showModal(AddCoords)
         },
         methods:{
+            goToSerie(){
+                this.$navigateTo(Series)
+            },
             selectPicture() {
-                //TODO Faire la selection des images et gerer les autaurisations
                 let context = imagepicker.create({
                     mode: 'single'
                 });
@@ -121,6 +126,7 @@
                         .then( serie => {
                             this.serie = serie;
                             if(serie){
+                                this.isBusy = true
                                 const url = 'https://api.imgbb.com/1/upload';
                                 const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
                                 this.images.forEach((image) => {
@@ -175,20 +181,27 @@
                         },
                         timeout: 10
                     };
-
                     axios.put(this.url_api_mobile+'series/'+this.serie._id+"/photos",data,config)
                         .then((res) =>{
                             dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
                         })
                         .catch((err) =>{
                             dialogs.alert("L'association à la série a été interompu !");
-                            console.log(err)
+                            console.log(err);
+                            this.isBusy = false;
+                        })
+                        .finally(()=>{
+                            setTimeout(() =>{
+                                this.isBusy = false;
+                            });
                         });
+
                 }
 
             },
             logEvent(e) {
                 console.log(e.eventName);
+                this.isBusy = true
                 if(e.eventName === 'error'){
                     dialogs.alert("Une erreur est survenue avec l'upload de la photo ")
                 }
@@ -202,6 +215,8 @@
                     this.images = [];
                     this.urls = []
                 }
+
+                this.isBusy = false
                 dialogs.confirm('Votre photo a bien été upload dans le cloud :) ')
 
             },
@@ -209,16 +224,6 @@
                 const string = path.split('/');
                 return string[string.length-1];
             },
-            //TODO ajouter les coordonées a une photo prise dans la galerie
-            // addCoords(obj){
-            //     this.$navigateTo(AddCoords)
-            //         .then(coords => {
-            //             if (coords){
-            //                 obj.location = coords;
-            //                 this.images.push(obj)
-            //             }
-            //         })
-            // },
             checkApiMobile(){
                 axios.get(this.url_api_mobile)
                     .then((result)=>{
