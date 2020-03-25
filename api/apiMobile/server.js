@@ -343,14 +343,10 @@ app.put("/series/:id/photos", (req, res) => {
                     created_at : new Date()
                 });
                 // sauvegarde l'id de la photo
-                newPhoto.save().then((phot) => {
+                const phot = newPhoto.save();
                     tab.push(phot.id);
                     console.log('regarde le tableau se remplit')
                     console.log(tab);
-                    // mise à jour de la serie
-                }).catch((err) =>{
-                    res.status(500).json({err})
-                });
             });
             return tab;
         }
