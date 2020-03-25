@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="container">
     <div class="row">
         <div class="col s12 m6">
           <div class="row">
@@ -10,7 +10,8 @@
                     v-if="photo" >
                 </div>
                 <div class="card-action center-align">
-                  <a data-target="modal1" class="btn modal-trigger">Modal</a>
+                  <a data-target="modal1"
+                  class="btn red darken-4 modal-trigger waves-effect waves-light">Modal</a>
                 </div>
               </div>
             </div>
@@ -65,8 +66,7 @@ export default {
   },
 
   mounted() {
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
+    window.M.AutoInit();
   },
 };
 </script>

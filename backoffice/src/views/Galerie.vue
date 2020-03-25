@@ -7,14 +7,14 @@
     <div v-else>
       <div>
         <div class="center-align">
-          <button
-            v-on:click="addPhoto"
+          <router-link
             class="s12 m3 btn waves-effect waves-light red darken-3"
             type="submit"
             name="action"
+            :to="{name: 'upload'}">
           >
           <i class="fas fa-plus left "></i>Ajouter une photo
-          </button>
+          </router-link>
         </div>
         <div class="row">
           <div class="col s12 m6 l4" v-for="photo in photos" :key="photo.id">
@@ -79,9 +79,6 @@ export default {
     };
   },
   methods: {
-    addPhoto() {
-      this.$router.push({ name: 'upload' });
-    },
     updateDeletePhoto(id, photo) {
       this.idDelete = id;
       this.photoDelete = photo;

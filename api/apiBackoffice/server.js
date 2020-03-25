@@ -80,8 +80,6 @@ app.get('/', (req, res) => {
  *      utilisateur créé
  */
 app.post('/utilisateurs', (req, res) => {
-    // TODO verifier que c'est un email
-
     const {email, password, passwordConfirm} = req.body;
     // verifie que les données sont présentes
     if(!email || !password || !passwordConfirm || password !== passwordConfirm) {
@@ -207,7 +205,6 @@ app.post('/utilisateurs/auth', (req, res) => {
  */
 app.get('/series', (req, res) => {
     let {size, offset} = req.query;
-    console.log(req.query.offset)
     if(!size || !Number(size) || size > 50 || size < 1) size = 10;
     if(!offset || !Number(offset) || offset < 0) offset = 0;
     if(!req.authUser) {
@@ -232,7 +229,13 @@ app.get('/series', (req, res) => {
 
             res.status(200).json({
                 total: count,
-                series,
+                series: series.map(s => ({
+                    id: s._id,
+                    ville: s.ville,
+                    dist: s.dist,
+                    nom: s.nom,
+                    descr: s.descr,
+                })),
             })
         })
         .catch((error) => {
@@ -286,7 +289,7 @@ app.get('/series/:id', (req, res) => {
     });
 });
 
-// TODO créer une serie
+
 /**
  * Permet de créer une série
  */
@@ -296,8 +299,10 @@ app.post('/series', (req, res) => {
         return;
     }
     const serie = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     // TODO verifier que serie possède la bonne architecture
+
+
     const newSerie = new Serie({
         ville: serie.ville,
         dist: serie.dist,
@@ -316,7 +321,7 @@ app.post('/series', (req, res) => {
     newSerie.save().then((data) => {
         res.status(200).json({data})
     }).catch((err) =>{
-        res.status(500).json({err})
+        throw err;
     });
     // TODO ajouté des photos
 
@@ -349,7 +354,14 @@ app.put('/series/:id/', (req, res) => {
         return;
     }
     const { rules } = req.body;
-
+    if(!rules.ville
+        || !rules.dist || !Number(rules.dist) || !rules.map
+        || !rules.map.lat || !rules.map.lng || !rules.map.zoom
+        || !Number(rules.map.lat) || !Number(rules.map.lng) || !Number(rules.map.zoom)
+    ) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
 
     //TODO verifier que rules possède la bonne architecture
     Serie.findById(id, (err, serie) => {
@@ -407,7 +419,6 @@ app.delete('/series/:id/', (req, res) => {
         return;
     }
 
-    //TODO faire en une requete
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -419,11 +430,20 @@ app.delete('/series/:id/', (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-    });
 
-    Serie.findByIdAndDelete(id, (err) => {
-        if(err) throw err;
-        res.status(200).json('deleted');
+        serie.remove((err2, deleted) => {
+            if(err2) throw err2;
+            res.status(200).json({
+                serie: {
+                    id: serie._id,
+                    ville: serie.ville,
+                    dist: serie.dist,
+                    nom: serie.nom,
+                    descr: serie.descr,
+                },
+                deleted_at: new Date(),
+            });
+        });
     });
 });
 
@@ -623,7 +643,6 @@ app.put("/series/:id/photos/:idPhoto", (req, res) => {
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
-    // TODO verifier la structure de l'objet photo
 
     if(!idPhoto) {
         res.status(400).json({ status: 400, msg: 'Bad Request' });

@@ -17,7 +17,7 @@
               <p class="col s6 m2">Temps: {{timer}}s</p>
               <button
                 v-on:click="nextPhoto"
-                class="col s12 m2 offset-m5 btn waves-effect waves-light"
+                class="col s12 m2 offset-m5 btn red darken-4 waves-effect waves-light"
                 type="submit" name="action">
                 Valider
               </button>

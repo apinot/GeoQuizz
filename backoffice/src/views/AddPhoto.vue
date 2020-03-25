@@ -157,7 +157,6 @@ export default {
         })
         .then((response) => {
           const photo = {
-            // TODO mettre la postion
             position: this.position,
             desc: this.description,
             url: response.data.data.url,

@@ -30,7 +30,8 @@
           </div>
           <div class="input-field col s6">
             <input
-            type="text"
+            type="number"
+            min="0"
             v-model="dist">
             <label>Distance</label>
             <small>en mètre</small>

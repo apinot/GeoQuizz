@@ -16,7 +16,9 @@
         },
         data(){
           return {
-              url_api_mobile: '',
+              selected:true,
+              notselected:false,
+              url_api_mobile: "https://00d46766.ngrok.io/",
               series: null,
               isBusy: false
           }

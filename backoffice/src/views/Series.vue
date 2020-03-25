@@ -7,12 +7,13 @@
     <div v-else>
       <div>
         <div class="center-align">
-          <button
-            v-on:click="createSerie"
+          <router-link
             class="s12 m3 btn waves-effect waves-light red darken-3"
             type="submit"
             name="action"
-          ><i class="fas fa-plus left "></i>Créer une nouvelle série</button>
+            :to="{ name: 'newserie' }">
+            <i class="fas fa-plus left "></i>Créer une nouvelle série
+          </router-link>
         </div>
         <div class="row">
           <div v-for="serie in series" :key="serie.id">
@@ -26,12 +27,14 @@
                   <p>{{serie.descr}}</p>
                 </div>
                 <div class="card-action">
-                  <a v-on:click="showSerie(serie._id)"
+                  <router-link
                     class="s12 m3 waves-effect waves-light"
                     type="submit"
                     name="action"
-                  >Modifier</a>
-                  <a v-on:click="updateDeleteSerie(serie._id, serie.nom)"
+                    :to="{ name: 'serie', params: { id: serie._d } }"
+                  >
+                    Modifier</router-link>
+                  <a v-on:click="updateDeleteSerie(serie.id, serie.nom)"
                   data-target="modal1"
                   class="s12 m3 waves-effect
                   waves-light modal-trigger
@@ -86,21 +89,13 @@ export default {
   },
 
   methods: {
-    showSerie(id) {
-      this.$router.push({ name: 'serie', params: { id } });
-    },
-    createSerie() {
-      this.$router.push({ name: 'newserie' });
-    },
-    showGallerie() {
-      this.$router.push({ name: 'galerie' });
-    },
     deleteSerie() {
       this.$store.dispatch('setLoading', true);
       this.$http
         .delete(`/series/${this.idDelete}`)
-        .then(() => {
-          const index = this.series.findIndex((e) => this.idSerie === e.id);
+        .then((response) => {
+          const index = this.series.findIndex((e) => response.data.serie.id === e.id);
+          console.log(index);
           this.series.splice(index, 1);
           this.offset -= 1;
           this.maxNbSerie -= 1;
@@ -157,8 +152,7 @@ export default {
   },
 
   mounted() {
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
+    window.M.AutoInit();
   },
 };
 </script>

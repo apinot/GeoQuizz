@@ -5,161 +5,162 @@
     </div>
     <div v-if="serie">
       <div class="row">
-        <h1 class="align-center">
+        <h1 class="center-align">
           Série de photos
         </h1>
       </div>
 
-      <!-- Nom -->
-      <div class="row">
-        <template v-if="currentNom !== null">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="text"
-              class="validate"
-              autofocus="true"
-              v-model="currentNom">
-            <label for="last_name">Nom</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineNom"
-            :disabled="!currentNom">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Nom de la serie</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.nom}}
-            </span>
-            <button class="btn" @click="currentNom = serie.nom">
-              <i class="fas fa-pen left"></i> Modifier
+      <div class="container center-align">
+        <!-- Nom -->
+        <div class="row">
+          <template v-if="currentNom !== null">
+            <div class="input-field col s12 m8">
+              <input
+                type="text"
+                class="validate"
+                autofocus="true"
+                v-model="currentNom">
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineNom"
+              :disabled="!currentNom">
+                Valider
             </button>
-          </div>
-        </template>
-      </div>
+          </template>
+          <template v-else>
+            <h4>Nom de la serie</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.nom}}
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentNom = serie.nom">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
 
-      <!-- description -->
-      <div class="row">
-        <template v-if="currentDescr !== null">
-          <div class="input-field col ">
-             <textarea
-              id="last_name"
-              type="text"
-              class="materialize-textarea"
-              autofocus="true"
-              v-model="currentDescr"></textarea>
-            <label for="last_name">Description</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineDescr"
-            :disabled="!currentDescr">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Description</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.descr}}
-            </span>
-            <button class="btn" @click="currentDescr = serie.descr">
-              <i class="fas fa-pen left"></i> Modifier
+        <!-- description -->
+        <div class="row">
+          <template v-if="currentDescr !== null">
+            <div class="input-field col s12 m8">
+              <textarea
+                type="text"
+                class="materialize-textarea"
+                autofocus="true"
+                v-model="currentDescr"></textarea>
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineDescr"
+              :disabled="!currentDescr">
+                Valider
             </button>
-          </div>
-        </template>
-      </div>
+          </template>
+          <template v-else>
+            <h4>Description</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.descr}}
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentDescr = serie.descr">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
 
-      <!-- Ville -->
-      <div class="row">
-        <template v-if="currentCity !== null">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="text"
-              class="validate"
-              autofocus="true"
-              v-model="currentCity">
-            <label for="last_name">Ville</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineVille"
-            :disabled="!currentCity">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Ville</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.ville}}
-            </span>
-            <button class="btn" @click="currentCity = serie.ville">
-              <i class="fas fa-pen left"></i> Modifier
+        <!-- Ville -->
+        <div class="row">
+          <template v-if="currentCity !== null">
+            <div class="input-field col s12 m8">
+              <input
+                type="text"
+                class="validate"
+                autofocus="true"
+                v-model="currentCity">
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineVille"
+              :disabled="!currentCity">
+                Valider
             </button>
-          </div>
-        </template>
-      </div>
+          </template>
+          <template v-else>
+            <h4>Ville</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.ville}}
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentCity = serie.ville">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
 
-       <!-- Distance -->
-      <div class="row">
-        <template v-if="currentDist !== null">
-          <div class="input-field col ">
-            <input
-              id="last_name"
-              type="number"
-              min="0"
-              class="validate"
-              autofocus="true"
-              v-model="currentDist">
-            <label for="last_name">Distance (en mètres)</label>
-          </div>
-          <button
-            class="btn"
-            @click="defineDist"
-            :disabled="!currentDist">
-              Valider
-          </button>
-        </template>
-        <template v-else>
-          <h4>Distance de perfection</h4>
-          <div class="row">
-            <span style="font-size: 1.5rem; margin-right: 1.5rem;">
-              {{serie.dist}} mètres
-            </span>
-            <button class="btn" @click="currentDist = serie.dist">
-              <i class="fas fa-pen left"></i> Modifier
+        <!-- Distance -->
+        <div class="row">
+          <template v-if="currentDist !== null">
+            <div class="input-field col s12 m8">
+              <input
+                type="number"
+                min="0"
+                class="validate"
+                autofocus="true"
+                v-model="currentDist">
+            </div>
+            <button
+              class="btn red darken-3 waves-effect waves-light col s4 offset-s4 offset-m2 m2"
+              @click="defineDist"
+              :disabled="!currentDist">
+                Valider
             </button>
-          </div>
-        </template>
+          </template>
+          <template v-else>
+            <h4>Distance de perfection</h4>
+            <div class="row">
+              <span style="font-size: 1.5rem; margin-right: 1.5rem;">
+                {{serie.dist}} mètres
+              </span>
+              <button class="btn red darken-3 waves-effect waves-light"
+              @click="currentDist = serie.dist">
+                <i class="fas fa-pen left"></i> Modifier
+              </button>
+            </div>
+          </template>
+        </div>
       </div>
 
       <!-- carte -->
-      <div class="row">
-        <h4>Carte de la serie</h4>
+      <div class="container">
         <div class="row">
-          <leaflet :options="leafletOptions"
-            :markers="photos"
-            :disabled="!editMap"
-            @viewchanged="onMapViewChange"
-          >
-          </leaflet>
-        </div>
-        <div class="row center-align">
-          <button
-            v-if="editMap"
-            @click="defineNewMap"
-            class="btn">
-            Définir cette vue comme nouvelle carte
-          </button>
-          <button  class="btn" @click="editMap = true" v-else>
-            <i class="fas fa-pen left"></i> Modifier
-          </button>
+          <h4 class="center-align">Carte de la serie</h4>
+          <div class="row">
+            <leaflet :options="leafletOptions"
+              :markers="photos"
+              :disabled="!editMap"
+              @viewchanged="onMapViewChange"
+            >
+            </leaflet>
+          </div>
+          <div class="row center-align">
+            <button
+              v-if="editMap"
+              @click="defineNewMap"
+              class="btn red darken-3 waves-effect waves-light">
+              Définir cette vue comme nouvelle carte
+            </button>
+            <button  class="btn red darken-3 waves-effect waves-light"
+            @click="editMap = true" v-else>
+              <i class="fas fa-pen left"></i> Modifier
+            </button>
+          </div>
         </div>
       </div>
 
@@ -167,7 +168,9 @@
       <div class="row">
       <h4>Photos</h4>
       <div class="row">
-        <button class="btn modal-trigger" data-target="modalAddPhotos" @click="getUserPhotos">
+        <button class="btn modal-trigger red darken-3" data-target="modalAddPhotos"
+          @click="userOffset <= 0 ? getUserPhotos() : ''"
+        >
           <i class="fas fa-plus left"></i>Ajouter
         </button>
       </div>
@@ -185,13 +188,15 @@
               <div class="row">Voulez-vous vraiement retirer cette photo de la série ?</div>
               <div class="row">
                 <button class="btn left" @click="photoToDelete = null">Annuler</button>
-                <button class="red accent-4 btn right" @click="removePhoto">
+                <button class="btn red accent-4  waves-effect waves-light right"
+                @click="removePhoto">
                   <i class="fas fa-trash left"></i> Supprimer
                 </button>
               </div>
             </div>
             <div class="card-action center-align" v-else>
-              <button class="red accent-4 btn" @click="photoToDelete = photo.id">
+              <button class="btn red accent-4 waves-effect waves-light"
+              @click="photoToDelete = photo.id">
                 <i class="fas fa-trash left"></i> Supprimer de la série
               </button>
             </div>
@@ -202,55 +207,74 @@
   </div>
 
 
-  <!-- TODO pb bouton ajouter + pagination-->
    <!-- Modal d'ajout de photo -->
-    <div id="modalAddPhotos" class="modal">
+    <div id="modalAddPhotos" class="modal modal-fixed-footer">
       <div class="modal-content">
         <h4>Ajouter des photos</h4>
-        <!-- Spinner -->
-        <div class="row center-align" v-if="!userPhotos">
-          <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-blue-only">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div><div class="gap-patch">
-                <div class="circle"></div>
-              </div><div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div class="row center-align red-text text-accent-4" v-if="modalError">
           {{modalError}}
         </div>
 
         <div class="row center-align">
-          <div
-            v-for="img in userPhotos" :key="img.id"
-            @click="selectedPhotoInGalllery = img"
-            :class="
-              selectedPhotoInGalllery === img
-                ? 'photo-selected col s12 m6 l4 img-tile'
-                : 'col s12 m6 l4 img-tile'"
-          >
-            <img :src="img.url" :alt="img.desc" class="gallery-image">
-            <i class="fas fa-check-circle selected-icone"></i>
+          <div class="col s12 m6 l4"  v-for="img in userPhotos" :key="img.id">
+            <div
+              :class="'card small ' +
+                        (selectedPhotoInGalllery.includes(img)
+                        ? 'selected' : '')"
+            >
+              <div class="card-image card-cover-image">
+                <img :src="img.url" :alt="img.desc">
+              </div>
+              <div class="card-action">
+                <a href="" v-if="selectedPhotoInGalllery.includes(img)"
+                  class="blue-text text-accent-4"
+                  @click.prevent="
+                    selectedPhotoInGalllery.splice(selectedPhotoInGalllery.indexOf(img),1)"
+                >
+                  Désélectionner
+                </a>
+                <a href="" v-else
+                  class="blue-text text-accent-4"
+                  @click.prevent="selectedPhotoInGalllery.push(img)"
+                >
+                  Sélectionner
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <a class="modal-close waves-effect waves-green btn-flat">
-          Fermer
-        </a>
-        <a class="btn modal-close waves-effect waves-green"
-          :disabled="!selectedPhotoInGalllery"
-          @click="addPhoto"
-        >
-          Ajouter
-        </a>
-      </div>
+             <!-- Spinner -->
+            <div class="row center-align" v-if="modalLoading">
+              <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div><div class="gap-patch">
+                    <div class="circle"></div>
+                  </div><div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row center-align" v-if="!modalLoading">
+              <button class="btn" @click="getUserPhotos" v-if="userPhotos.length < totalUserPhoto">
+                <i class="fas fa-arrow-down left"></i> Plus de photos
+              </button>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <a class="modal-close waves-effect waves-green btn-flat">
+            Fermer
+          </a>
+          <a class="btn modal-close waves-effect waves-green"
+            :disabled="!selectedPhotoInGalllery"
+            @click="addPhoto"
+          >
+            Ajouter
+          </a>
+        </div>
     </div>
 </div>
 </template>
@@ -275,8 +299,11 @@ export default {
       currentDist: null,
       photoToDelete: null,
       modalError: null,
-      userPhotos: null,
-      selectedPhotoInGalllery: null,
+      userPhotos: [],
+      selectedPhotoInGalllery: [],
+      userOffset: 0,
+      totalUserPhoto: -1,
+      modalLoading: true,
     };
   },
   created() {
@@ -305,8 +332,7 @@ export default {
       });
   },
   mounted() {
-    // eslint-disable-next-line no-undef
-    M.AutoInit();
+    window.M.AutoInit();
   },
   computed: {
     idUrlParam() {
@@ -400,28 +426,35 @@ export default {
         });
     },
     getUserPhotos() {
-      this.$http.get('/photos')
+      this.modalLoading = true;
+      this.$http.get(`/photos?offset=${this.userOffset}`)
         .then((response) => {
-          this.userPhotos = response.data.photos;
+          response.data.photos.forEach((p) => { this.userPhotos.push(p); });
+          this.userOffset += response.data.photos.length;
+          this.totalUserPhoto = response.data.total;
         })
         .catch(() => {
           this.modalError = 'Impossible de récupérer vos photos';
-          this.userPhotos = [];
+        })
+        .finally(() => {
+          this.modalLoading = false;
         });
     },
     addPhoto() {
-      this.$store.dispatch('setLoading', true);
-      this.$http.put(`/series/${this.serie.id}/photos/${this.selectedPhotoInGalllery.id}`)
-        .then((response) => {
-          this.photos = response.data.serie.photos;
-          this.selectedPhotoInGalllery = null;
-        })
-        .catch(() => {
-          this.error = 'Impossible d\'ajouter la photos';
-        })
-        .finally(() => {
-          this.$store.dispatch('setLoading', false);
-        });
+      this.selectedPhotoInGalllery.forEach((p) => {
+        this.$store.dispatch('setLoading', true);
+        this.$http.put(`/series/${this.serie.id}/photos/${p.id}`)
+          .then((response) => {
+            this.photos = response.data.serie.photos;
+          })
+          .catch(() => {
+            this.error = 'Impossible d\'ajouter la photos';
+          })
+          .finally(() => {
+            this.$store.dispatch('setLoading', false);
+          });
+      });
+      this.selectedPhotoInGalllery = [];
     },
   },
 };
@@ -430,29 +463,14 @@ export default {
 <style lang="scss">
     @import url('https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
 
-    .gallery-image {
-      max-width: 100%;
-    }
+.card.small{
+     .card-image {
+       max-height: 100%;
+       max-width: 100%;
+     }
 
-    .photo-selected {
-      position: relative;
-      border: 1px solid #26a69a;
-
-      .selected-icone {
-        display: inline;
-        position: absolute;
-        right: 0.5em;
-        bottom: 0.5em;
-        font-size: 2em;
-        color: darken(#26a69a, 10%);
-      }
-    }
-
-    .selected-icone {
-      display: none;
-    }
-
-    .img-tile {
-      height: 100%;
-    }
+     &.selected {
+       border: 1px solid blue;
+     }
+}
 </style>

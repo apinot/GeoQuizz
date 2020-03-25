@@ -35,6 +35,7 @@
         data(){
             return{
                 url_api_mobile: this.$store.state.api_mobile,
+                url_api_mobile: 'https://00d46766.ngrok.io/',
                 series : null,
                 isBusy: true,
             }
