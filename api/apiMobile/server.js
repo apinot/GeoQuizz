@@ -343,6 +343,7 @@ app.put("/series/:id/photos", (req, res) => {
             });
             // sauvegarde l'id de la photo
             newPhoto.save().then((phot) => {
+                console.log('2.5');
                 console.log('id de la photo')
                 console.log(phot.id);
                 newphotos.push(phot.id);
