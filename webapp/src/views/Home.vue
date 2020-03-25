@@ -14,7 +14,7 @@
       <div v-if="series">
         <ul id='dropdown1' class='dropdown-content' >
           <li v-for="serie in series" :key="serie.id">
-            <a href="#!" v-on:click="saveInfoSerie(serie.id, serie.nom, serie.ville)">
+            <a href="#!" v-on:click="saveInfoSerie(serie._id, serie.nom, serie.ville)">
               {{serie.nom}} {{serie.ville}}</a>
           </li>
         </ul>
@@ -92,6 +92,10 @@ export default {
         });
     },
     saveInfoSerie(id, nom, ville) {
+      console.log(id);
+      console.log(nom);
+      console.log(ville);
+
       this.idSerie = id;
       this.nomSerie = nom;
       this.villeSerie = ville;
@@ -103,9 +107,13 @@ export default {
       .get('/series')
       .then((response) => {
         this.series = response.data.series;
-        this.idSerie = this.series[0].id;
+        // eslint-disable-next-line dot-notation
+        this.idSerie = this.series[0]['_id'];
         this.nomSerie = this.series[0].nom;
         this.villeSerie = this.series[0].ville;
+        console.log(this.idSerie);
+        console.log(this.nomSerie);
+        console.log(this.villeSerie);
       })
       .catch((error) => {
         this.error = true;

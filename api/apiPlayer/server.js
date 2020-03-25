@@ -43,12 +43,11 @@ app.get('/series', (req, res) => {
     if(!limit || !Number(limit) || limit > 25) limit = 25;
     if(!offset || !Number(offset) || offset < 0) offset = 0;
 
-
     // Compte le nombre totals de séries
     Serie.count((err, count) => {
         if(err) throw err;
         //récupère les séries
-        Serie.find().limit(Number(limit)).skip(Number(offset)).exec()
+        Serie.find({ "photos.0": { "$exists": true } }).limit(Number(limit)).skip(Number(offset)).exec()
             .then((series) => {
                 if(!series){
                     res.status(200).json({
@@ -95,7 +94,7 @@ app.post("/parties", (req, res) => {
         }
 
         // token de vérification de la partie
-         const token = crypto.randomBytes(48).toString('hex');
+        const token = crypto.randomBytes(48).toString('hex');
 
         // initialidation de la partie
         const nouvellePartie = new Partie({
