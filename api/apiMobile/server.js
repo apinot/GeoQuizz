@@ -354,6 +354,7 @@ app.put("/series/:id/photos", (req, res) => {
         });
         console.log('3');
 
+        console.log('le tableau doi pas etre vide')
         console.log(newphotos);
         serie.photos = newphotos;
 
@@ -371,6 +372,7 @@ app.put("/series/:id/photos", (req, res) => {
                         lng: saved.map.lng,
                     },
                     zoom: saved.map.zoom,
+                    photos: saved.photos,
                 }
             });
         }).catch((err) =>{
