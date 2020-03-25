@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
-    "easy-vue-leaflet": "^1.1.1",
+    "easy-vue-leaflet": "^1.1.4",
     "geolib": "^3.2.1",
     "leaflet": "^1.6.0",
     "vue": "^2.6.11",

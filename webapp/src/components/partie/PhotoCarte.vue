@@ -22,6 +22,7 @@
           v-if="options"
           :options="options"
           :markers="markers"
+          :disabled="true"
           @mapclick="saveLatLngClick"
       />
     </div>
