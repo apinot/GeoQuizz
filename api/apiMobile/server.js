@@ -326,53 +326,59 @@ app.put("/series/:id/photos", (req, res) => {
         }
         console.log('2');
 
-        const photos = [];
-        photos.forEach((photo) => {
-            // initialisation de la photo
-            const lat = photo.location.latitude;
-            const lng = photo.location.longitude;
-            const url = photo.img.url;
-            const newPhoto = new Photo({
-                position : {
-                    lat: lat,
-                    lng: lng
-                },
-                url: url,
-                user : idUtilisateur,
-                created_at : new Date()
-            });
-            // sauvegarde l'id de la photo
-            newPhoto.save().then((phot) => {
-                console.log('id de la photo')
-                console.log(phot.id);
-                photos.push(phot.id);
-                // mise à jour de la serie
-            })
-        });
-        console.log('3');
-
-        console.log(photos);
-        serie.photos = photos;
-
-        serie.save().then((saved) => {
-            console.log('4');
-            res.status(200).json({
-                serie: {
-                    id: saved._id,
-                    ville: saved.ville,
-                    nom : saved.nom,
-                    descr: saved.descr,
-                    dist: saved.dist,
-                    map: {
-                        lat: saved.map.lat,
-                        lng: saved.map.lng,
+        let newphotos = [];
+        async function savePhoto() { 
+            photos.forEach((photo) => {
+                // initialisation de la photo
+                const lat = photo.location.latitude;
+                const lng = photo.location.longitude;
+                const url = photo.img.url;
+                const newPhoto = new Photo({
+                    position : {
+                        lat: lat,
+                        lng: lng
                     },
-                    zoom: saved.map.zoom,
-                }
+                    url: url,
+                    user : idUtilisateur,
+                    created_at : new Date()
+                });
+                // sauvegarde l'id de la photo
+                newPhoto.save().then((phot) => {
+                    console.log('2.5');
+                    console.log('id de la photo')
+                    console.log(phot.id);
+                    newphotos.push(phot.id);
+                    // mise à jour de la serie
+                }).catch((err) =>{
+                    res.status(500).json({err})
+                });
             });
-        }).catch((err) =>{
-            res.status(500).json({err})
-        });
+            return newphotos
+        }
+        savePhoto.then((tab) => {
+            console.log(tab);
+            serie.photos = tab
+            serie.save().then((saved) => {
+                console.log('4');
+                res.status(200).json({
+                    serie: {
+                        id: saved._id,
+                        ville: saved.ville,
+                        nom : saved.nom,
+                        descr: saved.descr,
+                        dist: saved.dist,
+                        map: {
+                            lat: saved.map.lat,
+                            lng: saved.map.lng,
+                        },
+                        zoom: saved.map.zoom,
+                        photos: saved.photos,
+                    }
+                });
+            }).catch((err) =>{
+                res.status(500).json({err})
+            });
+        })
     });
 });
 
