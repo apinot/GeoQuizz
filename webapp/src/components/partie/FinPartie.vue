@@ -9,7 +9,8 @@
           <p>Vous avez fait {{score}} pts !</p>
         </div>
         <div class="card-action center-align">
-          <a class="btn waves-effect waves-light" v-on:click="backAccueil">Retour à l'accueil</a>
+          <a class="btn red darken-4 modal-trigger waves-effect waves-light"
+          v-on:click="backAccueil">Retour à l'accueil</a>
         </div>
       </div>
     </div>

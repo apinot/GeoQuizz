@@ -3,7 +3,7 @@
   <div id="app">
      <nav>
       <div class="nav-wrapper red darken-4">
-        <a href="#" class="brand-logo">Geo Quizz</a>
+        <a class="brand-logo">Geo Quizz</a>
       </div>
     </nav>
     <router-view />
