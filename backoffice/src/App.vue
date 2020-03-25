@@ -8,25 +8,30 @@
         <ul class="right hide-on-med-and-down">
           <template v-if="isAuth">
             <li>
-              <router-link class="btn red darken-3 waves-effect waves-light"
+              <router-link
+                class="btn white darken-3 red-text text-darken-3 waves-effect waves-light"
                 :to="{name: 'home'}">
-                <i class="fas fa-home left" style="line-height: inherit"></i> Accueil
+                <i class="fas fa-home left" style="line-height: inherit">
+                </i> Accueil
               </router-link>
             </li>
             <li>
-              <router-link class="btn red darken-3 waves-effect waves-light"
+              <router-link
+                class="btn white darken-3 red-text text-darken-3 waves-effect waves-light"
                 :to="{name: 'galerie'}">
                 <i class="fas fa-images left" style="line-height: inherit"></i> Gallerie
               </router-link>
             </li>
             <li>
-              <router-link class="btn red darken-3 waves-effect waves-light"
+              <router-link
+                class="btn white darken-3 red-text text-darken-3 waves-effect waves-light"
                 :to="{name: 'series'}">
                 <i class="fas fa-list-alt left" style="line-height: inherit"></i> Series
                 </router-link>
             </li>
             <li>
-              <router-link class="btn red darken-3 waves-effect waves-light"
+              <router-link
+              class="btn white darken-3 red-text text-darken-3 waves-effect waves-light"
                 :to="{name: 'signout'}">
                 <i class="fas fa-sign-out-alt left icon" style="line-height: inherit"></i>
                  Déconnexion
@@ -35,19 +40,22 @@
           </template>
           <template v-else>
             <li>
-              <router-link class="btn red darken-3 waves-effect waves-light"
+              <router-link
+              class="btn white darken-3 red-text text-darken-3 waves-effect waves-light"
                 :to="{name: 'home'}">Accueil
                 <i class="fas fa-home right" style="line-height: inherit"></i>
               </router-link>
             </li>
             <li>
-              <router-link class="btn red darken-3 waves-effect waves-light"
+              <router-link
+              class="btn white darken-3 red-text text-darken-3 waves-effect waves-light"
                 :to="{name: 'signup'}">S'inscrire
                 <i class="fas fa-user-plus right" style="line-height: inherit"></i>
               </router-link>
             </li>
             <li>
-              <router-link class="btn red darken-3 waves-effect waves-light"
+              <router-link
+              class="btn white darken-3 red-text text-darken-3  waves-effect waves-light"
                 :to="{name: 'signin'}">Se connecter
                 <i class="fas fa-sign-in-alt right" style="line-height: inherit"></i>
               </router-link>
@@ -61,22 +69,22 @@
         <li>
           <router-link class="btn red darken-3 waves-effect waves-light"
             :to="{name: 'home'}">Accueil
-            <i class="fas fa-home" style="line-height: inherit"></i>
+            <i class="fas fa-home" style="color: white"></i>
           </router-link>
         </li>
         <li>
           <router-link class="btn red darken-3" :to="{name: 'galerie'}">
-            Gallerie <i class="fas fa-images"></i>
+            Gallerie <i class="fas fa-images" style="color: white"></i>
             </router-link>
         </li>
         <li>
           <router-link class="btn red darken-3" :to="{name: 'series'}">
-            Series <i class="fas fa-list-alt"></i>
+            Series <i class="fas fa-list-alt" style="color: white"></i>
             </router-link>
         </li>
         <li>
           <router-link class="btn red darken-3" :to="{name: 'signout'}">
-            Se déconnecter<i class="fas fa-sign-out-alt"></i>
+            Se déconnecter<i class="fas fa-sign-out-alt" style="color: white"></i>
           </router-link>
         </li>
       </template>
@@ -84,19 +92,19 @@
         <li>
           <router-link class="btn red darken-3 waves-effect waves-light"
             :to="{name: 'home'}">Accueil
-            <i class="fas fa-home" style="line-height: inherit"></i>
+            <i class="fas fa-home" style="color: white"></i>
           </router-link>
         </li>
         <li>
           <router-link class="btn red darken-3" :to="{name: 'signup'}">
             S'inscrire
-            <i class="fas fa-user-plus"></i>
+            <i class="fas fa-user-plus" style="color: white"></i>
           </router-link>
         </li>
         <li>
           <router-link class="btn red darken-3" :to="{name: 'signin'}">
             Se connecter
-            <i class="fas fa-sign-in-alt"></i>
+            <i class="fas fa-sign-in-alt" style="color: white"></i>
           </router-link>
         </li>
       </template>
@@ -107,7 +115,7 @@
     </div>
 
     <!-- router view -->
-    <div>
+    <div class="container">
       <router-view />
     </div>
   </div>
