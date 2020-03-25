@@ -326,7 +326,7 @@ app.put("/series/:id/photos", (req, res) => {
         }
         console.log('2');
 
-        let newphotos = [];
+        let tab = [];
         async function savePhoto() { 
             photos.forEach((photo) => {
                 // initialisation de la photo
@@ -344,20 +344,21 @@ app.put("/series/:id/photos", (req, res) => {
                 });
                 // sauvegarde l'id de la photo
                 newPhoto.save().then((phot) => {
-                    console.log('2.5');
-                    console.log('id de la photo')
-                    console.log(phot.id);
-                    newphotos.push(phot.id);
+                    tab.push(phot.id);
+                    console.log('regarde le tableau se remplit')
+                    console.log(tab);
                     // mise à jour de la serie
                 }).catch((err) =>{
                     res.status(500).json({err})
                 });
             });
-            return newphotos
+            return tab;
         }
-        savePhoto.then((tab) => {
-            console.log(tab);
-            serie.photos = tab
+        savePhoto().then((tab2) => {
+            console.log('3')
+            console.log('alors il est remplit ?')
+            console.log(tab2);
+            serie.photos = tab2
             serie.save().then((saved) => {
                 console.log('4');
                 res.status(200).json({
