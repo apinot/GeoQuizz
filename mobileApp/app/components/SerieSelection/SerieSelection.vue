@@ -47,7 +47,7 @@
                         this.isBusy = false
                     })
                     .finally(()=>{
-                        setTimeout(() => {this.isBusy = false}, 3000);
+                        setTimeout(() => {this.isBusy = false}, 1000);
                     })
             },
             selectSerie(serie){
