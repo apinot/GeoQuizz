@@ -328,7 +328,7 @@ app.put("/series/:id/photos", (req, res) => {
 
         let tab = [];
         async function savePhoto() { 
-            photos.forEach((photo) => {
+            for (const photo of photos) {
                 // initialisation de la photo
                 const lat = photo.location.latitude;
                 const lng = photo.location.longitude;
@@ -343,11 +343,12 @@ app.put("/series/:id/photos", (req, res) => {
                     created_at : new Date()
                 });
                 // sauvegarde l'id de la photo
-                const phot = newPhoto.save();
-                    tab.push(phot.id);
+                const phot = await newPhoto.save();
+                    tab.push(phot._id);
                     console.log('regarde le tableau se remplit')
                     console.log(tab);
-            });
+                    console.log(phot)
+            }
             return tab;
         }
         savePhoto().then((tab2) => {

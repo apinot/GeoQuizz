@@ -20,6 +20,8 @@
     import {Utils as utils} from "@nativescript/core";
     import MapBox from 'nativescript-mapbox'
     import Home from '../Home'
+    const dialogs = require("tns-core-modules/ui/dialogs");
+
     export default {
         data(){
             return {
@@ -48,7 +50,12 @@
                     lat: this.lat,
                     lng: this.lng
                 };
-                this.$modal.close(coords)
+                if(coords.lat === null){
+                    dialogs.alert("Vous n'avez pas choisis de position")
+                }else{
+                    this.$modal.close(coords)
+
+                }
             }
         }
 
