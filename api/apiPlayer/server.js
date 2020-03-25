@@ -177,11 +177,8 @@ app.put('/parties/:id', (req, res) => {
         }
 
         const {end, score} = req.body;
-        if(!end || !Boolean(end)) {
-            res.status(400).json({status: 400, msg: 'Bad Request'});
-            return;
-        }
-        if(!score || !Number(score)) {
+        if(isNaN(score)) {
+            console.log(isNaN(score))
             res.status(400).json({status: 400, msg: 'Bad Request'});
             return;
         }
