@@ -31,9 +31,10 @@
                     class="s12 m3 waves-effect waves-light"
                     type="submit"
                     name="action"
-                    :to="{ name: 'serie', params: { id: serie._id } }">
-                  >Modifier</router-link>
-                  <a v-on:click="updateDeleteSerie(serie._id, serie.nom)"
+                    :to="{ name: 'serie', params: { id: serie._d } }"
+                  >
+                    Modifier</router-link>
+                  <a v-on:click="updateDeleteSerie(serie.id, serie.nom)"
                   data-target="modal1"
                   class="s12 m3 waves-effect
                   waves-light modal-trigger
@@ -92,8 +93,9 @@ export default {
       this.$store.dispatch('setLoading', true);
       this.$http
         .delete(`/series/${this.idDelete}`)
-        .then(() => {
-          const index = this.series.findIndex((e) => this.idSerie === e.id);
+        .then((response) => {
+          const index = this.series.findIndex((e) => response.data.serie.id === e.id);
+          console.log(index);
           this.series.splice(index, 1);
           this.offset -= 1;
           this.maxNbSerie -= 1;

@@ -205,7 +205,6 @@ app.post('/utilisateurs/auth', (req, res) => {
  */
 app.get('/series', (req, res) => {
     let {size, offset} = req.query;
-    console.log(req.query.offset)
     if(!size || !Number(size) || size > 50 || size < 1) size = 10;
     if(!offset || !Number(offset) || offset < 0) offset = 0;
     if(!req.authUser) {
@@ -230,7 +229,13 @@ app.get('/series', (req, res) => {
 
             res.status(200).json({
                 total: count,
-                series,
+                series: series.map(s => ({
+                    id: s._id,
+                    ville: s.ville,
+                    dist: s.dist,
+                    nom: s.nom,
+                    descr: s.descr,
+                })),
             })
         })
         .catch((error) => {
@@ -294,8 +299,10 @@ app.post('/series', (req, res) => {
         return;
     }
     const serie = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     // TODO verifier que serie possède la bonne architecture
+
+
     const newSerie = new Serie({
         ville: serie.ville,
         dist: serie.dist,
@@ -314,7 +321,7 @@ app.post('/series', (req, res) => {
     newSerie.save().then((data) => {
         res.status(200).json({data})
     }).catch((err) =>{
-        res.status(500).json({err})
+        throw err;
     });
     // TODO ajouté des photos
 
@@ -426,9 +433,14 @@ app.delete('/series/:id/', (req, res) => {
 
         serie.remove((err2, deleted) => {
             if(err2) throw err2;
-
             res.status(200).json({
-                serie: deleted,
+                serie: {
+                    id: serie._id,
+                    ville: serie.ville,
+                    dist: serie.dist,
+                    nom: serie.nom,
+                    descr: serie.descr,
+                },
                 deleted_at: new Date(),
             });
         });
