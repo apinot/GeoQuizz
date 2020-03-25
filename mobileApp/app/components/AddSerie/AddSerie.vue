@@ -2,7 +2,6 @@
     <Page>
         <ActionBar title="Ajouter une série">
             <ActionItem @tap="this.$navigateBack" >Back</ActionItem>
-
         </ActionBar>
         <StackLayout>
             <TextField hint="Entrer d'une ville qui existe..." v-model="ville"/>
@@ -10,7 +9,6 @@
             <TextField hint="Entrer la description de la série..." v-model="descr"/>
             <Button @tap="getPositionCity">Sauvegarder la série</Button>
             <ActivityIndicator :busy="isBusy" ></ActivityIndicator>
-
         </StackLayout>
     </Page>
 </template>
@@ -22,12 +20,13 @@
     import Series from '../Series/Series'
 
     export default {
+        //La liste de toutes les components utilisés dans cette vue
         components:{
             Home,
             Series
         },
-        props: {
-        },
+
+         //La liste de toutes les variables utilisés dans les méthodes ci-dessous
         data(){
             return{
                 ville: '',
@@ -43,6 +42,14 @@
             }
         },
         methods: {
+
+            /**
+             * Nom : saveSerie
+             * Description : Cette fonction permet de sauvegarder la nouvelle série dans la base de donnée
+             * Api utilisée : apiMobile
+             * Route utilisée : /series
+             * Méthode : POST
+             */
             saveSerie(){
                 this.isBusy = true;
                 console.log(this.api_mobile + 'series');
@@ -76,6 +83,14 @@
                         setTimeout(() => {this.isBusy = false}, 3000);
                     })
             },
+
+            /**
+             * Nom : getPositionCity
+             * Description : Cette fonction permet de récupérer les coordonées d'une ville a partir de son nom
+             * Api utilisée : api data.gouv
+             * Route utilisée : https://api-adresse.data.gouv.fr/search/
+             * Méthode : GET
+             */
             getPositionCity(){
                 axios.get('https://api-adresse.data.gouv.fr/search/?q='+this.ville)
                     .then((res) => {

@@ -23,6 +23,8 @@
     const dialogs = require("tns-core-modules/ui/dialogs");
 
     export default {
+
+        //La liste de toutes les variables utilisés dans les méthodes ci-dessous
         data(){
             return {
                 lat : null,
@@ -31,6 +33,11 @@
         },
 
         methods: {
+            /**
+             * Nom: onMapReady
+             * Description: Permet d'initialisé la map et d'ajouter un point lorsque l'on tap sur la map
+             * @param args
+             */
             onMapReady(args){
                 args.map.setOnMapClickListener((point= LatLng) => {
                     args.map.removeMarkers([1]);
@@ -45,6 +52,11 @@
                     console.log('lat'+ this.lat)
                 });
             },
+
+            /**
+             * Name: save
+             * Description: Permet de gérer les erreurs si l'on ne définit pas de point sur la map et que l'ont sauvgarde
+             */
             save(){
                 const coords = {
                     lat: this.lat,

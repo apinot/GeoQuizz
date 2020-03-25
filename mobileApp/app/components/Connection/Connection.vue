@@ -17,8 +17,13 @@
     const dialogs = require("tns-core-modules/ui/dialogs");
 
     export default {
-        props: {
+
+        //La liste de toutes les components utilisés dans la vue
+        components:{
+            Home,
         },
+
+        //La liste de toutes les variables utilisés dans les méthodes ci-dessous
         data(){
             return{
                 email:'',
@@ -37,10 +42,21 @@
             }
 
         },
+        /**
+         * Description : Permet de définir le propriété url_api_mobile avec la valeur de la variable api_mobile du store
+         */
         created(){
             this.url_api_mobile = this.$store.state.api_mobile
         },
         methods: {
+
+            /**
+             * Nom : connection
+             * Description : Cette fonction permet a un utilisateur de se connecter, générer un token unique et de récupérer son ID
+             * Api utilisée : mobileApp
+             * Route utilisée : utilisateurs/auth
+             * Méthode : POST
+             */
             connection(){
                 console.log(this.url_api_mobile)
                 this.isBusy = true;
@@ -66,6 +82,12 @@
                         setTimeout(() => {this.isBusy = false}, 3000)
                     })
             },
+
+            /**
+             * Nom : base64Credentials
+             * Description : Cette fonction permet de convertir en base64 l'email et le password de l'utilisateur en une chaine de caractères
+             * @returns {string}
+             */
             base64Credentials() {
                 console.log(this.email);
                 console.log(this.password);
