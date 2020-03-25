@@ -347,8 +347,8 @@ app.put("/series/:id/photos", (req, res) => {
 
 
         });
-        console.log(serie)
         serie.save().then((ser) => {
+            console.log("coucou hibou")
             res.status(200).json(ser)
         }).catch((err) =>{
             res.status(500).json({err})
