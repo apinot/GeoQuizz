@@ -168,7 +168,7 @@
       <div class="row">
       <h4>Photos</h4>
       <div class="row">
-        <button class="btn modal-trigger" data-target="modalAddPhotos"
+        <button class="btn modal-trigger red darken-3" data-target="modalAddPhotos"
           @click="userOffset <= 0 ? getUserPhotos() : ''"
         >
           <i class="fas fa-plus left"></i>Ajouter
@@ -188,14 +188,14 @@
               <div class="row">Voulez-vous vraiement retirer cette photo de la série ?</div>
               <div class="row">
                 <button class="btn left" @click="photoToDelete = null">Annuler</button>
-                <button class="btn red darken-3 waves-effect waves-light right"
+                <button class="btn red accent-4  waves-effect waves-light right"
                 @click="removePhoto">
                   <i class="fas fa-trash left"></i> Supprimer
                 </button>
               </div>
             </div>
             <div class="card-action center-align" v-else>
-              <button class="btn red darken-3 waves-effect waves-light"
+              <button class="btn red accent-4 waves-effect waves-light"
               @click="photoToDelete = photo.id">
                 <i class="fas fa-trash left"></i> Supprimer de la série
               </button>
