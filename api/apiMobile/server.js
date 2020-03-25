@@ -347,7 +347,9 @@ app.put("/series/:id/photos", (req, res) => {
                 console.log(phot.id);
                 photos.push(phot.id);
                 // mise à jour de la serie
-            })
+            }).catch((err) =>{
+                res.status(500).json({err})
+            });
         });
         console.log('3');
 
