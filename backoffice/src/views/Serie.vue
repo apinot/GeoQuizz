@@ -140,7 +140,7 @@
       <!-- carte -->
       <div class="container">
         <div class="row">
-          <h4>Carte de la serie</h4>
+          <h4 class="center-align">Carte de la serie</h4>
           <div class="row">
             <leaflet :options="leafletOptions"
               :markers="photos"
