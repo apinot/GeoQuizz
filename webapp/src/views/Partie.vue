@@ -13,10 +13,18 @@
           </photo-carte>
           <div class="container">
             <div class="card row">
-              <p class="col s6 m2"> Score: {{this.score}}</p>
-              <p class="col s6 m2">Temps: {{timer}}s</p>
+              <p class="col s4"><i class="fas fa-star"></i> Score: {{score}}</p>
+              <p class="col s4">
+                <i class="fas fa-camera-retro"></i>
+                Photo: {{numeroPhotoActuelle}} / {{photos.length}}
+              </p>
+              <p class="col s4"><i class="fas fa-hourglass-half"></i> Temps: {{timer | round}}s</p>
+              <div class="progress">
+                  <div class="determinate" :style="progressTime"></div>
+              </div>
               <button
                 v-on:click="nextPhoto"
+                style="margin-bottom: 1.5em;"
                 class="col s12 m2 offset-m5 btn red darken-4 waves-effect waves-light"
                 type="submit" name="action">
                 Valider
@@ -149,9 +157,9 @@ export default {
     countDownTimer() {
       if (this.timer > 0) {
         this.timeoutTimer = setTimeout(() => {
-          this.timer -= 1;
+          this.timer -= 0.1;
           this.countDownTimer();
-        }, 1000);
+        }, 100);
       }
     },
   },
@@ -202,6 +210,15 @@ export default {
           zoom: this.serie.map.zoom,
         },
       };
+    },
+    progressTime() {
+      // if (this.timer <= 0) return 'width: 0%;';
+      return `width: ${(this.timer / 20) * 100}%;`;
+    },
+  },
+  filters: {
+    round(v) {
+      return Math.ceil(v);
     },
   },
 };
