@@ -27,7 +27,6 @@
         created(){
             this.url_api_mobile = this.$store.state.api_mobile;
             this.getSerie()
-
         },
         methods: {
             getSerie() {
@@ -47,7 +46,7 @@
                         this.isBusy = false
                     })
                     .finally(()=>{
-                        setTimeout(() => {this.isBusy = false}, 3000);
+                        setTimeout(() => {this.isBusy = false}, 1000);
                     })
             },
             selectSerie(serie){

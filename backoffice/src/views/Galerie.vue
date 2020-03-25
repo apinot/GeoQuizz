@@ -11,7 +11,7 @@
             class="s12 m3 btn waves-effect waves-light red darken-3"
             type="submit"
             name="action"
-            :to="{name: 'upload'}">
+            :to="{name: 'upload'}"
           >
           <i class="fas fa-plus left "></i>Ajouter une photo
           </router-link>

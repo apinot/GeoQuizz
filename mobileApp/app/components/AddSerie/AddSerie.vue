@@ -85,10 +85,12 @@
                         this.lng = lng;
                         console.log(this.lat,this.lng);
                         this.saveSerie();
-                        this.$navigateTo(Series)
-                            .then(()=>{
-                                Series.getSerie()
-                            })
+                        setTimeout(()=>{
+                            this.$navigateTo(Series)
+                                .then(()=>{
+                                    Series.getSerie()
+                                })
+                        },3000)
                     })
                     .catch((err) => {
                         console.log(err)
