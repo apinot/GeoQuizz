@@ -28,10 +28,10 @@
                 </div>
                 <div class="card-action">
                   <router-link
-                    class="s12 m3 waves-effect waves-light"
+                    class="s12 m3 blue-text waves-effect waves-light"
                     type="submit"
                     name="action"
-                    :to="{ name: 'serie', params: { id: serie._d } }"
+                    :to="{ name: 'serie', params: { id: serie.id } }"
                   >
                     Modifier</router-link>
                   <a v-on:click="updateDeleteSerie(serie.id, serie.nom)"
