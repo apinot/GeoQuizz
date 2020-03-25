@@ -36,7 +36,7 @@
                 lng: null,
                 zoom: 10,
                 user: this.$store.state.idUtilisateur,
-                api_mobile : 'https://f68f868d.ngrok.io/',
+                api_mobile : this.$store.state.api_mobile,
                 isBusy: false,
                 photos: this.EditedSerie.photos
             }
@@ -86,6 +86,9 @@
                         console.log(this.lat,this.lng);
                         this.saveSerie();
                         this.$navigateTo(Series)
+                            .then(()=>{
+                                Series.getSerie()
+                            })
                     })
                     .catch((err) => {
                         console.log(err)

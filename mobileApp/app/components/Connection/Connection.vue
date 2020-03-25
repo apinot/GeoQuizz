@@ -5,7 +5,6 @@
             <TextField  hint="***********" v-model="password" secure="true"></TextField>
             <Button @tap="connection">Connection</Button>
             <ActivityIndicator :busy="isBusy" ></ActivityIndicator>
-
         </StackLayout>
     </Page>
 </template>
@@ -24,7 +23,7 @@
             return{
                 email:'',
                 password: '',
-                url_api_mobile: "https://f68f868d.ngrok.io/",
+                url_api_mobile: '',
                 isBusy: false,
             }
         },
@@ -36,9 +35,14 @@
             if (!global.atob) {
                 global.atob = decode;
             }
+
+        },
+        created(){
+            this.url_api_mobile = this.$store.state.api_mobile
         },
         methods: {
             connection(){
+                console.log(this.url_api_mobile)
                 this.isBusy = true;
                 const config = {
                     headers: {

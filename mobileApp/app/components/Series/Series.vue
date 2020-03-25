@@ -2,8 +2,8 @@
     <Page>
         <ActionBar title="Series">
             <ActionItem @tap="addSerie" text="Ajouter"></ActionItem>
-            <ActionItem @tap="refresh" text="Refresh"></ActionItem>
-            <ActionItem @tap="this.$navigateBack" >Back</ActionItem>
+<!--            <ActionItem @tap="refresh" text="Refresh"></ActionItem>-->
+            <ActionItem @tap="goHome" >Back</ActionItem>
         </ActionBar>
         <ActivityIndicator :busy="isBusy" ></ActivityIndicator>
 
@@ -23,26 +23,32 @@
     import AddSerie from '../AddSerie/AddSerie'
     import EditSerie from '../EditSerie/EditSerie'
     import axios from 'axios'
+    import Home from '../Home'
     const dialogs = require("tns-core-modules/ui/dialogs");
 
     export default {
         components:{
             AddSerie,
-            EditSerie
+            EditSerie,
+            Home,
         },
         data(){
             return{
-                url_api_mobile: 'https://f68f868d.ngrok.io/',
+                url_api_mobile: this.$store.state.api_mobile,
                 series : null,
                 isBusy: true,
             }
         },
-        mounted() {
-            this.getSeries();
+        created(){
+            this.getSeries()
         },
-        computed : {
+        computed(){
+            this.getSeries()
         },
         methods: {
+            goHome(){
+                this.$navigateTo(Home)
+            },
             addSerie(){
                 this.$navigateTo(AddSerie)
             },
@@ -58,11 +64,14 @@
                 const config = {
                     headers: {
                         'Authorization': 'Bearer ' + this.$store.state.tokenAuth
-                    }
+                    },
+                    params: {id : this.$store.state.idUtilisateur}
                 };
-                axios.delete(this.url_api_mobile + 'series/'+serie._id, config)
+
+                axios.delete(this.url_api_mobile + 'series/'+serie._id,config)
                     .then((res) => {
                         console.log(res.data)
+                        this.getSeries()
                     })
                     .catch((err) => {
                         console.log(err)
@@ -103,7 +112,7 @@
                     .finally(()=>{
                         setTimeout(()=>{
                             this.isBusy = false
-                        },5000)
+                        },50)
                     })
             }
         }

@@ -122,40 +122,48 @@ app.get("/", (req,res) =>{
     res.status(200).json({success: "bonjour de l'api Mobile"})
 });
 
-// app.post("/photos", (req, res) =>{
-//
-//     let photos = req.body.data.images[0];
-//     //console.log(req.body.data);
-//     //console.log(photos);
-//     if(!photos) {
-//         res.status(400).json({ status: 400, msg: 'Bad Request' });
-//         return;
-//     }
-//
-//     //initialisation de la photo
-//     const lat = photos.location.latitude;
-//     const lng = photos.location.longitude;
-//     const url = photos.img.url;
-//     const idUtilisateur = photos.idUtilisateur;
-//     const newPhoto = new Photo({
-//         position : {
-//             lat: lat,
-//             lng: lng
-//         },
-//         url: url,
-//         idUtilisateur: idUtilisateur,
-//         create_at : new Date()
-//     });
-//
-//     //enregistrement de la photo
-//     newPhoto.save()
-//         .then((photo) => {
-//             res.status(200).json(photo);
-//         })
-//         .catch((err) =>{
-//             res.status(500).json({err})
-//         });
-// });
+app.post("/photos", (req, res) =>{
+    if (!req.headers.authorization) {
+        res.status(401).json({status: 401, msg: 'Unauthorized'});
+        return;
+    }
+    let photos = req.body.data.images;
+    let id  = req.body.data.id
+    console.log(req.body.data)
+    //console.log(req.body.data);
+    //console.log(photos);
+    if(!photos) {
+        res.status(400).json({ status: 400, msg: 'Bad Request' });
+        return;
+    }
+
+    photos.forEach((photo)=>{
+        //initialisation de la photo
+        const lat = photo.location.latitude;
+        const lng = photo.location.longitude;
+        const url = photo.img.url;
+        const idUtilisateur = id;
+        const newPhoto = new Photo({
+            position : {
+                lat: lat,
+                lng: lng
+            },
+            url: url,
+            user: idUtilisateur,
+            created_at : new Date()
+        });
+        console.log(newPhoto)
+        //enregistrement de la photo
+        newPhoto.save()
+            .then((photo) => {
+                res.status(200).json(photo);
+            })
+            .catch((err) =>{
+                res.status(500).json({err})
+            });
+    })
+
+})
 app.put('/serie/:id', (req,res)=>{
     if (!req.headers.authorization) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
@@ -225,12 +233,13 @@ app.post('/series', (req, res) => {
 
 app.delete('/series/:id/', (req, res) => {
     const { id } = req.params;
+    console.log(req.headers);
     if (!req.headers.authorization) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
     const idUtilisateur = req.query.id;
-
+    console.log(idUtilisateur)
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -243,10 +252,9 @@ app.delete('/series/:id/', (req, res) => {
             return;
         }
     });
-
     Serie.findByIdAndDelete(id, (err) => {
         if(err) throw err;
-        res.status(200).json('deleted');
+        res.status(200).json({response: 'deleted'});
     });
 });
 
@@ -295,7 +303,7 @@ app.put("/series/:id/photos", (req, res) => {
         return;
     }
     // TODO verifier la structure de l'objet photo
-    let photos = req.body.data.images[0];
+    let photos = req.body.data.images;
     if(!photos) {
         console.log('zinzin');
         res.status(400).json({ status: 400, msg: 'Bad Request' });
@@ -315,32 +323,38 @@ app.put("/series/:id/photos", (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-        // initialisation de la photo
-        const lat = photos.location.latitude;
-        const lng = photos.location.longitude;
-        const url = photos.img.url;
-        const newPhoto = new Photo({
-            position : {
-                lat: lat,
-                lng: lng
-            },
-            url: url,
-            user : idUtilisateur,
-            created_at : new Date()
-        });
-        console.log(newPhoto);
-        // sauvegarde l'id de la photo
-        newPhoto.save().then((photo) => {
-            serie.photos.push(photo.id);
-            // mise à jour de la serie
-            serie.save().then(() => {
-                res.status(200).json(photo)
+
+        photos.forEach((photo) => {
+            // initialisation de la photo
+            const lat = photo.location.latitude;
+            const lng = photo.location.longitude;
+            const url = photo.img.url;
+            const newPhoto = new Photo({
+                position : {
+                    lat: lat,
+                    lng: lng
+                },
+                url: url,
+                user : idUtilisateur,
+                created_at : new Date()
             });
+            // sauvegarde l'id de la photo
+            newPhoto.save().then((phot) => {
+                serie.photos.push(phot.id);
+                console.log(serie)
+                // mise à jour de la serie
+            })
+
+
+        });
+        console.log(serie)
+        serie.save().then((ser) => {
+            res.status(200).json(ser)
+        })
         }).catch((err) =>{
             res.status(500).json({err})
         });
 
-    });
 });
 
 

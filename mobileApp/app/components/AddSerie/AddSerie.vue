@@ -5,7 +5,7 @@
 
         </ActionBar>
         <StackLayout>
-            <TextField hint="Entrer la ville..." v-model="ville"/>
+            <TextField hint="Entrer d'une ville qui existe..." v-model="ville"/>
             <TextField hint="Entrer le nom de la série..." v-model="nom"/>
             <TextField hint="Entrer la description de la série..." v-model="descr"/>
             <Button @tap="getPositionCity">Sauvegarder la série</Button>
@@ -19,10 +19,12 @@
     import axios from 'axios'
     const dialogs = require("tns-core-modules/ui/dialogs");
     import Home from '../Home'
+    import Series from '../Series/Series'
 
     export default {
         components:{
             Home,
+            Series
         },
         props: {
         },
@@ -36,7 +38,7 @@
                 lng: null,
                 zoom: 10,
                 user: this.$store.state.idUtilisateur,
-                api_mobile : 'https://f68f868d.ngrok.io/',
+                api_mobile : this.$store.state.api_mobile,
                 isBusy: false
             }
         },
@@ -82,11 +84,15 @@
                         this.lat = lat;
                         this.lng = lng;
                         console.log(this.lat,this.lng);
-                        this.saveSerie()
-                        this.$navigateTo(Home)
+                        this.saveSerie();
+                        this.$navigateTo(Series)
+                            .then(()=>{
+                                Series.getSerie()
+                            })
                     })
                     .catch((err) => {
                         console.log(err)
+                        dialogs.alert("le nom de la ville est incorrecte")
                     })
             }
         }

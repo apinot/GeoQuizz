@@ -43,12 +43,13 @@
                 urls: [],
                 data: [],
                 serie: null,
-                url_api_mobile: "https://f68f868d.ngrok.io/",
+                url_api_mobile: this.$store.state.api_mobile,
                 isBusy: false
             }
         },
         created(){
             geolocation.enableLocationRequest();
+            console.log(this.url_api_mobile)
         },
         methods:{
             goToSerie(){
@@ -124,30 +125,10 @@
                 if(this.images.length > 0){
                     this.$showModal(SerieSelection)
                         .then( serie => {
+                            console.log(serie);
                             this.serie = serie;
                             if(serie){
-                                this.isBusy = true
-                                const url = 'https://api.imgbb.com/1/upload';
-                                const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
-                                this.images.forEach((image) => {
-                                    const request = {
-                                        url: url + "?key=" + api_key,
-                                        method: "POST",
-                                        header: {
-                                            "Content-Type": "application/octet-stream",
-                                        },
-                                        description: 'Uploading ' + this.getName(image.img.src.android)
-                                    };
-                                    const params = [
-                                        {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
-                                    ];
-
-                                    const task = session.multipartUpload(params, request);
-                                    task.on("progress", this.logEvent);
-                                    task.on("error", this.logEvent);
-                                    task.on("complete", this.logEvent);
-                                    task.on("responded", this.respondedHandler);
-                                });
+                               this.request()
                             }else{
                                 dialogs.alert("Vous n'avez pas choisis de serie")
                             }
@@ -158,8 +139,74 @@
                 }
             },
 
-            setUrlToImg(urls){
+            request(){
+                this.isBusy = true
+                const url = 'https://api.imgbb.com/1/upload';
+                const api_key=  'bf1794aedb1cd3df011c27ee66f9c5e8';
+                this.images.forEach((image) => {
+                    const request = {
+                        url: url + "?key=" + api_key,
+                        method: "POST",
+                        header: {
+                            "Content-Type": "application/octet-stream",
+                        },
+                        description: 'Uploading ' + this.getName(image.img.src.android)
+                    };
+                    const params = [
+                        {name: 'image', filename: image.img.src.android,mimeType: 'image/jpeg'}
+                    ];
 
+                    const task = session.multipartUpload(params, request);
+                    task.on("progress", this.logEvent);
+                    task.on("error", this.logEvent);
+                    task.on("complete", this.logEvent);
+                    task.on("responded", this.respondedHandler);
+                });
+            },
+
+            setUrlToImg2(urls){
+                if (this.checkApiMobile()){
+                    dialogs.alert("Une erreur est survenue avec l'api ")
+                }else{
+                    let compt = 0;
+                    this.images.forEach((image) =>{
+                        image.img.url = urls[compt];
+                        compt++;
+                    });
+                    const data = {
+                        data : {
+                            images: this.images,
+                            id : this.$store.state.idUtilisateur
+                        },
+
+                    };
+                    const config = {
+                        headers: {
+                            'Authorization': 'Bearer '+this.$store.state.tokenAuth
+                        },
+                        timeout: 10
+                    };
+                    console.log(this.url_api_mobile+'photos');
+                    axios.post(this.url_api_mobile+'photos',data,config)
+                        .then((res) =>{
+                            console.log(res.data)
+                            dialogs.confirm('Les photo a bien été sauvgarder dans la base de donnée :)')
+                        })
+                        .catch((err) =>{
+                            dialogs.alert("Erreur avec la connection a la base de donnée!");
+                            console.log(err);
+                            this.isBusy = false;
+                        })
+                        .finally(()=>{
+                            setTimeout(() =>{
+                                this.isBusy = false;
+                            });
+                        });
+
+                }
+
+            },
+            setUrlToImg(urls){
                 if (this.checkApiMobile()){
                     dialogs.alert("Une erreur est survenue avec l'api ")
                 }else{
@@ -183,6 +230,7 @@
                     };
                     axios.put(this.url_api_mobile+'series/'+this.serie._id+"/photos",data,config)
                         .then((res) =>{
+                            console.log(res.data)
                             dialogs.confirm('Votre photo a bien été sauvgarder dans la base de donnée et dans la série choisie :)')
                         })
                         .catch((err) =>{
@@ -211,9 +259,18 @@
                 const uploaded_image = result.data;
                 this.urls.push(uploaded_image.url);
                 if(this.images.length === this.urls.length){
-                    this.setUrlToImg(this.urls);
-                    this.images = [];
-                    this.urls = []
+                    console.log(this.serie);
+                    if(this.serie === 'galerie'){
+                        this.setUrlToImg2(this.urls);
+                        this.images = [];
+                        this.urls = []
+                    }else{
+                        console.log('einein')
+                        this.setUrlToImg(this.urls);
+                        this.images = [];
+                        this.urls = []
+                    }
+
                 }
 
                 this.isBusy = false
@@ -238,3 +295,5 @@
 
     }
 </script>
+<style>
+</style>

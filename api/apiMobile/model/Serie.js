@@ -7,9 +7,9 @@ const schema = new mongoose.Schema({
     nom :{ type: String, required: true },
     descr: { type: String, required: true },
     map: {
-        //lat: { type: Number, required: true },
-        //lng: { type: Number, required: true },
-        //zoom: { type: Number, required: true },
+        lat: { type: Number, required: true },
+        lng: { type: Number, required: true },
+        zoom: { type: Number, required: true },
     },
     photos: [{type: String}],
     user: { type: String, required: true },
