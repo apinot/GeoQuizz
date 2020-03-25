@@ -314,6 +314,7 @@ app.put("/series/:id/photos", (req, res) => {
     const idUtilisateur = req.body.data.id;
 
     Serie.findById(id, (err, serie) => {
+        console.log('1');
         if(err) throw err;
         if(!serie) {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
@@ -323,6 +324,7 @@ app.put("/series/:id/photos", (req, res) => {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
+        console.log('2');
 
         const photos = [];
         photos.forEach((photo) => {
@@ -347,10 +349,13 @@ app.put("/series/:id/photos", (req, res) => {
                 // mise à jour de la serie
             })
         });
+        console.log('3');
 
+        console.log(photos);
         serie.photos = photos;
 
         serie.save().then((saved) => {
+            console.log('4');
             res.status(200).json({
                 serie: {
                     id: saved._id,
