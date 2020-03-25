@@ -1,27 +1,27 @@
 <template>
   <div class="home">
     <div class="container">
-      <h1>Geo Quizz</h1>
       <div class="row">
+        <h5>Choisir votre pseudo</h5>
         <div class="input-field col s12">
           <input v-model="userName" id="first_name" type="text" class="validate" />
           <label for="first_name">Pseudo</label>
         </div>
       </div>
       <div class="row">
-        <a class='dropdown-trigger btn col s6 m4 offset-s3'
+        <a class='dropdown-trigger btn col s6 m4 offset-s3 red darken-4'
         data-target='dropdown1'>{{nomSerie}} {{villeSerie}}</a>
       <div v-if="series">
-        <ul id='dropdown1' class='dropdown-content' >
+        <ul id='dropdown1' class='dropdown-content red darken-4' >
           <li v-for="serie in series" :key="serie.id">
-            <a href="#!" v-on:click="saveInfoSerie(serie._id, serie.nom, serie.ville)">
+            <a class="white-text" v-on:click="saveInfoSerie(serie._id, serie.nom, serie.ville)">
               {{serie.nom}} {{serie.ville}}</a>
           </li>
         </ul>
       </div>
         <button
           v-on:click="createPartie"
-          class="btn waves-effect waves-light col s2 m2 offset-s5 offset-m6"
+          class="btn red darken-4 waves-effect waves-light col s2 m2 offset-s5 offset-m6"
           type="submit"
           name="action"
         >
@@ -75,6 +75,9 @@ export default {
 
   methods: {
     createPartie() {
+      if (this.userName.length === 0) {
+        return;
+      }
       this.$http
         .post('/parties', {
           username: this.userName,
@@ -92,10 +95,6 @@ export default {
         });
     },
     saveInfoSerie(id, nom, ville) {
-      console.log(id);
-      console.log(nom);
-      console.log(ville);
-
       this.idSerie = id;
       this.nomSerie = nom;
       this.villeSerie = ville;
@@ -111,9 +110,6 @@ export default {
         this.idSerie = this.series[0]['_id'];
         this.nomSerie = this.series[0].nom;
         this.villeSerie = this.series[0].ville;
-        console.log(this.idSerie);
-        console.log(this.nomSerie);
-        console.log(this.villeSerie);
       })
       .catch((error) => {
         this.error = true;
