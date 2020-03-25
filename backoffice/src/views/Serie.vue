@@ -167,7 +167,9 @@
       <div class="row">
       <h4>Photos</h4>
       <div class="row">
-        <button class="btn modal-trigger" data-target="modalAddPhotos" @click="getUserPhotos">
+        <button class="btn modal-trigger" data-target="modalAddPhotos"
+          @click="userOffset <= 0 ? getUserPhotos() : ''"
+        >
           <i class="fas fa-plus left"></i>Ajouter
         </button>
       </div>
@@ -202,25 +204,10 @@
   </div>
 
 
-  <!-- TODO pb bouton ajouter + pagination-->
    <!-- Modal d'ajout de photo -->
-    <div id="modalAddPhotos" class="modal">
+    <div id="modalAddPhotos" class="modal modal-fixed-footer">
       <div class="modal-content">
         <h4>Ajouter des photos</h4>
-        <!-- Spinner -->
-        <div class="row center-align" v-if="!userPhotos">
-          <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-blue-only">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div><div class="gap-patch">
-                <div class="circle"></div>
-              </div><div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div class="row center-align red-text text-accent-4" v-if="modalError">
           {{modalError}}
@@ -254,6 +241,26 @@
             </div>
           </div>
         </div>
+             <!-- Spinner -->
+            <div class="row center-align" v-if="modalLoading">
+              <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div><div class="gap-patch">
+                    <div class="circle"></div>
+                  </div><div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row center-align" v-if="!modalLoading">
+              <button class="btn" @click="getUserPhotos" v-if="userPhotos.length < totalUserPhoto">
+                <i class="fas fa-arrow-down left"></i> Plus de photos
+              </button>
+            </div>
+        </div>
         <div class="modal-footer">
           <a class="modal-close waves-effect waves-green btn-flat">
             Fermer
@@ -265,7 +272,6 @@
             Ajouter
           </a>
         </div>
-      </div>
     </div>
 </div>
 </template>
@@ -290,8 +296,11 @@ export default {
       currentDist: null,
       photoToDelete: null,
       modalError: null,
-      userPhotos: null,
+      userPhotos: [],
       selectedPhotoInGalllery: [],
+      userOffset: 0,
+      totalUserPhoto: -1,
+      modalLoading: true,
     };
   },
   created() {
@@ -415,13 +424,18 @@ export default {
         });
     },
     getUserPhotos() {
-      this.$http.get('/photos')
+      this.modalLoading = true;
+      this.$http.get(`/photos?offset=${this.userOffset}`)
         .then((response) => {
-          this.userPhotos = response.data.photos;
+          response.data.photos.forEach((p) => { this.userPhotos.push(p); });
+          this.userOffset += response.data.photos.length;
+          this.totalUserPhoto = response.data.total;
         })
         .catch(() => {
           this.modalError = 'Impossible de récupérer vos photos';
-          this.userPhotos = [];
+        })
+        .finally(() => {
+          this.modalLoading = false;
         });
     },
     addPhoto() {
