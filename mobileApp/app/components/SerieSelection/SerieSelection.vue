@@ -27,7 +27,6 @@
         created(){
             this.url_api_mobile = this.$store.state.api_mobile;
             this.getSerie()
-
         },
         methods: {
             getSerie() {

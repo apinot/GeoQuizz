@@ -326,7 +326,7 @@ app.put("/series/:id/photos", (req, res) => {
         }
         console.log('2');
 
-        let tab = [];
+        let tab = serie.photos;
         async function savePhoto() { 
             for (const photo of photos) {
                 // initialisation de la photo
