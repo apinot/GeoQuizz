@@ -324,6 +324,7 @@ app.put("/series/:id/photos", (req, res) => {
             return;
         }
 
+        const photos = [];
         photos.forEach((photo) => {
             // initialisation de la photo
             const lat = photo.location.latitude;
@@ -340,16 +341,30 @@ app.put("/series/:id/photos", (req, res) => {
             });
             // sauvegarde l'id de la photo
             newPhoto.save().then((phot) => {
-                serie.photos.push(phot.id);
-                console.log(serie)
+                console.log('id de la photo')
+                console.log(phot.id);
+                photos.push(phot.id);
                 // mise à jour de la serie
             })
-
-
         });
-        serie.save().then((ser) => {
-            console.log("coucou hibou")
-            res.status(200).json(ser)
+
+        serie.photos = photos;
+
+        serie.save().then((saved) => {
+            res.status(200).json({
+                serie: {
+                    id: saved._id,
+                    ville: saved.ville,
+                    nom : saved.nom,
+                    descr: saved.descr,
+                    dist: saved.dist,
+                    map: {
+                        lat: saved.map.lat,
+                        lng: saved.map.lng,
+                    },
+                    zoom: saved.map.zoom,
+                }
+            });
         }).catch((err) =>{
             res.status(500).json({err})
         });
