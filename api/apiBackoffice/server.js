@@ -299,9 +299,16 @@ app.post('/series', (req, res) => {
         return;
     }
     const serie = req.body;
-    // console.log(req.body);
-    // TODO verifier que serie possède la bonne architecture
-
+    
+    if(!serie.ville
+        || !serie.dist || !Number(serie.dist) || !serie.map
+        || !serie.ville || !serie.descr || !serie.nom
+        || !serie.map.lat || !serie.map.lng || !serie.map.zoom
+        || !Number(serie.map.lat) || !Number(serie.map.lng) || !Number(serie.map.zoom)
+    ) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
 
     const newSerie = new Serie({
         ville: serie.ville,
@@ -356,6 +363,7 @@ app.put('/series/:id/', (req, res) => {
     const { rules } = req.body;
     if(!rules.ville
         || !rules.dist || !Number(rules.dist) || !rules.map
+        || !rules.ville || !rules.nom || !rules.descr
         || !rules.map.lat || !rules.map.lng || !rules.map.zoom
         || !Number(rules.map.lat) || !Number(rules.map.lng) || !Number(rules.map.zoom)
     ) {
@@ -363,7 +371,6 @@ app.put('/series/:id/', (req, res) => {
         return;
     }
 
-    //TODO verifier que rules possède la bonne architecture
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
