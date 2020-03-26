@@ -34,8 +34,8 @@ app.get('/', (req, res) => {
  * @apiName GetSeries
  * @apiGroup Series
  * 
- * @apiParam (BODY) {String} limit valeur pour limité la récupération des série
- * @apiParam (BODY) {String} offset valeur pour limité la récupération des série
+ * @apiParam (QUERY) {String} limit valeur pour limité la récupération des série
+ * @apiParam (QUERY) {String} offset valeur pour limité la récupération des série
  * 
  * @apiSuccess {Series} Series Liste de serie
  * 
@@ -165,7 +165,6 @@ app.post("/parties", (req, res) => {
  * 
  * @apiSuccess {Partie} Partie Informations sur la partie
  * 
- * @apiError 401 l'idSerie n'est pas renseigné
  * @apiError 404 l'idSerie est incorrect
  * @apiError 401 le token ne correspond pas à celui de la partie
  * @apiError 400 le score est n'est pas dans le bon format
@@ -308,7 +307,6 @@ app.get('/parties/:id/photos', (req, res) => {
  * 
  * @apiError 400 l'idPartie n'est pas renseigné
  * @apiError 404 l'idPartie est incorrect
- * @apiError 404 la série est introuvable
  * @apiError 401 le token ne correspond pas à celui de la partie
  * @apiError 500 Erreur interne
  * 
