@@ -1027,7 +1027,7 @@ app.get('/photos/:id', (req, res) => {
         res.status(401).json({ status: 401, msg: 'Unauthorized' });
         return;
     }
-
+    const { id } = req.params;
     Photo.findById(id, (err, photo) => {
         if (err) throw err;
         if (!photo) {
