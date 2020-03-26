@@ -371,7 +371,6 @@ export default {
             this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
             return;
           }
-
           this.error = 'Impossible de mettre à jour les données';
         })
         .finally(() => {

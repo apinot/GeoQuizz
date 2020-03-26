@@ -1028,6 +1028,65 @@ app.get('/photos/:id', (req, res) => {
         return;
     }
     const { id } = req.params;
+    const { newphoto } = req.body;
+    Photo.findById(id, (err, photo) => {
+        if (err) throw err;
+        if (!photo) {
+            return;
+        }
+        if (photo.user != req.authUser._id) {
+            res.status(401).json({ status: 401, msg: 'Unauthorized' });
+            return;
+        }
+
+        photo.position.lat = newphoto.position.lat;
+        photo.position.lng = newphoto.position.lng;
+        photo.desc =  newphoto.desc;
+
+        photo.save()
+            .then((saved) => {
+                res.status(200).json({
+                    photo: {
+                        position: {
+                            lat: saved.position.lat,
+                            lng: saved.position.lng
+                        },
+                        url: saved.url,
+                        desc: saved.desc,
+                    }
+                });
+            })
+            .catch((error) => {
+                throw error;
+            });
+    });
+});
+
+/**
+ * Permet de modifier une photo selon l'id
+ * 
+ * @api {put} /photos/:id Photo de l'utilisateur selon un id
+ * @apiName savePhoto
+ * @apiGroup Photos
+ * 
+ * @apiHeader (Authorization) {bearer} token token de l'utilisateur 
+ * 
+ * @apiParam (URI) {UUID} id de la photo
+ * @apiParam (BODY) {Photo} Photo Données de la photo a sauvegarder
+ * 
+ * @apiSuccess {Photo} Photo Photo de l'utilisateur a modifié
+ * 
+ * @apiError 401 L'utilisateur n'est pas authentifié
+ * @apiError 404 l'id est incorrect
+ * @apiError 500 Erreur interne
+ */
+
+app.put('/photos/:id', (req, res) => {
+    if (!req.authUser) {
+        res.status(401).json({ status: 401, msg: 'Unauthorized' });
+        return;
+    }
+    const { id } = req.params;
     Photo.findById(id, (err, photo) => {
         if (err) throw err;
         if (!photo) {
@@ -1050,6 +1109,7 @@ app.get('/photos/:id', (req, res) => {
         });
     });
 });
+
 
 
 /* Gestion des erreurs */

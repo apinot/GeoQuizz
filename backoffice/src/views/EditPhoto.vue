@@ -6,8 +6,8 @@
     <div class="container">
       <div class="row">
         <div class="input-field col s12">
-          <input id="text" type="text" class="validate" v-if="photo" v-model="photo.description"/>
-          <label for="text">Description</label>
+          <input id="text" type="text" class="validate" v-if="photo" v-model="photo.desc"/>
+          <label for="text" class="active">Description</label>
         </div>
       </div>
     </div>
@@ -81,12 +81,29 @@ export default {
         lng: event.position.lng,
       };
     },
+    savePhoto() {
+      this.$http.put(`/photos/${this.idPhoto}`)
+        .then(() => {
+          this.$router.push({ name: 'galerie' });
+        }).catch((error) => {
+          if (error.response && error.response.status === 404) {
+            this.error = 'Désolé, cette photo n\'existe pas';
+            return;
+          } if (error.response && error.response.status === 401) {
+            this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
+          }
+          this.error = 'Impossible de mettre à jour les données';
+        }).finally(() => {
+          this.$store.dispatch('setLoading', false);
+        });
+    },
   },
   created() {
     this.$store.dispatch('setLoading', true);
     this.$http.get(`/photos/${this.idPhoto}`)
       .then((response) => {
         this.photo = response.data.photo;
+        this.position = response.data.photo.position;
       }).catch((error) => {
         if (error.response && error.response.status === 404) {
           this.error = 'Désolé, cette série de photos n\'existe pas';
