@@ -141,11 +141,13 @@
       <div class="container">
         <div class="row">
           <h4 class="center-align">Carte de la serie</h4>
+          <small>Cliquer sur un marker pouvoir sa associée</small>
           <div class="row">
             <leaflet :options="leafletOptions"
-              :markers="photos"
+              :markers="markers"
               :disabled="!editMap"
               @viewchanged="onMapViewChange"
+              @markerclick="onMarkerClick"
             >
             </leaflet>
           </div>
@@ -350,6 +352,16 @@ export default {
     },
     isLoading() {
       return this.$store.getters.isLoading;
+    },
+    markers() {
+      if (!this.photos) return [];
+      return this.photos.map((p) => ({
+        position: p.position,
+        popup: {
+          content: p.desc,
+          show: false,
+        },
+      }));
     },
   },
   methods: {
