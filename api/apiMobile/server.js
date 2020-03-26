@@ -28,6 +28,7 @@ const config = require('./config/server.conf.json');
 
 
 /* Middelware d'authentification */
+//Permet de voir si l'utilisateur possède un token lorsqu'il réalise une requête
 app.use((req, res, next) => {
     if(!req.headers.authorization) {
         next();
@@ -39,16 +40,13 @@ app.use((req, res, next) => {
         return;
     }
     jwt.verify(token, config.jwtSecret, (err, decoded) => {
-
         if (err) {
             throw err;
         }
-
         if (!decoded && !decoded.user) {
             next();
             return;
         }
-
         Utilisateur.findById(decoded.user)
             .then((user) => {
                 if (!user) {
@@ -63,26 +61,40 @@ app.use((req, res, next) => {
             })
     });
 });
+/*Routes*/
 
+/**
+ * Connexion de l'utilisateur
+ * Gestion des droits d'accès
+ * @api {post} /utilisateurs/auth
+ * @apiName Connexion
+ * @apiGroup Utilisateur
+ * @apiSuccess {200} {Utilisateur,token} L'utilisateur et son token
+ * @apiError 401 Authentification incorrecte
+ */
 app.post('/utilisateurs/auth', (req, res) => {
-    console.log('zinzin')
     setTimeout(() => {
+        // Vérification des droit de l'utilisateur
         if(!req.headers.authorization) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
 
+        // Vérification de la précence des autorisation dans le headers
         const credentialsBase64 = req.headers.authorization.split(' ')[1];
         if(!credentialsBase64) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
+
+        // Dechiffrage des identifiants de l'utilisateur et verification de ces derniers
         const [email, password] = Buffer.from(credentialsBase64, 'base64').toString('utf-8').split(':');
         if(!email || !password) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
 
+        // Requête pour trouver l'utilisateur
         Utilisateur.find({email}, (err, users) => {
             if(err) throw err;
 
@@ -90,18 +102,15 @@ app.post('/utilisateurs/auth', (req, res) => {
                 res.status(401).json({status: 401, msg: 'Unauthorized'});
                 return;
             }
-
             const [user] = users;
-
+            // Comparaison des password
             bcrypt.compare(config.passwordSecret + password, user.password)
                 .then((result) => {
                     if(!result) {
                         res.status(401).json({status: 401, msg: 'Unauthorized'});
                         return;
                     }
-
                     const token = jwt.sign({user: user._id}, config.jwtSecret);
-
                     res.status(200).json({
                         user: {
                             id: user._id,
@@ -117,26 +126,37 @@ app.post('/utilisateurs/auth', (req, res) => {
     }, 2000);
 });
 
-/*Routes*/
+
 app.get("/", (req,res) =>{
     res.status(200).json({success: "bonjour de l'api Mobile"})
 });
 
+/**
+ * Listes des photos
+ * Gestion des droits d'accès
+ * @api {post} /photos
+ * @apiName AddPhotos
+ * @apiGroup Photos
+ * @apiHeader {String} access-key Users unique access-key.
+ * @apiSuccess {200} {Photo} La photos ajoutée
+ * @apiError 401 Authentification incorrecte
+ * @apiError 500 Problème avec la base de donnée
+ * @apiError 400 Pas de photo dans le body de la requete
+ * @apiParam {Object} images[], user
+ */
 app.post("/photos", (req, res) =>{
+    // Vérification des droit de l'utilisateur
     if (!req.headers.authorization) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
     let photos = req.body.data.images;
-    let id  = req.body.data.id
-    console.log(req.body.data)
-    //console.log(req.body.data);
-    //console.log(photos);
+    let id  = req.body.data.id;
+    // Condition pour si les bon paramètre on été ajouter dans la requête
     if(!photos) {
         res.status(400).json({ status: 400, msg: 'Bad Request' });
         return;
     }
-
     photos.forEach((photo)=>{
         //initialisation de la photo
         const lat = photo.location.latitude;
@@ -163,8 +183,24 @@ app.post("/photos", (req, res) =>{
             });
     })
 
-})
+});
+
+
+/**
+ * Edit Series
+ * Gestion des droits d'accès
+ * @api {put} /serie/:id
+ * @apiName EditPhoto
+ * @apiGroup Series
+ * @apiHeader {String} access-key Users unique access-key.
+ * @apiSuccess {200} {Photo} La série édité
+ * @apiError 401 Authentification incorrecte
+ * @apiError 500 Problème avec la base de donnée
+ * @apiError 404 Série non trouvé dans la base de donnée
+ * @apiParam {Object} serie, user ,id
+ */
 app.put('/serie/:id', (req,res)=>{
+    // Vérification des droit de l'utilisateur
     if (!req.headers.authorization) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
@@ -172,8 +208,8 @@ app.put('/serie/:id', (req,res)=>{
     const {id} = req.params;
     const updateSerie = req.body;
     const idUtilisateur = req.body.user;
-    console.log(req.body.user)
-    console.log(req.body)
+
+    // Requête pour trouver la série
     Serie.findById(id, (err, serie) => {
         if (err) throw err;
         if (!serie) {
@@ -185,7 +221,7 @@ app.put('/serie/:id', (req,res)=>{
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-        console.log('---------------------------------------------------------')
+        // Update de la série
         serie.ville =  updateSerie.ville;
         serie.dist = updateSerie.dist;
         serie.descr = updateSerie.descr;
@@ -194,7 +230,7 @@ app.put('/serie/:id', (req,res)=>{
         serie.map.zoom = updateSerie.zoom;
         serie.user = updateSerie.user;
         serie.created_at = new Date();
-
+        // Sauvegarde de la série
         serie.save().then((serie) => {
             res.status(200).json(serie)
         }).catch((err)=>{
@@ -204,7 +240,19 @@ app.put('/serie/:id', (req,res)=>{
 
 });
 
+/**
+ * Ajout Series
+ * Gestion des droits d'accès
+ * @api {get} /series
+ * @apiName GetSeries
+ * @apiGroup Series
+ * @apiHeader {String} access-key Users unique access-key.
+ * @apiSuccess {200} {Series[]} La série édité
+ * @apiError 401 Authentification incorrecte
+ * @apiError 500 Problème avec la base de donnée
+ */
 app.post('/series', (req, res) => {
+    // Vérification des droit de l'utilisateur
     if (!req.headers.authorization) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
@@ -224,6 +272,7 @@ app.post('/series', (req, res) => {
         user: serie.user,
         created_at: new Date()
     });
+    //Ajout de la série
     newSerie.save().then((serie)=>{
         res.status(200).json({serie})
     }).catch((err) => {
@@ -231,15 +280,28 @@ app.post('/series', (req, res) => {
     })
 });
 
+/**
+ * Suppression Series
+ * Gestion des droits d'accès
+ * @api {get} /series/id
+ * @apiName DeleteSeries
+ * @apiGroup Series
+ * @apiHeader {String} access-key Users unique access-key.
+ * @apiSuccess {200} {response : 'deleted'} La série supprimé
+ * @apiError 401 Authentification incorrecte
+ * @apiError 500 Problème avec la base de donnée
+ * @apiError 404 Série non trouvé dans la base de donnée
+ * @apiParam {String} id
+ */
 app.delete('/series/:id/', (req, res) => {
     const { id } = req.params;
-    console.log(req.headers);
+    // Condition pour voir si l'utilisateur a la droit d'effectuer la requête
     if (!req.headers.authorization) {
         res.status(401).json({status: 401, msg: 'Unauthorized'});
         return;
     }
     const idUtilisateur = req.query.id;
-    console.log(idUtilisateur)
+    // Requête pour trouver la série
     Serie.findById(id, (err, serie) => {
         if(err) throw err;
         if(!serie) {
@@ -252,18 +314,28 @@ app.delete('/series/:id/', (req, res) => {
             return;
         }
     });
+    // Suppression de la série
     Serie.findByIdAndDelete(id, (err) => {
         if(err) throw err;
         res.status(200).json({response: 'deleted'});
     });
 });
 
+/**
+ * Liste Series
+ * Gestion des droits d'accès
+ * @api {get} /series
+ * @apiName GetSeries
+ * @apiGroup Series
+ * @apiHeader {String} access-key Users unique access-key.
+ * @apiSuccess {200} {Series[]} Series Le nombre total de séries de l'utilisateur et la liste des séries à partir de offset (avec size element) * @apiError 500 Problème avec la base de donnée
+ * @apiParam {Query} limit, offset
+ */
 app.get('/series', (req, res) => {
-    let {limit, offset} = req.query;
 
+    let {limit, offset} = req.query;
     if(!limit || !Number(limit) || limit > 25) limit = 25;
     if(!offset || !Number(offset) || offset < 0) offset = 0;
-
     const idUtilisateur = req.query.id;
 
     // Compte le nombre totals de séries
@@ -276,10 +348,9 @@ app.get('/series', (req, res) => {
                     res.status(200).json({
                         count,
                         series: [],
-                    })
+                    });
                     return;
                 }
-
                 res.status(200).json({
                     count,
                     series,
@@ -291,42 +362,58 @@ app.get('/series', (req, res) => {
     });
 });
 
+
+/**
+ * Ajout de photo dans une series
+ * Gestion des droits d'accès
+ * @api {put} /series/id/photos
+ * @apiName AddPhotoToSeries
+ * @apiGroup Series
+ * @apiHeader {String} access-key Users unique access-key.
+ * @apiSuccess {200} {Series[]} La série modifier
+ * @apiError 500 Problème avec la base de donnée
+ * @apiError 404 Pas de série trouver
+ * @apiError 401 Pas autorisé à effectuer la requête
+ * @apiError 400 Mauvaise requête
+ * @apiParam {String} id
+ */
 app.put("/series/:id/photos", (req, res) => {
+    //Application du middleware
     setTimeout(()=>{
         if(!req.headers.authorization) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
         }},2000);
 
     const { id } = req.params;
+    // Regex pour savoir si l'id a le bon type
     if(!id.match(/^[0-9a-fA-F]{24}$/)){
         res.status(404).json({status: 404, msg: 'Serie Not Found'});
         return;
     }
     // TODO verifier la structure de l'objet photo
     let photos = req.body.data.images;
+    // Condition pour voir si le body contient bien des images
     if(!photos) {
-        console.log('zinzin');
         res.status(400).json({ status: 400, msg: 'Bad Request' });
         return;
     }
 
-    // application du middleware
     const idUtilisateur = req.body.data.id;
-
+    // Requete pour trouver la série avec l'id placé en paramètre
     Serie.findById(id, (err, serie) => {
-        console.log('1');
         if(err) throw err;
+        // Condition si la série n'a pas été trouvé
         if(!serie) {
             res.status(404).json({status: 404, msg: 'Serie Not Found'});
             return;
         }
+        // Condition pour savoir si c'est bien la série de l'utilisateur
         if(serie.user !== idUtilisateur) {
             res.status(401).json({status: 401, msg: 'Unauthorized'});
             return;
         }
-        console.log('2');
-
         let tab = serie.photos;
+        // Sauvegarde de la photo
         async function savePhoto() { 
             for (const photo of photos) {
                 // initialisation de la photo
@@ -345,19 +432,15 @@ app.put("/series/:id/photos", (req, res) => {
                 // sauvegarde l'id de la photo
                 const phot = await newPhoto.save();
                     tab.push(phot._id);
-                    console.log('regarde le tableau se remplit')
                     console.log(tab);
                     console.log(phot)
             }
             return tab;
         }
+        // Sauvegarde de la série
         savePhoto().then((tab2) => {
-            console.log('3')
-            console.log('alors il est remplit ?')
-            console.log(tab2);
-            serie.photos = tab2
+            serie.photos = tab2;
             serie.save().then((saved) => {
-                console.log('4');
                 res.status(200).json({
                     serie: {
                         id: saved._id,
@@ -400,8 +483,7 @@ app.use((error, req, res, next) => {
     });
 });
 
-
-
+// L'api écoute le port 8080
 app.listen(8080, () => {
     console.log('api mobile is running !');
 });
