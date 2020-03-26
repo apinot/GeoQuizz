@@ -3,7 +3,7 @@
     <div class="col s12 m8 offset-m2">
       <div class="card">
         <div class="card-image">
-          <img src="https://media.giphy.com/media/a0h7sAqON67nO/giphy.gif">
+          <img src="https://media3.giphy.com/media/3rUbeDiLFMtAOIBErf/giphy.gif?cid=ecf05e47fc8ebae5889f9a2a92941e380e14f236d85ac328&rid=giphy.gif">
         </div>
         <div class="card-content">
           <p>Vous avez fait {{score}} pts !</p>

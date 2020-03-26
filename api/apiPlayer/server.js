@@ -30,12 +30,16 @@ app.get('/', (req, res) => {
 /**
  * Permet de récupérer la liste des séries
  * 
- * Query:
- *  limit: nombre d'éléments à recupérer (optionel, max 25)
- *  offset: (optionel, 0 par défault)
+ * @api {get} /series Series
+ * @apiName GetSeries
+ * @apiGroup Series
  * 
- *  @return
- *      la liste des series
+ * @apiParam (BODY) {String} limit valeur pour limité la récupération des série
+ * @apiParam (BODY) {String} offset valeur pour limité la récupération des série
+ * 
+ * @apiSuccess {Series} Series Liste de serie
+ * 
+ * @apiError 500 Erreur interne
  */
 app.get('/series', (req, res) => {
     let {limit, offset} = req.query;
@@ -71,12 +75,18 @@ app.get('/series', (req, res) => {
 /**
  * Permet de créée une nouvelle partie
  * 
- * Body :
- * - username : nom du joueur
+ * @api {post} /parties/ Création d'une partie
+ * @apiName PostPartie
+ * @apiGroup Paries
  * 
- * @return 
- *      id de la partie
- *      token de la partie
+ * @apiParam (BODY) {UUID} idSerie id de la série que l'utilisateur à séléctionner
+ * @apiParam (BODY) {String} username pseudo de l'utilisateur
+ * 
+ * @apiSuccess {Partie} Partie information sur la nouvelle partie, avec son token de verification
+ *  
+ * @apiError 400 L'username n'est pas renseigné
+ * @apiError 404 La série est introuvable
+ * @apiError 500 Erreur interne
  */
 app.post("/parties", (req, res) => {
     const { username } = req.body;
@@ -143,12 +153,24 @@ app.post("/parties", (req, res) => {
  * Permet de mettre à jour les données de la partie
  * (notamment lorsqu'elle est terminée)
  * 
- *  Body :
- * - score : nouveau score
- * - end : indique que la partie est terminée
+ * @api {put} /parties/:id Mise à jour de la partie lorsqu'elle est terminé
+ * @apiName EndGame
+ * @apiGroup Parties
  * 
- * @return 
- *      nouvelles infos de la partie
+ * @apiHeader (Authorization) {bearer} token token de la partie
+ * 
+ * @apiParam (URI) {UUID} idSerie Id de la série que l'utilisateur à joué
+ * @apiParam (BODY) {Boolean} end Indique si la partie est finit
+ * @apiParam (BODY) {Number} score Score de la partie
+ * 
+ * @apiSuccess {Partie} Partie Informations sur la partie
+ * 
+ * @apiError 401 l'idSerie n'est pas renseigné
+ * @apiError 404 l'idSerie est incorrect
+ * @apiError 401 le token ne correspond pas à celui de la partie
+ * @apiError 400 le score est n'est pas dans le bon format
+ * @apiError 500 Erreur interne
+ *  
  */
 app.put('/parties/:id', (req, res) => {
     const idPartie = req.params.id;
@@ -205,14 +227,22 @@ app.put('/parties/:id', (req, res) => {
 /**
  * Permet de récupérer les photos d'une partie
  * 
- * Query :
+ * @api {get} /parties/:id/photos Photos de la serie
+ * @apiName getPhotos
+ * @apiGroup Parties
  * - id : id de la partie
  * 
- * Authorization : 
- * - token: token de la partie
+ * @apiHeader (Authorization) {bearer} token token de la partie
  * 
- * @return 
- *      liste des photos d'une partie
+ * @apiParam (URI) {UUID} idSerie Id de la série que l'utilisateur à choisi
+ * 
+ * @apiSuccess {Photos} Photos Photos de la série
+ * 
+ * @apiError 400 l'idSerie n'est pas renseigné
+ * @apiError 404 l'idSerie est incorrect
+ * @apiError 401 le token ne correspond pas à celui de la partie
+ * @apiError 500 Erreur interne
+ * 
  */
 app.get('/parties/:id/photos', (req, res) => {
     const idPartie = req.params.id;
@@ -264,13 +294,23 @@ app.get('/parties/:id/photos', (req, res) => {
 });
 
 /**
- * Permet de récupérer la serie de photo d'une partie
+ * Permet de récupérer la serie d'une la partie
  * 
- * Query :
- * - id : id de la partie
+ * @api {get} /parties/:id/series Photos de la serie
+ * @apiName getSerieByPartie
+ * @apiGroup Parties
  * 
- * Authorization : 
- * - token: token de la partie
+ * @apiHeader (Authorization) {bearer} token token de la partie
+ * 
+ * @apiParam (URI) {UUID} idPartie Id de la partie
+ * 
+ * @apiSuccess {Serie} Serie Serie correspondant à la partie
+ * 
+ * @apiError 400 l'idPartie n'est pas renseigné
+ * @apiError 404 l'idPartie est incorrect
+ * @apiError 404 la série est introuvable
+ * @apiError 401 le token ne correspond pas à celui de la partie
+ * @apiError 500 Erreur interne
  * 
  * @return 
  *      serie de la partie
