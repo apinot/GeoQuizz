@@ -69,8 +69,14 @@ app.use((req, res, next) => {
  * @api {post} /utilisateurs/auth
  * @apiName Connexion
  * @apiGroup Utilisateur
- * @apiSuccess {200} {Utilisateur,token} L'utilisateur et son token
+ * 
+ * @apiHeader (Authorisation) {basic} email:password Identifiants de connexion de l'utilisateur encodés en base64
+ * 
+ * @apiSuccess {Utilisateur,token} L'utilisateur et son token
+ * 
  * @apiError 401 Authentification incorrecte
+ * @apiError 500 Erreur interne
+ * 
  */
 app.post('/utilisateurs/auth', (req, res) => {
     setTimeout(() => {
@@ -137,12 +143,17 @@ app.get("/", (req,res) =>{
  * @api {post} /photos
  * @apiName AddPhotos
  * @apiGroup Photos
- * @apiHeader {String} access-key Users unique access-key.
- * @apiSuccess {200} {Photo} La photos ajoutée
+ * 
+ * @apiHeader (String) {access-key} Users unique access-key.
+ * 
+ * @apiParam (Object) {Images}, Liste original de photo
+ * @apiParam (Object) {UUID}, id de l'utilisateur
+ * 
+ * @apiSuccess {Photo} Photo La photos ajoutée
+ * 
  * @apiError 401 Authentification incorrecte
  * @apiError 500 Problème avec la base de donnée
  * @apiError 400 Pas de photo dans le body de la requete
- * @apiParam {Object} images[], user
  */
 app.post("/photos", (req, res) =>{
     // Vérification des droit de l'utilisateur
@@ -192,12 +203,18 @@ app.post("/photos", (req, res) =>{
  * @api {put} /serie/:id
  * @apiName EditPhoto
  * @apiGroup Series
- * @apiHeader {String} access-key Users unique access-key.
- * @apiSuccess {200} {Photo} La série édité
+ * 
+ * @apiHeader (String) {access-key} Users unique access-key. 
+ *  
+ * @apiParam (URI) {UUID} id Id de la série
+ * @apiParam (BODY) {Serie} Serie Serie à modifier
+ * @apiParam (BODY) {Number} user Id de l'utilisateur
+ * 
  * @apiError 401 Authentification incorrecte
  * @apiError 500 Problème avec la base de donnée
  * @apiError 404 Série non trouvé dans la base de donnée
- * @apiParam {Object} serie, user ,id
+ * 
+ * @apiSuccess {200} {Photo} La série édité
  */
 app.put('/serie/:id', (req,res)=>{
     // Vérification des droit de l'utilisateur
@@ -246,10 +263,14 @@ app.put('/serie/:id', (req,res)=>{
  * @api {get} /series
  * @apiName GetSeries
  * @apiGroup Series
- * @apiHeader {String} access-key Users unique access-key.
- * @apiSuccess {200} {Series[]} La série édité
+ * 
+ * @apiHeader (String) {access-key} Users unique access-key. 
+ *
+ * @apiSuccess {200} {Series} La série édité
+ * 
  * @apiError 401 Authentification incorrecte
  * @apiError 500 Problème avec la base de donnée
+ * 
  */
 app.post('/series', (req, res) => {
     // Vérification des droit de l'utilisateur
@@ -286,12 +307,17 @@ app.post('/series', (req, res) => {
  * @api {get} /series/id
  * @apiName DeleteSeries
  * @apiGroup Series
- * @apiHeader {String} access-key Users unique access-key.
- * @apiSuccess {200} {response : 'deleted'} La série supprimé
+ * 
+ * @apiHeader (String) {access-key} Users unique access-key. 
+ * 
+ * @apiParam (URI) {String} id
+ * 
  * @apiError 401 Authentification incorrecte
  * @apiError 500 Problème avec la base de donnée
  * @apiError 404 Série non trouvé dans la base de donnée
- * @apiParam {String} id
+ * 
+ * @apiSuccess {response : 'deleted'} La série supprimé
+ * 
  */
 app.delete('/series/:id/', (req, res) => {
     const { id } = req.params;
@@ -327,9 +353,15 @@ app.delete('/series/:id/', (req, res) => {
  * @api {get} /series
  * @apiName GetSeries
  * @apiGroup Series
- * @apiHeader {String} access-key Users unique access-key.
- * @apiSuccess {200} {Series[]} Series Le nombre total de séries de l'utilisateur et la liste des séries à partir de offset (avec size element) * @apiError 500 Problème avec la base de donnée
- * @apiParam {Query} limit, offset
+ * 
+ * @apiHeader (String) {access-key} Users unique access-key. 
+ * 
+ * @apiParam (QUERY) {String} limit valeur pour limité la récupération des série
+ * @apiParam (QUERY) {String} offset valeur pour limité la récupération des série
+ * 
+ * @apiSuccess {Series} Series Le nombre total de séries de l'utilisateur et la liste des séries à partir de offset (avec size element) * @apiError 500 Problème avec la base de donnée
+ * 
+ * @apiError 500 Erreur interne
  */
 app.get('/series', (req, res) => {
 
@@ -369,13 +401,17 @@ app.get('/series', (req, res) => {
  * @api {put} /series/id/photos
  * @apiName AddPhotoToSeries
  * @apiGroup Series
- * @apiHeader {String} access-key Users unique access-key.
- * @apiSuccess {200} {Series[]} La série modifier
- * @apiError 500 Problème avec la base de donnée
+ * 
+ * @apiHeader (String) {access-key} Users unique access-key.
+ * 
+ * @apiParam (BODY) {Image} Image
+ * 
+ * @apiError 500 Erreur interne
  * @apiError 404 Pas de série trouver
  * @apiError 401 Pas autorisé à effectuer la requête
  * @apiError 400 Mauvaise requête
- * @apiParam {String} id
+ * 
+ * @apiSuccess {Series} La série modifié
  */
 app.put("/series/:id/photos", (req, res) => {
     //Application du middleware
