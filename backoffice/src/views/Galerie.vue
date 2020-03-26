@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 class="center-align">Galerie</h3>
-    <div v-if="isError">
+    <div v-if="error">
       <error></error>
     </div>
     <div v-else>
@@ -27,6 +27,11 @@
                   {{photo.desc}}
               </div>
               <div class="card-action">
+                <router-link :to="{name: 'editPhoto', params: { id: photo.id } }">
+                  <a class="s12 m3 waves-effect waves-light modal-trigger blue-text text-darken-2">
+                    Modifier
+                  </a>
+                </router-link>
                 <a v-on:click="updateDeletePhoto(photo.id, photo.url)"
                   data-target="modal1"
                   class="s12 m3 waves-effect waves-light modal-trigger red-text text-darken-2"
@@ -61,6 +66,8 @@
 </template>
 
 <script>
+import Error from '../components/Error.vue';
+
 export default {
   components: {
     Error,
@@ -68,11 +75,10 @@ export default {
 
   data() {
     return {
-      isError: false,
+      error: false,
       idDelete: '',
       photoDelete: '',
       photos: [],
-      error: null,
       edit: null,
       maxNbPhoto: -1,
       offset: 0,
@@ -93,7 +99,7 @@ export default {
           this.offset -= 1;
           this.maxNbPhoto -= 1;
         }).catch((error) => {
-          this.isError = true;
+          this.error = true;
           console.log(error);
         }).finally(() => {
           this.$store.dispatch('setLoading', false);
@@ -111,7 +117,7 @@ export default {
           this.loading = true;
         })
         .catch((error) => {
-          this.isError = true;
+          this.error = true;
           console.log(error);
         })
         .finally(() => {
@@ -130,7 +136,7 @@ export default {
         this.loading = true;
       })
       .catch((error) => {
-        this.isError = true;
+        this.error = true;
         console.log(error);
       })
       .finally(() => {

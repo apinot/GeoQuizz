@@ -325,7 +325,6 @@ export default {
           return;
         } if (error.response && error.response.status === 401) {
           this.$router.push({ name: 'signin', query: { redirect: this.$route.fullPath } });
-          return;
         }
         this.error = 'Impossible d\'afficher cette série de photos';
       })

@@ -97,7 +97,6 @@ export default {
     },
   },
   methods: {
-
     saveLatLngClick(event) {
       this.position = {
         lat: event.position.lat,

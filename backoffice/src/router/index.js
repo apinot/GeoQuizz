@@ -59,6 +59,14 @@ const routes = [
     },
   },
   {
+    path: '/photo/:id',
+    name: 'editPhoto',
+    component: () => import('../views/EditPhoto.vue'),
+    meta: {
+      requireAuth: true,
+    },
+  },
+  {
     path: '/upload',
     name: 'upload',
     component: () => import('../views/AddPhoto.vue'),
