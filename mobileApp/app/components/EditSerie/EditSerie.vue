@@ -30,12 +30,19 @@
         //La liste de toutes les props utilisés dans cette vue
         props: ['EditedSerie'],
 
+        mounted() {
+            this.ville = this.EditedSerie.ville;
+            this.nom = this.EditedSerie.nom;
+            this.descr = this.EditedSerie.descr
+            console.log('zinzin')
+        },
+
         //La liste de toutes les variables utilisés dans les méthodes ci-dessous
         data(){
             return{
-                ville: this.EditedSerie.ville,
-                nom: this.EditedSerie.nom,
-                descr: this.EditedSerie.descr,
+                ville: '',
+                nom: '',
+                descr: '',
                 dist: 1000,
                 lat: null,
                 lng: null,
@@ -91,32 +98,43 @@
 
             /**
              * Nom : getPositionCity
+             * Description : Faire des traitement après la sauvegarde de la série
+             */
+            getPositionCity () {
+                console.log("zinzin"+this.ville);
+                this.getPos().then(()=>{
+                    this.$navigateTo(Series)
+                        .then(() => {
+                            Series.getSerie()
+                        })
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+            },
+            /**
+             * Nom: GetPos
              * Description : Cette fonction permet de récupérer les coordonées d'une ville a partir de son nom
              * Api utilisée : api data.gouv
              * Route utilisée : https://api-adresse.data.gouv.fr/search/
              * Méthode : GET
+             * @returns {Promise<void>}
              */
-            getPositionCity(){
-                axios.get('https://api-adresse.data.gouv.fr/search/?q='+this.ville)
+            async getPos() {
+                await axios.get('https://api-adresse.data.gouv.fr/search/?q=' + this.ville)
                     .then((res) => {
                         const lat = res.data.features[0].geometry.coordinates[1];
                         const lng = res.data.features[0].geometry.coordinates[0];
                         this.lat = lat;
                         this.lng = lng;
-                        console.log(this.lat,this.lng);
-                        this.saveSerie();
-                        setTimeout(()=>{
-                            this.$navigateTo(Series)
-                                .then(()=>{
-                                    Series.getSerie()
-                                })
-                        },3000)
-
+                        console.log(this.lat, this.lng);
                     })
                     .catch((err) => {
                         console.log(err)
-                    })
+                    });
+                await this.saveSerie()
             }
+
         }
 
     };

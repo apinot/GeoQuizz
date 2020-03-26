@@ -86,31 +86,40 @@
 
             /**
              * Nom : getPositionCity
+             * Description : Permet d'effectuer des traitement apres avoir ajouté la série dans la base de donnée
+             */
+            getPositionCity(){
+                this.getPos().then(()=>{
+                    this.$navigateTo(Series)
+                        .then(() => {
+                            Series.getSerie()
+                        })
+                }).catch((err) => {
+                    console.log(err)
+                })
+            },
+
+            /**
+             * Nom: GetPos
              * Description : Cette fonction permet de récupérer les coordonées d'une ville a partir de son nom
              * Api utilisée : api data.gouv
              * Route utilisée : https://api-adresse.data.gouv.fr/search/
              * Méthode : GET
+             * @returns {Promise<void>}
              */
-            getPositionCity(){
-                axios.get('https://api-adresse.data.gouv.fr/search/?q='+this.ville)
+            async getPos() {
+                await axios.get('https://api-adresse.data.gouv.fr/search/?q=' + this.ville)
                     .then((res) => {
                         const lat = res.data.features[0].geometry.coordinates[1];
                         const lng = res.data.features[0].geometry.coordinates[0];
                         this.lat = lat;
                         this.lng = lng;
-                        console.log(this.lat,this.lng);
-                        this.saveSerie();
-                        setTimeout(()=>{
-                            this.$navigateTo(Series)
-                                .then(()=>{
-                                    Series.getSerie()
-                                })
-                        },3000)
+                        console.log(this.lat, this.lng);
                     })
                     .catch((err) => {
                         console.log(err)
-                        dialogs.alert("le nom de la ville est incorrecte")
-                    })
+                    });
+                await this.saveSerie()
             }
         }
 

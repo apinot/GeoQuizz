@@ -8,7 +8,7 @@ export default new Vuex.Store({
         tokenAuth: '',
         user_id: '',
         serie :'',
-        api_mobile: 'https://00d46766.ngrok.io/'
+        api_mobile: 'https://47f32f3f.ngrok.io/'
     },
 
 });
