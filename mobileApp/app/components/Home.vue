@@ -125,11 +125,7 @@
                                     , function (e) {
                                         console.log("Error: " + e.message);
                                     });
-
                                 this.images.push(obj);
-                                console.log(this.images.length);
-
-
                             })
                             .catch(e => {
                                 console.log('error:', e);
@@ -148,7 +144,6 @@
                 if(this.images.length > 0){
                     this.$showModal(SerieSelection)
                         .then( serie => {
-                            console.log(serie);
                             this.serie = serie;
                             if(serie){
                                this.request()
@@ -315,13 +310,11 @@
                 const uploaded_image = result.data;
                 this.urls.push(uploaded_image.url);
                 if(this.images.length === this.urls.length){
-                    console.log(this.serie);
                     if(this.serie === 'galerie'){
                         this.setUrlToImg2(this.urls);
                         this.images = [];
                         this.urls = []
                     }else{
-                        console.log('einein')
                         this.setUrlToImg(this.urls);
                         this.images = [];
                         this.urls = []
