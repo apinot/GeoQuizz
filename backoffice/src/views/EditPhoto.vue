@@ -40,6 +40,7 @@
     </div>
     <div class="row center-align mb-5">
       <button
+        v-on:click="savePhoto"
         class="s12 m3 btn red darken-3 waves-effect waves-light"
         type="submit"
         name="action"

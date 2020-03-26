@@ -1028,7 +1028,6 @@ app.get('/photos/:id', (req, res) => {
         return;
     }
     const { id } = req.params;
-    const { newphoto } = req.body;
     Photo.findById(id, (err, photo) => {
         if (err) throw err;
         if (!photo) {
@@ -1038,27 +1037,16 @@ app.get('/photos/:id', (req, res) => {
             res.status(401).json({ status: 401, msg: 'Unauthorized' });
             return;
         }
-
-        photo.position.lat = newphoto.position.lat;
-        photo.position.lng = newphoto.position.lng;
-        photo.desc =  newphoto.desc;
-
-        photo.save()
-            .then((saved) => {
-                res.status(200).json({
-                    photo: {
-                        position: {
-                            lat: saved.position.lat,
-                            lng: saved.position.lng
-                        },
-                        url: saved.url,
-                        desc: saved.desc,
-                    }
-                });
-            })
-            .catch((error) => {
-                throw error;
-            });
+        res.status(200).json({
+            photo: {
+                position: {
+                    lat: photo.position.lat,
+                    lng: photo.position.lng
+                },
+                url: photo.url,
+                desc: photo.desc,
+            }
+        });
     });
 });
 
@@ -1087,6 +1075,8 @@ app.put('/photos/:id', (req, res) => {
         return;
     }
     const { id } = req.params;
+    const { newphoto } = req.body;
+    
     Photo.findById(id, (err, photo) => {
         if (err) throw err;
         if (!photo) {
@@ -1096,17 +1086,26 @@ app.put('/photos/:id', (req, res) => {
             res.status(401).json({ status: 401, msg: 'Unauthorized' });
             return;
         }
+        photo.position.lat = newphoto.position.lat;
+        photo.position.lng = newphoto.position.lng;
+        photo.desc =  newphoto.desc;
 
-        res.status(200).json({
-            photo: {
-                position: {
-                    lat: photo.position.lat,
-                    lng: photo.position.lng
-                },
-                url: photo.url,
-                desc: photo.desc,
-            }
-        });
+        photo.save()
+            .then((saved) => {
+                res.status(200).json({
+                    photo: {
+                        position: {
+                            lat: saved.position.lat,
+                            lng: saved.position.lng
+                        },
+                        url: saved.url,
+                        desc: saved.desc,
+                    }
+                });
+            })
+            .catch((error) => {
+                throw error;
+            });
     });
 });
 
