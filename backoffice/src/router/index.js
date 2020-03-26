@@ -59,7 +59,7 @@ const routes = [
     },
   },
   {
-    path: '/photo/:id',
+    path: '/photos/:id',
     name: 'editPhoto',
     component: () => import('../views/EditPhoto.vue'),
     meta: {

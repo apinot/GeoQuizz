@@ -100,15 +100,15 @@ export default {
   },
 
   computed: {
+    idPhoto() {
+      return this.$route.params.id;
+    },
     isLoading() {
       return this.$store.getters.isLoading;
     },
     markers() {
       if (!this.position) return [];
       return [{ position: this.position }];
-    },
-    idPhoto() {
-      return this.$route.params.id;
     },
   },
 };

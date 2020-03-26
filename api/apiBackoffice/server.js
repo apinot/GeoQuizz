@@ -1031,7 +1031,6 @@ app.get('/photos/:id', (req, res) => {
     Photo.findById(id, (err, photo) => {
         if (err) throw err;
         if (!photo) {
-            res.status(404).json({ status: 404, msg: 'Photo Not Found' });
             return;
         }
         if (photo.user != req.authUser._id) {
