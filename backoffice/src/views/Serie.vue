@@ -147,7 +147,6 @@
               :markers="markers"
               :disabled="!editMap"
               @viewchanged="onMapViewChange"
-              @markerclick="onMarkerClick"
             >
             </leaflet>
           </div>
