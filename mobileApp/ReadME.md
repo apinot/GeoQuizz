@@ -2,7 +2,7 @@
 
 ##Lancement du projet
 
-Pour le bon fonctionnement du projet vous avez besoins d'intaller nativescript.
+Pour le bon fonctionnement du projet vous avez besoins d'installer nativescript.
 
 Pour lancer le projet sous android :
 
