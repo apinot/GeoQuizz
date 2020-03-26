@@ -2,11 +2,9 @@
     <Page>
         <ActionBar title="Series">
             <ActionItem @tap="addSerie" text="Ajouter"></ActionItem>
-<!--            <ActionItem @tap="refresh" text="Refresh"></ActionItem>-->
             <ActionItem @tap="goHome" >Back</ActionItem>
         </ActionBar>
         <ActivityIndicator :busy="isBusy" ></ActivityIndicator>
-
         <ListView v-if="isBusy===false" :items="series">
                 <v-template>
                     <StackLayout orientation="horizontal">
@@ -27,11 +25,15 @@
     const dialogs = require("tns-core-modules/ui/dialogs");
 
     export default {
+
+        //La liste de toutes les components utilisés dans cette vue
         components:{
             AddSerie,
             EditSerie,
             Home,
         },
+
+        //La liste de toutes les variables utilisés dans les méthodes ci-dessous
         data(){
             return{
                 url_api_mobile: this.$store.state.api_mobile,
@@ -40,19 +42,37 @@
                 isBusy: true,
             }
         },
+
+        //Appeler la méthode getSeries a la création
         created(){
             this.getSeries()
         },
+
+        //Appeler la méthode getSeries a lorsque l'application se charge
         computed(){
             this.getSeries()
         },
         methods: {
+            /**
+             * Nom: goHome
+             * Description: Permet de naviguer vers le component Home
+             */
             goHome(){
                 this.$navigateTo(Home)
             },
+
+            /**
+             * Nom: addSerie
+             * Description: Permet de naviguer vers le component AddSerie
+             */
             addSerie(){
                 this.$navigateTo(AddSerie)
             },
+
+            /**
+             * Nom: editSerie
+             * Description: Permet de naviguer vers le component editSerie et de passer la propriété 'EditedSerie'
+             */
             editSerie(serie){
                 this.$navigateTo(EditSerie, {
                     props : {
@@ -61,6 +81,14 @@
                 })
             },
 
+            /**
+             * Nom : deleteSerie
+             * Description : Cette fonction permet de supprimer série dans la base de donnée
+             * Api utilisée : apiMobile
+             * Route utilisée : /series/:id
+             * Méthode : DELETE
+             * @param serie
+             */
             deleteSerie(serie){
                 const config = {
                     headers: {
@@ -78,8 +106,15 @@
                         console.log(err)
                     })
             },
+
+            /**
+             * Nom : getSeries
+             * Description : Cette fonction permet récupérer les séries de la base de données
+             * Api utilisée : apiMobile
+             * Route utilisée : /series
+             * Méthode : GET
+             */
             getSeries() {
-                console.log('zinzin')
                 const data = {
                     params: {id : this.$store.state.idUtilisateur}
                 };
@@ -96,26 +131,7 @@
                         setTimeout(() => {this.isBusy = false}, 1000)
                     })
             },
-            refresh(){
-                this.isBusy = true;
-                console.log(this.isBusy)
-                const data = {
-                    params: {id : this.$store.state.idUtilisateur}
-                };
-                axios.get(this.url_api_mobile + 'series', data)
-                    .then(res => {
-                        this.series = res.data.series;
-                    })
-                    .catch(err => {
-                        console.log(err)
-                        this.isBusy = false
-                    })
-                    .finally(()=>{
-                        setTimeout(()=>{
-                            this.isBusy = false
-                        },50)
-                    })
-            }
+
         }
     };
 </script>

@@ -10,11 +10,9 @@
             </WrapLayout>
             <Button text="Upload" @tap="sendPictures" />
             <ActivityIndicator :busy="isBusy" ></ActivityIndicator>
-
         </StackLayout>
     </Page>
 </template>
-
 
 <script>
     import * as camera from "nativescript-camera";
@@ -30,11 +28,15 @@
     const session = bghttp.session("image-upload");
     const dialogs = require("tns-core-modules/ui/dialogs");
     export default {
+
+        //La liste de toutes les components utilisés dans cette vue
         components: {
             AddCoords,
             SerieSelection,
             Series,
         },
+
+        //La liste de toutes les variables utilisés dans les méthodes ci-dessous
         data() {
             return {
                 images:[],
@@ -47,14 +49,27 @@
                 isBusy: false
             }
         },
+
+        //Permet à la création de demander l'autorisation de l'utilisateur d'accéder a la géolocalisation
         created(){
             geolocation.enableLocationRequest();
-            console.log(this.url_api_mobile)
         },
+
         methods:{
+
+            /**
+             * Nom: goToSerie
+             * Description: Permet de naviguer vers le component Series
+             */
             goToSerie(){
                 this.$navigateTo(Series)
             },
+
+            /**
+             * Nom: selectPictures
+             * Description: Permet de gérer les autorisation d'accès de la galerie, d'affecter des coordonées a celle-ci
+             * grâce au component AddCoords et ensuite de les affecter au tableau
+             */
             selectPicture() {
                 let context = imagepicker.create({
                     mode: 'single'
@@ -82,14 +97,17 @@
                                     };
                                     console.log(obj)
                                 })
-
-
-
                         });
                     }).catch(function (e) {
                     console.log('error in selectPicture', e);
                 });
             },
+
+            /**
+             * Nom: takePicture
+             * Description: Permet de gérer les autaurisations pour accéder a la caméra ainsi que d'ajouter des images dans le tableau,
+             * de plus, ajouter des coordonées a l'image en fonction de la postion de l'utilisateur
+             */
             takePicture() {
                 let obj = {};
                 camera.requestPermissions()
@@ -121,6 +139,11 @@
                         console.log('Error requesting permission :'+ e);
                     });
             },
+
+            /**
+             * Nom: sendPictures
+             * Description: Permet d'appeler la methode 'request()' après que la modal soit fermée
+             */
             sendPictures(){
                 if(this.images.length > 0){
                     this.$showModal(SerieSelection)
@@ -139,6 +162,12 @@
                 }
             },
 
+            /**
+             *Name: request
+             * Service: http-background
+             * Méthode: POST
+             * Description: Permet d'upload une image sur le cloud
+             */
             request(){
                 this.isBusy = true
                 const url = 'https://api.imgbb.com/1/upload';
@@ -164,6 +193,14 @@
                 });
             },
 
+            /**
+             * Nom: setUrlToImg2
+             * Description: Permet de déifnir l'url aux images et de les ajouter a la base de donnée
+             * Api utilisée : mobileApi
+             * Route utilisée : /photos
+             * Méthode : POST
+             * @param: string
+             */
             setUrlToImg2(urls){
                 if (this.checkApiMobile()){
                     dialogs.alert("Une erreur est survenue avec l'api ")
@@ -206,6 +243,15 @@
                 }
 
             },
+
+            /**
+             * Nom: setUrlToImg
+             * Description: Permet de déifnir l'url aux images et de les ajouter à une série
+             * Api utilisée : mobileApi
+             * Route utilisée : series/:id/photos
+             * Méthode : PUT
+             * @param: string
+             */
             setUrlToImg(urls){
                 if (this.checkApiMobile()){
                     dialogs.alert("Une erreur est survenue avec l'api ")
@@ -220,7 +266,6 @@
                             images: this.images,
                             id : this.$store.state.idUtilisateur
                         },
-
                     };
                     const config = {
                         headers: {
@@ -247,6 +292,11 @@
                 }
 
             },
+            /**
+             * Name: logEvent
+             * @params event
+             * Description : Permet d'avoir le nom de l'event dans la requête
+             */
             logEvent(e) {
                 console.log(e.eventName);
                 this.isBusy = true
@@ -254,6 +304,12 @@
                     dialogs.alert("Une erreur est survenue avec l'upload de la photo ")
                 }
             },
+
+            /**
+             * Nom: respondedHandler
+             * @param: event
+             * Description : Permet d'effectuer des traitement sur les données reçues après l'upload
+             */
             respondedHandler(e) {
                 const result = JSON.parse(e.data);
                 const uploaded_image = result.data;
@@ -272,15 +328,26 @@
                     }
 
                 }
-
                 this.isBusy = false
                 dialogs.confirm('Votre photo a bien été upload dans le cloud :) ')
-
             },
+
+            /**
+             * Nom: getName
+             * Description: Permet de récupérer le nom de l'image
+             * @param path
+             * @returns {*|parser.Node[]|string}
+             */
             getName(path){
                 const string = path.split('/');
                 return string[string.length-1];
             },
+
+            /**
+             * Name: checkApiMobile
+             * Description : permet de voir si l'api mobile fonctionne
+             * @return boolean
+             */
             checkApiMobile(){
                 axios.get(this.url_api_mobile)
                     .then((result)=>{
