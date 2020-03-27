@@ -1070,6 +1070,7 @@ app.get('/photos/:id', (req, res) => {
  */
 
 app.put('/photos/:id', (req, res) => {
+    //TODO filtrer les données de l'utilisateur
     if (!req.authUser) {
         res.status(401).json({ status: 401, msg: 'Unauthorized' });
         return;
@@ -1086,13 +1087,10 @@ app.put('/photos/:id', (req, res) => {
             res.status(401).json({ status: 401, msg: 'Unauthorized' });
             return;
         }
-        console.log('1');
-        console.log(newphoto);
         photo.position.lat = newphoto.position.lat;
         photo.position.lng = newphoto.position.lng;
         photo.desc =  newphoto.desc;
 
-        console.log('2');
         photo.save()
             .then((saved) => {
                 res.status(200).json({

@@ -83,11 +83,11 @@ export default {
       };
     },
     savePhoto() {
-      const newPhoto = {
+      const newphoto = {
         position: this.position,
         desc: this.desc,
       };
-      this.$http.put(`/photos/${this.idPhoto}`, { newPhoto })
+      this.$http.put(`/photos/${this.idPhoto}`, { newphoto })
         .then(() => {
           this.$router.push({ name: 'galerie' });
         }).catch((error) => {
