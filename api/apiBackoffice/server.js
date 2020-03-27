@@ -656,63 +656,6 @@ app.delete("/photos/:id", (req, res) => {
     });
 });
 
-/**
- * @api {put} /serie/:id Modifier une photo
- * @apiName UpdatePhoto
- * @apiGroup Photos
- * 
- * @apiHeader (Authorization) {bearer} token token obtenu lors de l'authentification
- * 
- * @apiParam (URI) {UUID} id Id de la photo à mettre à jour
- * @apiParam (BODY) {String} desc Description de la photo
- * @apiParam (BODY) {String} url Url de la photo
- * @apiParam (BODY) {Object} position Position de la photo (position : {lat, lng} )
- * 
- * @apiSuccess {Photo} serie Nouvelle informations de la photo
- * @apiError 404 L'id ne correspond pas à une photo existante
- * @apiError 401 Authentification impossible ou la photo n'appartient pas à l'utilisateur
- * @apiError 500 Erreur interne
- */
-app.put("/photos/:id", (req, res) => {
-    // application du middleware
-    if (!req.authUser) {
-        res.status(401).json({ status: 401, msg: 'Unauthorized' });
-        return;
-    }
-    const { id } = req.params;
-    const { position } = req.body
-    Photo.findById(id, (err, photo) => {
-        if (err) throw err;
-        if (!photo) {
-            res.status(404).json({ status: 404, msg: 'Photo Not Found' });
-            return;
-        }
-        // vérification du propriétaire de l'image
-        if (photo.user !== req.authUser.id) {
-            res.status(401).json({ status: 401, msg: 'Unauthorized' });
-            return;
-        }
-        photo.position.lat = position.lat;
-        photo.position.lng = position.lng;
-        photo.save()
-            .then((saved) => {
-                res.status(200).json({
-                    photo: {
-                        position: {
-                            lat: saved.position.lat,
-                            lng: saved.position.lng,
-                        },
-                        desc: saved.desc,
-                        url: saved.url,
-                    }
-                });
-            })
-            .catch((error) => {
-                throw error;
-            });
-
-    });
-});
 
 /**
  * Récupère les photos d'une série
