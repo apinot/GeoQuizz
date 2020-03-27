@@ -7,8 +7,8 @@ import store from './store';
 Vue.config.productionTip = false;
 
 /* Configuration d'axios */
-// Nom de domaine et port de l'api Player
-const apiHost = 'https://3f4b35a8.ngrok.io/';
+// Nom de domaine et port de l'api Players
+const apiHost = 'https://6427e147.ngrok.io/';
 axios.defaults.baseURL = apiHost;
 
 
