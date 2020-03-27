@@ -358,6 +358,63 @@ app.get('/parties/:id/series', (req, res) => {
     });
 });
 
+/**
+ * Permet le classement pour une série
+ * 
+ * @api {get} /series/:id/classement Photos de la serie
+ * @apiName getSerieByPartie
+ * @apiGroup Parties
+ * 
+ * @apiParam (URI) {UUID} idSerie Id de la serie
+ * 
+ * @apiSuccess {Partie} Partie Parties correspondant à la série
+ * 
+ * @apiError 400 l'idSerie n'est pas renseigné
+ * @apiError 404 l'idSerie est incorrect
+ * @apiError 500 Erreur interne
+ * 
+ * @return 
+ *      parties correspondant à la série
+ */
+app.get('series/:id/classement', (req, res) => {
+    const idPartie = req.params.id;
+    if(!idPartie) {
+        res.status(400).json({status: 400, msg: 'Bad Request'});
+        return;
+    }
+    Partie.findById(idPartie, (err, partie) => {
+        if(err) throw err;
+
+        if(!partie) {
+            res.status(404).json({status: 404, msg: 'Partie not found'});
+            return;
+        }
+
+        const idSerie = partie.serie;
+        Serie.findById( {serie: idSerie }).sort(score).exec((err, parties) => {
+            if(err) throw err;
+            if(!serie) {
+                res.status(404).json({status: 404, msg: 'Serie not found'});
+                return;
+            }
+            Partie.find({ serie: idSerie }, (err, parties) => {
+                if (err) throw err;
+                if(!parties) {
+                    res.status(404).json({status: 404, msg: 'parties not found'});
+                    return;
+                }
+
+                res.status(200).json({
+                    parties
+                });
+
+            });
+            
+               
+        });
+    });
+});
+
 /* Gestion des erreurs */
 
 // Lorsque l'url ne corrspond à aucune route
