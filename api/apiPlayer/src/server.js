@@ -18,9 +18,9 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
 });
 
 /* Models */ 
-const Partie = require('./models/Partie');
-const Serie = require('./models/Serie');
-const Photo = require('./models/Photo');
+const Partie = require('../models/Partie');
+const Serie = require('../models/Serie');
+const Photo = require('../models/Photo');
 
 /* Routes */
 app.get('/', (req, res) => {

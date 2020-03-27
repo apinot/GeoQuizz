@@ -12,9 +12,9 @@ app.use(parser.json());
 
 
 /*Models*/
-const Utilisateur = require('./model/Utilisateur');
-const Serie = require('./model/Serie');
-const Photo = require('./model/Photo');
+const Utilisateur = require('../model/Utilisateur');
+const Serie = require('../model/Serie');
+const Photo = require('../model/Photo');
 
 
 // connexion à la base de donnée mongo
@@ -24,7 +24,7 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
     useUnifiedTopology: true
 });
 
-const config = require('./config/server.conf.json');
+const config = require('../config/server.conf.json');
 
 
 /* Middelware d'authentification */
@@ -72,7 +72,7 @@ app.use((req, res, next) => {
  * 
  * @apiHeader (Authorisation) {basic} email:password Identifiants de connexion de l'utilisateur encodés en base64
  * 
- * @apiSuccess {Utilisateur,token} L'utilisateur et son token
+ * @apiSuccess {Utilisation} L'utilisateur et son token
  * 
  * @apiError 401 Authentification incorrecte
  * @apiError 500 Erreur interne
@@ -146,8 +146,8 @@ app.get("/", (req,res) =>{
  * 
  * @apiHeader (String) {access-key} Users unique access-key.
  * 
- * @apiParam (Object) {Images}, Liste original de photo
- * @apiParam (Object) {UUID}, id de l'utilisateur
+ * @apiParam (Object) {Images} Liste original de photo
+ * @apiParam (Object) {UUID} id de l'utilisateur
  * 
  * @apiSuccess {Photo} Photo La photos ajoutée
  * 

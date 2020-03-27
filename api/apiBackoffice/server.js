@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const config = require('./config/server.conf.json');
+const config = require('../config/server.conf.json');
 
 // creation de l'application
 const app = express();
@@ -21,9 +21,9 @@ mongoose.connect("mongodb://databaseGeoQuizz/Geoquizz", {
 });
 
 /* Models */
-const Utilisateur = require('./models/Utilisateur');
-const Serie = require('./models/Serie');
-const Photo = require('./models/Photo');
+const Utilisateur = require('../models/Utilisateur');
+const Serie = require('../models/Serie');
+const Photo = require('../models/Photo');
 
 /* Middelware d'authentification */
 app.use((req, res, next) => {
