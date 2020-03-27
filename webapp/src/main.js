@@ -9,7 +9,7 @@ Vue.config.productionTip = false;
 
 /* Configuratio d'axios */
 // Nom de domaine et port de l'api Player
-const apiHost = 'http://34f0ac2d.ngrok.io';
+const apiHost = 'http://docketu.iutnc.univ-lorraine.fr/:22003';
 axios.defaults.baseURL = apiHost;
 
 axios.defaults.crossDomain = true;
