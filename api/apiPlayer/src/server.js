@@ -229,7 +229,6 @@ app.put('/parties/:id', (req, res) => {
  * @api {get} /parties/:id/photos Photos de la serie
  * @apiName getPhotos
  * @apiGroup Parties
- * - id : id de la partie
  * 
  * @apiHeader (Authorization) {bearer} token token de la partie
  * 
@@ -310,8 +309,6 @@ app.get('/parties/:id/photos', (req, res) => {
  * @apiError 401 le token ne correspond pas à celui de la partie
  * @apiError 500 Erreur interne
  * 
- * @return 
- *      serie de la partie
  */
 app.get('/parties/:id/series', (req, res) => {
     const idPartie = req.params.id;
@@ -373,8 +370,6 @@ app.get('/parties/:id/series', (req, res) => {
  * @apiError 404 l'idSerie est incorrect
  * @apiError 500 Erreur interne
  * 
- * @return 
- *      parties correspondant à la série
  */
 app.get('series/:id/classement', (req, res) => {
     const idPartie = req.params.id;

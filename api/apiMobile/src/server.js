@@ -64,15 +64,13 @@ app.use((req, res, next) => {
 /*Routes*/
 
 /**
- * Connexion de l'utilisateur
- * Gestion des droits d'accès
- * @api {post} /utilisateurs/auth
+ * @api {post} /utilisateurs/auth Connexion de l'utilisateur
  * @apiName Connexion
- * @apiGroup Utilisateur
+ * @apiGroup Utilisateurs
  * 
  * @apiHeader (Authorisation) {basic} email:password Identifiants de connexion de l'utilisateur encodés en base64
  * 
- * @apiSuccess {Utilisation} L'utilisateur et son token
+ * @apiSuccess {Utilisateur} Utilisateur L'utilisateur et son token
  * 
  * @apiError 401 Authentification incorrecte
  * @apiError 500 Erreur interne
@@ -138,9 +136,9 @@ app.get("/", (req,res) =>{
 });
 
 /**
- * Listes des photos
+ *
  * Gestion des droits d'accès
- * @api {post} /photos
+ * @api {post} /photos  Listes des photos
  * @apiName AddPhotos
  * @apiGroup Photos
  * 
@@ -198,10 +196,8 @@ app.post("/photos", (req, res) =>{
 
 
 /**
- * Edit Series
- * Gestion des droits d'accès
- * @api {put} /serie/:id
- * @apiName EditPhoto
+ * @api {put} /serie/:id  Edit Series
+ * @apiName EditSerie 
  * @apiGroup Series
  * 
  * @apiHeader (String) {access-key} Users unique access-key. 
@@ -214,7 +210,7 @@ app.post("/photos", (req, res) =>{
  * @apiError 500 Problème avec la base de donnée
  * @apiError 404 Série non trouvé dans la base de donnée
  * 
- * @apiSuccess {200} {Photo} La série édité
+ * @apiSuccess {Serie} Serie La série édité
  */
 app.put('/serie/:id', (req,res)=>{
     // Vérification des droit de l'utilisateur
@@ -258,15 +254,14 @@ app.put('/serie/:id', (req,res)=>{
 });
 
 /**
- * Ajout Series
- * Gestion des droits d'accès
- * @api {get} /series
- * @apiName GetSeries
+ * 
+ * @api {get} /series Ajout Series
+ * @apiName PostSeries
  * @apiGroup Series
  * 
  * @apiHeader (String) {access-key} Users unique access-key. 
  *
- * @apiSuccess {200} {Series} La série édité
+ * @apiSuccess {Serie} Serie La série édité
  * 
  * @apiError 401 Authentification incorrecte
  * @apiError 500 Problème avec la base de donnée
@@ -302,9 +297,9 @@ app.post('/series', (req, res) => {
 });
 
 /**
- * Suppression Series
+ * 
  * Gestion des droits d'accès
- * @api {get} /series/id
+ * @api {get} /series/id  Suppression Series
  * @apiName DeleteSeries
  * @apiGroup Series
  * 
@@ -316,7 +311,7 @@ app.post('/series', (req, res) => {
  * @apiError 500 Problème avec la base de donnée
  * @apiError 404 Série non trouvé dans la base de donnée
  * 
- * @apiSuccess {response : 'deleted'} La série supprimé
+ * @apiSuccess {String} String La série est supprimé
  * 
  */
 app.delete('/series/:id/', (req, res) => {
@@ -348,9 +343,8 @@ app.delete('/series/:id/', (req, res) => {
 });
 
 /**
- * Liste Series
  * Gestion des droits d'accès
- * @api {get} /series
+ * @api {get} /series  Liste Series
  * @apiName GetSeries
  * @apiGroup Series
  * 
@@ -359,7 +353,7 @@ app.delete('/series/:id/', (req, res) => {
  * @apiParam (QUERY) {String} limit valeur pour limité la récupération des série
  * @apiParam (QUERY) {String} offset valeur pour limité la récupération des série
  * 
- * @apiSuccess {Series} Series Le nombre total de séries de l'utilisateur et la liste des séries à partir de offset (avec size element) * @apiError 500 Problème avec la base de donnée
+ * @apiSuccess {Series} Series Le nombre total de séries de l'utilisateur et la liste des séries à partir de offset (avec size element)
  * 
  * @apiError 500 Erreur interne
  */
@@ -396,9 +390,9 @@ app.get('/series', (req, res) => {
 
 
 /**
- * Ajout de photo dans une series
+ * 
  * Gestion des droits d'accès
- * @api {put} /series/id/photos
+ * @api {put} /series/id/photos Ajout de photo dans une series
  * @apiName AddPhotoToSeries
  * @apiGroup Series
  * 

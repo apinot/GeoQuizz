@@ -251,6 +251,79 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/photos/:id",
+    "title": "Photo de l'utilisateur selon un id",
+    "name": "getPhoto",
+    "group": "Photos",
+    "header": {
+      "fields": {
+        "Authorization": [
+          {
+            "group": "Authorization",
+            "type": "bearer",
+            "optional": false,
+            "field": "token",
+            "description": "<p>token de l'utilisateur</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "URI": [
+          {
+            "group": "URI",
+            "type": "UUID",
+            "optional": false,
+            "field": "id",
+            "description": "<p>de la photo</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Photo",
+            "optional": false,
+            "field": "Photo",
+            "description": "<p>Photo de l'utilisateur qu'il veut modifier</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "401",
+            "description": "<p>L'utilisateur n'est pas authentifié</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "404",
+            "description": "<p>l'id est incorrect</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>Erreur interne</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/server.js",
+    "groupTitle": "Photos"
+  },
+  {
+    "type": "get",
     "url": "/photos",
     "title": "Photos de l'utilisateur",
     "name": "getPhotos",
@@ -309,6 +382,88 @@ define({ "api": [
             "optional": false,
             "field": "401",
             "description": "<p>L'utilisateur n'est pas authentifié</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "500",
+            "description": "<p>Erreur interne</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/server.js",
+    "groupTitle": "Photos"
+  },
+  {
+    "type": "put",
+    "url": "/photos/:id",
+    "title": "Photo de l'utilisateur selon un id",
+    "name": "savePhoto",
+    "group": "Photos",
+    "header": {
+      "fields": {
+        "Authorization": [
+          {
+            "group": "Authorization",
+            "type": "bearer",
+            "optional": false,
+            "field": "token",
+            "description": "<p>token de l'utilisateur</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "URI": [
+          {
+            "group": "URI",
+            "type": "UUID",
+            "optional": false,
+            "field": "id",
+            "description": "<p>de la photo</p>"
+          }
+        ],
+        "BODY": [
+          {
+            "group": "BODY",
+            "type": "Photo",
+            "optional": false,
+            "field": "Photo",
+            "description": "<p>Données de la photo a sauvegarder</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Photo",
+            "optional": false,
+            "field": "Photo",
+            "description": "<p>Photo de l'utilisateur a modifié</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "401",
+            "description": "<p>L'utilisateur n'est pas authentifié</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "404",
+            "description": "<p>l'id est incorrect</p>"
           },
           {
             "group": "Error 4xx",
