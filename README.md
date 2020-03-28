@@ -6,8 +6,7 @@ Simon DAL PONTE
 
 ## Installation
 
-Pour pouvoir lancer toutes les applications il faudra se rendre dans les dossiers api/apiBackoffice , /api/apiPlayer, 
-api/apiMobile , mobileApp , backfoffice et enfin mobileApp  et lancer la commande suivante :
+Pour pouvoir lancer toutes les applications il faudra se rendre dans les dossiers api/apiBackoffice , /api/apiPlayer, api/apiMobile, mobileApp, backfoffice mobileApp  et lancer la commande suivante :
 
 ```
 npm install
@@ -43,5 +42,5 @@ tns run ios
 
 ## Documentation des APIs
 
-La documentation des APIs se trouve dans les les dossiers apiBackOffice, apiMobile et apiPlayer dans le dossier apidoc,
-il suffira de lancer index.html dans ce dernier.  
+Les documentations des APIs se trouvent dans les dossiers api/apiBackOffice,  api/apiMobile et  api/apiPlayer.
+il suffira de lancer index.html dans un navigateur pour voir la documentation.  
