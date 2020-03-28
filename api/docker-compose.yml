@@ -8,8 +8,8 @@ services:
   
   apiBackoffice:
     image: node
-#    environment:
-#      - NODE_ENV=production
+    environment:
+      - NODE_ENV=production
 #      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
 #      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     container_name: apiBackoffice
@@ -26,8 +26,8 @@ services:
       - databaseGeoQuizz:mongodb
 
   apiMobile:
-#    environment:
-#      - NODE_ENV=production
+    environment:
+      - NODE_ENV=production
 #      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
 #      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     image: node
@@ -45,8 +45,8 @@ services:
       - databaseGeoQuizz:mongodb
 
   apiPlayer:
-#    environment:
-#      - NODE_ENV=production
+    environment:
+      - NODE_ENV=production
 #      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
 #      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     image: node
