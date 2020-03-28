@@ -40,3 +40,8 @@ tns run android
 ```
 tns run ios
 ```
+
+## Documentation des APIs
+
+La documentation des APIs se trouve dans les les dossiers apiBackOffice, apiMobile et apiPlayer dans le dossier apidoc,
+il suffira de lancer index.html dans ce dernier.  
