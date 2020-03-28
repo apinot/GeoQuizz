@@ -1,0 +1,79 @@
+version: "2"
+
+networks: 
+  geoquizz:
+    driver: bridge
+
+services:
+  
+  apibackoffice:
+    build:
+      context: ./apiBackoffice
+    environment:
+      - NODE_ENV=production
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    container_name: apibackoffice
+    ports:
+      - "22001:8080"
+    networks: 
+      - 'geoquizz'
+    links: 
+      - databasegeoquizz:mongodb
+
+  apimobile:
+    build:
+      context: ./apiMobile
+    environment:
+      - NODE_ENV=production
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    container_name: apimobile
+    ports:
+      - "22002:8080"
+    networks: 
+      - 'geoquizz'
+    links: 
+      - databasegeoquizz:mongodb
+
+  apiplayer:
+    build:
+      context: ./apiPlayer
+    environment:
+      - NODE_ENV=production
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    container_name: apiplayer
+    ports:
+      - "22003:8080"
+    networks: 
+      - 'geoquizz'
+    links: 
+      - databasegeoquizz:mongodb
+      
+  databasegeoquizz:
+    image: mongo
+    restart: always
+    container_name: databasegeoquizz
+    environment:
+        - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+        - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+        - MONGO_INITDB_DATABASE=Geoquizz
+        - MONGO_INITDB_USERNAME=root
+        - MONGO_INITDB_PASSWORD=example
+    volumes:
+        - ./mongo-volume:/data/db
+    ports:
+        - '27017:27017'
+    networks: 
+        - 'geoquizz'
+
+  dbmanager:
+    image: mongo-express
+    networks:
+      - geoquizz
+    ports:
+      - "22010:8081"
+    links:
+      - databasegeoquizz:mongo
+

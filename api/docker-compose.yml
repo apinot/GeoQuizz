@@ -6,58 +6,70 @@ networks:
 
 services:
   
-  apibackoffice:
-    build:
-      context: ./apiBackoffice
-    environment:
-      - NODE_ENV=production
-      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-    container_name: apibackoffice
+  apiBackoffice:
+    image: node
+#    environment:
+#      - NODE_ENV=production
+#      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+#      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    container_name: apiBackoffice
+    user: "node"
+    working_dir: /api
+    volumes:
+      - ./apiBackoffice:/api
+    command: "npm run dev"
     ports:
-      - "22001:8080"
+      - "8081:8080"
     networks: 
       - 'geoquizz'
     links: 
-      - databasegeoquizz:mongodb
+      - databaseGeoQuizz:mongodb
 
-  apimobile:
-    build:
-      context: ./apiMobile
-    environment:
-      - NODE_ENV=production
-      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-    container_name: apimobile
+  apiMobile:
+#    environment:
+#      - NODE_ENV=production
+#      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+#      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    image: node
+    container_name: apiMobile
+    user: "node"
+    working_dir: /api
+    volumes:
+      - ./apiMobile:/api
+    command: "npm run dev"
     ports:
-      - "22002:8080"
+      - "8082:8080"
     networks: 
       - 'geoquizz'
     links: 
-      - databasegeoquizz:mongodb
+      - databaseGeoQuizz:mongodb
 
-  apiplayer:
-    build:
-      context: ./apiPlayer
-    environment:
-      - NODE_ENV=production
-      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-    container_name: apiplayer
+  apiPlayer:
+#    environment:
+#      - NODE_ENV=production
+#      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+#      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    image: node
+    container_name: apiPlayer
+    user: "node"
+    working_dir: /api
+    volumes:
+      - ./apiPlayer:/api
+    command: "npm run dev"
     ports:
-      - "22003:8080"
+      - "8083:8080"
     networks: 
       - 'geoquizz'
     links: 
-      - databasegeoquizz:mongodb
+      - databaseGeoQuizz:mongodb
       
-  databasegeoquizz:
+  databaseGeoQuizz:
     image: mongo
     restart: always
-    container_name: databasegeoquizz
+    container_name: databaseGeoQuizz
     environment:
-        - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-        - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+#        - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+#        - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
         - MONGO_INITDB_DATABASE=Geoquizz
         - MONGO_INITDB_USERNAME=root
         - MONGO_INITDB_PASSWORD=example
@@ -73,7 +85,6 @@ services:
     networks:
       - geoquizz
     ports:
-      - "22010:8081"
+      - "8090:8081"
     links:
-      - databasegeoquizz:mongo
-
+      - databaseGeoQuizz:mongo
