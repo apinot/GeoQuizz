@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -53,14 +55,19 @@ export default {
   methods: {
     signup() {
       if (this.loading) return;
-
+      const proxy = {
+        proxy: {
+          host: 'https://www-cache.iutnc.univ-lorraine.fr',
+          port: 3128,
+        },
+      };
       this.$store.dispatch('setLoading', true);
 
       this.$http.post('/utilisateurs', {
         email: this.email,
         password: this.password,
         passwordConfirm: this.passwordConfirm,
-      })
+      }, proxy)
         .then(() => {
           this.$router.push({ name: 'signin' });
         })

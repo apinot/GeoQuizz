@@ -51,7 +51,7 @@ app.get('/series', (req, res) => {
     Serie.count((err, count) => {
         if(err) throw err;
         //récupère les séries
-        Serie.find({ "photos.0": { "$exists": true } }).limit(Number(limit)).skip(Number(offset)).exec()
+        Serie.find({ "photos": { "$exists": true } }).limit(Number(limit)).skip(Number(offset)).exec()
             .then((series) => {
                 if(!series){
                     res.status(200).json({
@@ -125,7 +125,7 @@ app.post("/parties", (req, res) => {
             // on verifie si la serie a encore des photos
             
             const index = Math.floor(Math.random() * serie.photos.length);
-            const photoId = serie.photos.splice(index, 1).shift();
+            const photoId = serie.photos.splice(index, 1);
 
             nouvellePartie.photos.push(photoId);
         }
